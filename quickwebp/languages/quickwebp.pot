@@ -1,0 +1,518 @@
+# Quickwebp Pot
+# Copyright 2023 ...
+# This file is distributed under the GNU General Public License v3 or later.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: "
+"Quickwebp v1.0.0\n"
+"Report-Msgid-Bugs-To: "
+"Webdeclic "
+"<contact@webdeclic.com>\n"
+"POT-Creation-Date: "
+"2023-08-01 19:00+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: "
+"Webdeclic "
+"<contact@webdeclic.com>\n"
+"Language-Team: Webdeclic "
+"<contact@webdeclic.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/"
+"plain; charset=UTF-8\n"
+"Content-Transfer-"
+"Encoding: 8bit\n"
+"Plural-Forms: "
+"nplurals=2; plural=n != "
+"1;\n"
+"X-Textdomain-Support: "
+"yesX-Generator: Poedit "
+"1.6.4\n"
+"X-Poedit-SourceCharset: "
+"UTF-8\n"
+"X-Poedit-KeywordsList: "
+"__;_e;esc_html_e;"
+"esc_html_x:1,2c;"
+"esc_html__;esc_attr_e;"
+"esc_attr_x:1,2c;"
+"esc_attr__;_ex:1,2c;"
+"_nx:4c,1,2;"
+"_nx_noop:4c,1,2;_x:1,2c;"
+"_n:1,2;_n_noop:1,2;"
+"__ngettext:1,2;"
+"__ngettext_noop:1,2;_c,"
+"_nc:4c,1,2\n"
+"X-Poedit-Basepath: ..\n"
+"X-Generator: Poedit "
+"3.3.2\n"
+"X-Poedit-"
+"SearchPath-0: .\n"
+"X-Poedit-"
+"SearchPathExcluded-0: "
+"public/assets/"
+"node_modules\n"
+
+#: admin/class-cron-job.php:50
+msgid "Every minute"
+msgstr ""
+
+#: admin/class-cron-job.php:118
+#: admin/class-cron-job.php:150
+#: admin/class-cron-job.php:162
+#: admin/class-cron-job.php:169
+#: admin/class-cron-job.php:181
+#: admin/class-image-optimizer.php:318
+#: admin/class-image-optimizer.php:528
+#: admin/class-image-optimizer.php:585
+msgid ""
+"Refresh the page and try "
+"again."
+msgstr ""
+
+#: admin/class-cron-job.php:125
+msgid ""
+"No images to optimize."
+msgstr ""
+
+#: admin/class-cron-job.php:130
+msgid ""
+"Bulk optimization is "
+"already running."
+msgstr ""
+
+#: admin/class-cron-job.php:166
+msgid ""
+"Bulk optimization "
+"stopped."
+msgstr ""
+
+#: admin/class-image-optimizer.php:327
+#: admin/class-image-optimizer.php:333
+msgid ""
+"No image uploaded, try "
+"again."
+msgstr ""
+
+#: admin/class-image-optimizer.php:535
+#: admin/class-image-optimizer.php:592
+msgid "No attachment id."
+msgstr ""
+
+#: admin/class-image-optimizer.php:540
+msgid "Already optimized."
+msgstr ""
+
+#: admin/class-image-optimizer.php:550
+msgid "Not a valid image."
+msgstr ""
+
+#: admin/class-image-optimizer.php:608
+msgid "Not optimized."
+msgstr ""
+
+#: admin/class-settings.php:70
+msgid "Quickwebp Settings"
+msgstr ""
+
+#: admin/class-settings.php:71
+#: admin/class-wp-media-extends.php:116
+msgid "Quickwebp"
+msgstr ""
+
+#: admin/class-settings.php:130
+#, php-format
+msgid ""
+"<a href=\"%s\">Settings</"
+"a>"
+msgstr ""
+
+#: admin/class-settings.php:150
+msgid ""
+"Oops! QuickWebP needs "
+"the GD library to "
+"function properly, but "
+"it looks like the "
+"library is not installed "
+"on your server."
+msgstr ""
+
+#: admin/class-settings.php:151
+msgid ""
+"Please contact your "
+"hosting provider and ask "
+"them to install the GD "
+"library for PHP. They "
+"should be able to assist "
+"you with this process. "
+"Once the library is "
+"installed, QuickWebP "
+"should work as expected."
+msgstr ""
+
+#: admin/class-settings.php:152
+#: admin/class-settings.php:168
+#: admin/class-settings.php:183
+msgid ""
+"Thank you for using "
+"QuickWebP!"
+msgstr ""
+
+#: admin/class-settings.php:166
+msgid ""
+"Oops! QuickWebP needs "
+"the Imagick library to "
+"function properly, but "
+"it looks like the "
+"library is not installed "
+"on your server."
+msgstr ""
+
+#: admin/class-settings.php:167
+msgid ""
+"Please contact your "
+"hosting provider and ask "
+"them to install the "
+"Imagick library for PHP. "
+"They should be able to "
+"assist you with this "
+"process. Once the "
+"library is installed, "
+"QuickWebP should work as "
+"expected."
+msgstr ""
+
+#: admin/class-settings.php:181
+msgid ""
+"Oops! QuickWebP needs "
+"the Imagick or GD "
+"library to function "
+"properly, but it looks "
+"like the no Imagick nor "
+"GD is not installed on "
+"your server."
+msgstr ""
+
+#: admin/class-settings.php:182
+msgid ""
+"Please contact your "
+"hosting provider and ask "
+"them to install the "
+"Imagick or GD library "
+"for PHP. They should be "
+"able to assist you with "
+"this process. Once the "
+"library is installed, "
+"QuickWebP should work as "
+"expected."
+msgstr ""
+
+#: admin/class-wp-media-extends.php:59
+msgid ""
+"Please enter the name of "
+"your image"
+msgstr ""
+
+#: admin/class-wp-media-extends.php:60
+msgid ""
+"Quickwebp paste image"
+msgstr ""
+
+#: admin/class-wp-media-extends.php:61
+msgid ""
+"Click here, and paste "
+"your image."
+msgstr ""
+
+#: admin/class-wp-media-extends.php:131
+msgid ""
+"Image type not supported"
+msgstr ""
+
+#: admin/class-wp-media-extends.php:183
+msgid "Original Image: "
+msgstr ""
+
+#: admin/class-wp-media-extends.php:187
+msgid "Webp: "
+msgstr ""
+
+#: admin/class-wp-media-extends.php:191
+msgid "Save: "
+msgstr ""
+
+#: admin/class-wp-media-extends.php:196
+msgid "Undo optimization"
+msgstr ""
+
+#: admin/class-wp-media-extends.php:217
+msgid "Optimize"
+msgstr ""
+
+#: admin/components/media.php:21
+msgid "No image selected"
+msgstr ""
+
+#: admin/components/media.php:47
+#: admin/components/media.php:65
+msgid "Select media"
+msgstr ""
+
+#: admin/components/media.php:53
+msgid "Remove medias"
+msgstr ""
+
+#: admin/components/select.php:19
+msgid "Select an option"
+msgstr ""
+
+#: admin/rewrite-rules/class-rewrite-rules-abstract.php:136
+#, php-format
+msgid ""
+"The %s file could not be "
+"read."
+msgstr ""
+
+#: admin/rewrite-rules/class-rewrite-rules-abstract.php:160
+#, php-format
+msgid ""
+"Could not write into the "
+"%s file."
+msgstr ""
+
+#: admin/templates/bulk-optimization.php:21
+msgid "Start"
+msgstr ""
+
+#: admin/templates/bulk-optimization.php:26
+msgid "Stop"
+msgstr ""
+
+#: admin/templates/page-settings.php:7
+msgid "QuickWebp Settings"
+msgstr ""
+
+#: admin/templates/page-settings.php:16
+msgid ""
+"Enable/disable image "
+"conversion to WEBP format"
+msgstr ""
+
+#: admin/templates/page-settings.php:30
+msgid "Quality"
+msgstr ""
+
+#: admin/templates/page-settings.php:41
+msgid "Sharpen"
+msgstr ""
+
+#: admin/templates/page-settings.php:48
+msgid ""
+"Do not compress images "
+"already in WebP"
+msgstr ""
+
+#: admin/templates/page-settings.php:61
+msgid ""
+"Save original images"
+msgstr ""
+
+#: admin/templates/page-settings.php:73
+msgid ""
+"Before saving, test your "
+"configuration with "
+"preview mode."
+msgstr ""
+
+#: admin/templates/page-settings.php:81
+msgid ""
+"If you choose to use "
+"rewrite rules, the file "
+"conf/quickwebp.conf will "
+"be created and must be "
+"included into the "
+"server's configuration "
+"file (then restart the "
+"server)."
+msgstr ""
+
+#: admin/templates/page-settings.php:86
+msgid ""
+"Display images in WebP "
+"format on the site"
+msgstr ""
+
+#: admin/templates/page-settings.php:87
+#, php-format
+msgid ""
+"If activated, this "
+"option allows to deliver "
+"optimized images in bulk "
+"via QuickWebP in WebP "
+"format (useless for "
+"images converted to "
+"import). %s"
+msgstr ""
+
+#: admin/templates/page-settings.php:91
+msgid "Deactivate"
+msgstr ""
+
+#: admin/templates/page-settings.php:95
+msgid "Use <picture> tags"
+msgstr ""
+
+#: admin/templates/page-settings.php:99
+#, php-format
+msgid ""
+"Use rewrite rules %s"
+msgstr ""
+
+#: admin/templates/page-settings.php:108
+msgid "Bulk optimization"
+msgstr ""
+
+#: admin/templates/page-settings.php:126
+msgid ""
+"Enable/disable image "
+"resizing"
+msgstr ""
+
+#: admin/templates/page-settings.php:129
+msgid ""
+"By default, WordPress "
+"limits the maximum width "
+"of uploaded images to "
+"2560 pixels."
+msgstr ""
+
+#: admin/templates/page-settings.php:137
+msgid "Max size"
+msgstr ""
+
+#: admin/templates/page-settings.php:152
+msgid ""
+"Enable/disable smart "
+"media completion for SEO"
+msgstr ""
+
+#: admin/templates/page-settings.php:155
+msgid ""
+"This feature will "
+"automatically complete "
+"the media information "
+"(title, caption, alt "
+"text, description) from "
+"the image name."
+msgstr ""
+
+#: admin/templates/page-settings.php:166
+msgid ""
+"Title completion from "
+"image name"
+msgstr ""
+
+#: admin/templates/page-settings.php:170
+msgid ""
+"Caption completion from "
+"image name."
+msgstr ""
+
+#: admin/templates/page-settings.php:174
+msgid ""
+"Alt text completion from "
+"image name."
+msgstr ""
+
+#: admin/templates/page-settings.php:178
+msgid ""
+"Description completion "
+"from image name."
+msgstr ""
+
+#: admin/templates/page-settings.php:195
+msgid ""
+"Enable/disable file name "
+"cleanup"
+msgstr ""
+
+#: admin/templates/page-settings.php:197
+msgid ""
+"Remove special "
+"characters from file "
+"names."
+msgstr ""
+
+#: admin/templates/page-settings.php:209
+msgid ""
+"Enable/disable paste "
+"picture directly (beta)"
+msgstr ""
+
+#: admin/templates/page-settings.php:211
+msgid ""
+"With this feature you "
+"can paste directly your "
+"picture in WordPress "
+"media."
+msgstr ""
+
+#: admin/templates/page-settings.php:233
+msgid "Library to use"
+msgstr ""
+
+#: admin/templates/page-settings.php:235
+msgid ""
+"We use the GD library as "
+"the default option. "
+"However, if the GD "
+"library is not "
+"available, we will use "
+"Imagick instead."
+msgstr ""
+
+#: admin/templates/page-settings.php:243
+msgid "Credits"
+msgstr ""
+
+#: admin/templates/page-settings.php:246
+msgid ""
+"This plugin is developed "
+"by"
+msgstr ""
+
+#: admin/templates/page-settings.php:248
+msgid ""
+"You can support this "
+"project here:"
+msgstr ""
+
+#: admin/templates/page-settings.php:254
+msgid ""
+"You can show all "
+"Webdeclic's plugins on "
+msgstr ""
+
+#: admin/templates/page-settings.php:255
+msgid "wordpress.org"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:10
+msgid "Preview"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:19
+msgid "Add image"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:45
+msgid "Original Image"
+msgstr ""
+
+#: quickwebp.php:108
+msgid ""
+"Oops! QuickWebP isn't "
+"running because PHP is "
+"outdated. Update to PHP "
+"version 7.4"
+msgstr ""
