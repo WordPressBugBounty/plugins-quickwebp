@@ -10,7 +10,7 @@
  * Plugin Name:       QuickWebP - Compress / Optimize Images & Convert WebP | SEO Friendly
  * Plugin URI:        https://webdeclic.com/projets/creation-de-lextension-wordpress-quickwebp/
  * Description:       QuickWebP is an image compression and optimization plugin for WordPress that automatically converts images to WebP when they are uploaded to the media library. It also optimizes the image to improve your site’s performance.
- * Version:           3.2.1
+ * Version:           3.2.2
  * Author:            Webdeclic
  * Requires PHP: 	  7.4
  * Author URI:        https://webdeclic.com/
@@ -33,7 +33,7 @@ $is_local = isset($_SERVER['REMOTE_ADDR']) && ($_SERVER['REMOTE_ADDR'] == '127.0
 /**
  * If you are in local environment, you can use the version number as a timestamp for better cache management in your browser
  */
-$version  = $is_local ? time() : '3.2.1';
+$version  = get_file_data( __FILE__, array( 'Version' => 'Version' ), false )['Version'];
 
 /**
  * Currently plugin version.

@@ -253,6 +253,9 @@ class Quickwebp_Image_Optimizer {
 	
 				update_post_meta( $attachment_id, 'quickwebp_already_optimized', '1' );
 				update_post_meta( $attachment_id, 'quickwebp_data', $new_sizes );
+				delete_post_meta( $attachment_id, 'quickwebp_has_error' );
+			} else {
+				update_post_meta( $attachment_id, 'quickwebp_has_error', '1' );
 			}
 		}
 
@@ -420,16 +423,23 @@ class Quickwebp_Image_Optimizer {
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
 			'meta_query'     => array(
-				'relation' => 'OR',
+				'relation' => 'AND',
 				array(
-					'key'     => 'quickwebp_already_optimized',
+					'key'     => 'quickwebp_has_error',
 					'compare' => 'NOT EXISTS'
 				),
 				array(
-					'key'     => 'quickwebp_already_optimized',
-					'compare' => '=',
-					'value'   => '0'
-				)
+					'relation' => 'OR',
+					array(
+						'key'     => 'quickwebp_already_optimized',
+						'compare' => 'NOT EXISTS'
+					),
+					array(
+						'key'     => 'quickwebp_already_optimized',
+						'compare' => '=',
+						'value'   => '0'
+					)
+				),
 			),
 		) );
 
@@ -502,28 +512,31 @@ class Quickwebp_Image_Optimizer {
 			return false;
 		}
 
-		$size_before	= filesize( $size['path'] );
-		$manager		= new ImageManager(array('driver'=>$extension_to_use));
-		$image			= $manager->make($size['path']);
-		$quality 		= $this->get_quality( $size['path'], $settings );
-		$webp_path		= $size['path'].'.webp';
-
-		$image->sharpen($settings['quickwebp_settings_conversion_sharpen']);
-		$image->save( $webp_path, $quality, 'webp' );
-		$size_after = $image->filesize();
-		$image->destroy();
-
-		$deference	= $size_before - $size_after;
-		$percent	= $deference / $size_before * 100;
-
-		return array(
-			'success'			=> 1,
-			'original_size'		=> $size_before,
-			'optimized_size'	=> $size_after,
-			'percent' 			=> round( $percent, 2 ),
-			'path'				=> $webp_path
-		);
-
+		try {
+			$size_before	= filesize( $size['path'] );
+			$manager		= new ImageManager(array('driver'=>$extension_to_use));
+			$image			= $manager->make($size['path']);
+			$quality 		= $this->get_quality( $size['path'], $settings );
+			$webp_path		= $size['path'].'.webp';
+	
+			$image->sharpen($settings['quickwebp_settings_conversion_sharpen']);
+			$image->save( $webp_path, $quality, 'webp' );
+			$size_after = $image->filesize();
+			$image->destroy();
+	
+			$deference	= $size_before - $size_after;
+			$percent	= $deference / $size_before * 100;
+	
+			return array(
+				'success'			=> 1,
+				'original_size'		=> $size_before,
+				'optimized_size'	=> $size_after,
+				'percent' 			=> round( $percent, 2 ),
+				'path'				=> $webp_path
+			);
+		} catch (\Throwable $th) {
+			return false;
+		}
 	}
 
 	/**
@@ -572,9 +585,11 @@ class Quickwebp_Image_Optimizer {
 		}
 
 		if ( ! empty( $new_sizes ) ) {
-
 			update_post_meta( $attachment_id, 'quickwebp_already_optimized', '1' );
 			update_post_meta( $attachment_id, 'quickwebp_data', $new_sizes );
+			delete_post_meta( $attachment_id, 'quickwebp_has_error' );
+		} else {
+			update_post_meta( $attachment_id, 'quickwebp_has_error', '1' );
 		}
 
 		$wp_media_extend = new Quickwebp_Wp_Media_Extends( $this->plugin_name, $this->version );

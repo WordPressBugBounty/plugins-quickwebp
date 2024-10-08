@@ -86,11 +86,16 @@ class Quickwebp_Wp_Media_Extends {
 			return $form_fields;
 		}
 
-		$data = get_post_meta( $post->ID, 'quickwebp_data', true );
+		$data      = get_post_meta( $post->ID, 'quickwebp_data', true );
+		$has_error = get_post_meta( $post->ID, 'quickwebp_has_error', true );
 
 		if ( ! is_array( $data ) ) {
 
 			$html = $this->optimize_btn( $post->ID );
+
+			if ( ! empty( $has_error ) ) {
+				$html .= '<br>' . esc_html__( 'Error attempting to optimize this image', QUICKWEBP_TEXT_DOMAIN );	
+			}
 
 		} else {
 
@@ -132,11 +137,16 @@ class Quickwebp_Wp_Media_Extends {
 			return;
 		}
 
-		$data = get_post_meta( $attachment_id, 'quickwebp_data', true );
+		$data      = get_post_meta( $attachment_id, 'quickwebp_data', true );
+		$has_error = get_post_meta( $attachment_id, 'quickwebp_has_error', true );
 
 		if ( ! is_array( $data ) ) {
 
 			echo $this->optimize_btn( $attachment_id );
+
+			if ( ! empty( $has_error ) ) {
+				echo esc_html__( 'Error attempting to optimize this image', QUICKWEBP_TEXT_DOMAIN );	
+			}
 
 		} else {
 
@@ -154,11 +164,19 @@ class Quickwebp_Wp_Media_Extends {
 			return;
 		}
 
-		$data = get_post_meta( $post->ID, 'quickwebp_data', true );
+		$data      = get_post_meta( $post->ID, 'quickwebp_data', true );
+		$has_error = get_post_meta( $post->ID, 'quickwebp_has_error', true );
 
 		if ( ! is_array( $data ) ) {
 
-			echo '<table><tr><td>' . $this->optimize_btn( $post->ID ) . '</td></tr></table>';
+			echo '<table><tr><td>';
+			echo $this->optimize_btn( $post->ID );
+
+			if ( ! empty( $has_error ) ) {
+				echo esc_html__( 'Error attempting to optimize this image', QUICKWEBP_TEXT_DOMAIN );
+			}
+
+			echo '</td></tr></table>';
 
 		} else {
 

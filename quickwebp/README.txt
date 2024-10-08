@@ -2,9 +2,9 @@
 Contributors: ludwigyou
 Tags: Easy, Fast, Image, Multiple, One-click, SEO, Site, WebP, compression, conversion, conversion, format, friendly, image, improvement, optimization, quality, reduction, size, speed, drag, drop, wpmedia, jquery
 Requires at least: 4.0.0
-Tested up to: 6.2.2
+Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 
@@ -44,9 +44,12 @@ QuickWebP is an image compression and optimization plugin for WordPress that aut
 
 == Other plugin by Webdeclic ==
 [Webdeclic](https://webdeclic.com) is a French web agency based in Paris. We are specialized in the creation of websites and e-commerce sites. We are also the creator of the following plugins:
+* [WPMasterToolKit](https://wordpress.org/plugins/wpmastertoolkit/) : A complete toolkit for your WordPress site.
 * [Mentions Legales Par Webdeclic](https://wordpress.org/plugins/mentions-legales-par-webdeclic/)
 * [Cookie Dough Compliance and Consent for GDPR](https://wordpress.org/plugins/cookie-dough-compliance-and-consent-for-gdpr/)
 * [QuickWebP - Compress / Optimize Images & Convert WebP | SEO Friendly](https://wordpress.org/plugins/quickwebp/)
+* [Univeral Honey Pot](https://wordpress.org/plugins/universal-honey-pot/)
+* [Clean My WP](https://wordpress.org/plugins/clean-my-wp/)
 * [Show all plugins on WordPress.org](https://wordpress.org/plugins/search/webdeclic/)
 
 == Support us ==
@@ -105,6 +108,9 @@ You can copy the images from any software like Adobe Photoshop & Illustrator, GI
 2. Settings page of QuickWebP
 
 == Changelog ==
+
+= 3.2.2 =
+* FIX: problem if an image file has a special character in the name.
 
 = 3.2.1 =
 * FIX: bug on bulk convertion.

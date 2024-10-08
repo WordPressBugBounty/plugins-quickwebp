@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Quickwebp v1.0.0\n"
 "Report-Msgid-Bugs-To: Webdeclic <contact@webdeclic.com>\n"
 "POT-Creation-Date: 2023-07-26 10:45+0100\n"
-"PO-Revision-Date: 2023-08-01 18:02+0000\n"
+"PO-Revision-Date: 2024-10-08 15:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: French (France)\n"
 "Language: fr_FR\n"
@@ -34,7 +34,7 @@ msgstr "<a href=\"%s\">Paramètres</a>"
 msgid "Add image"
 msgstr "Ajouter une image"
 
-#: admin/class-image-optimizer.php:540
+#: admin/class-image-optimizer.php:562
 msgid "Already optimized."
 msgstr "Déjà optimisé."
 
@@ -121,6 +121,11 @@ msgstr ""
 "Activer/désactiver la complétion multimédia intelligente pour le "
 "référencement"
 
+#: admin/class-wp-media-extends.php:97 admin/class-wp-media-extends.php:148
+#: admin/class-wp-media-extends.php:176
+msgid "Error attempting to optimize this image"
+msgstr "Erreur lors de la tentative d'optimisation de cette image"
+
 #: admin/class-cron-job.php:50
 msgid "Every minute"
 msgstr "Chaque minute"
@@ -145,7 +150,7 @@ msgstr ""
 "conf/quickwebp.conf sera créé et devra être inclus dans le fichier de "
 "configuration du serveur (puis redémarrez le serveur)."
 
-#: admin/class-wp-media-extends.php:131
+#: admin/class-wp-media-extends.php:136
 msgid "Image type not supported"
 msgstr "Type d'image non pris en charge"
 
@@ -157,7 +162,7 @@ msgstr "Bibliothèque à utiliser"
 msgid "Max size"
 msgstr "Taille max"
 
-#: admin/class-image-optimizer.php:535 admin/class-image-optimizer.php:592
+#: admin/class-image-optimizer.php:557 admin/class-image-optimizer.php:616
 msgid "No attachment id."
 msgstr "Aucun identifiant de pièce jointe."
 
@@ -165,7 +170,7 @@ msgstr "Aucun identifiant de pièce jointe."
 msgid "No image selected"
 msgstr "Aucune image sélectionnée"
 
-#: admin/class-image-optimizer.php:327 admin/class-image-optimizer.php:333
+#: admin/class-image-optimizer.php:330 admin/class-image-optimizer.php:336
 msgid "No image uploaded, try again."
 msgstr "Aucune image téléchargée, réessayez."
 
@@ -173,11 +178,11 @@ msgstr "Aucune image téléchargée, réessayez."
 msgid "No images to optimize."
 msgstr "Aucune image à optimiser."
 
-#: admin/class-image-optimizer.php:550
+#: admin/class-image-optimizer.php:572
 msgid "Not a valid image."
 msgstr "Image non valide."
 
-#: admin/class-image-optimizer.php:608
+#: admin/class-image-optimizer.php:632
 msgid "Not optimized."
 msgstr "Non optimisé."
 
@@ -215,7 +220,7 @@ msgstr ""
 "correctement, mais il semble que ni Imagick ni GD ne soient installés sur "
 "votre serveur."
 
-#: admin/class-wp-media-extends.php:217
+#: admin/class-wp-media-extends.php:235
 msgid "Optimize"
 msgstr "Optimiser"
 
@@ -223,7 +228,7 @@ msgstr "Optimiser"
 msgid "Original Image"
 msgstr "Image Originale"
 
-#: admin/class-wp-media-extends.php:183
+#: admin/class-wp-media-extends.php:201
 msgid "Original Image: "
 msgstr "Image originale:"
 
@@ -272,7 +277,7 @@ msgstr "Aperçu"
 msgid "Quality"
 msgstr "Qualité"
 
-#: admin/class-settings.php:71 admin/class-wp-media-extends.php:116
+#: admin/class-settings.php:71 admin/class-wp-media-extends.php:121
 msgid "Quickwebp"
 msgstr "Quickwebp"
 
@@ -290,8 +295,8 @@ msgstr "Paramètres Quickwebp"
 
 #: admin/class-cron-job.php:118 admin/class-cron-job.php:150
 #: admin/class-cron-job.php:162 admin/class-cron-job.php:169
-#: admin/class-cron-job.php:181 admin/class-image-optimizer.php:318
-#: admin/class-image-optimizer.php:528 admin/class-image-optimizer.php:585
+#: admin/class-cron-job.php:181 admin/class-image-optimizer.php:321
+#: admin/class-image-optimizer.php:550 admin/class-image-optimizer.php:609
 msgid "Refresh the page and try again."
 msgstr "Actualisez la page et réessayez."
 
@@ -307,7 +312,7 @@ msgstr "Supprimez les caractères spéciaux des noms de fichiers."
 msgid "Save original images"
 msgstr "Enregistrer les images originales"
 
-#: admin/class-wp-media-extends.php:191
+#: admin/class-wp-media-extends.php:209
 msgid "Save: "
 msgstr "Sauvegarder:"
 
@@ -358,7 +363,7 @@ msgstr "Ce plugin est développé par"
 msgid "Title completion from image name"
 msgstr "Complétion du titre à partir du nom de l’image"
 
-#: admin/class-wp-media-extends.php:196
+#: admin/class-wp-media-extends.php:214
 msgid "Undo optimization"
 msgstr "Annuler l'optimisation"
 
@@ -379,7 +384,7 @@ msgstr ""
 "Nous utilisons la bibliothèque GD comme option par défaut. Cependant, si la "
 "bibliothèque GD n'est pas disponible, nous utiliserons Imagick à la place."
 
-#: admin/class-wp-media-extends.php:187
+#: admin/class-wp-media-extends.php:205
 msgid "Webp: "
 msgstr "Webp: "
 

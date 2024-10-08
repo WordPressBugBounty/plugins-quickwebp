@@ -10,7 +10,7 @@ msgstr ""
 "Webdeclic "
 "<contact@webdeclic.com>\n"
 "POT-Creation-Date: "
-"2023-08-01 19:00+0100\n"
+"2024-10-08 16:54+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: "
 "Webdeclic "
@@ -45,7 +45,7 @@ msgstr ""
 "_nc:4c,1,2\n"
 "X-Poedit-Basepath: ..\n"
 "X-Generator: Poedit "
-"3.3.2\n"
+"3.4.4\n"
 "X-Poedit-"
 "SearchPath-0: .\n"
 "X-Poedit-"
@@ -62,9 +62,9 @@ msgstr ""
 #: admin/class-cron-job.php:162
 #: admin/class-cron-job.php:169
 #: admin/class-cron-job.php:181
-#: admin/class-image-optimizer.php:318
-#: admin/class-image-optimizer.php:528
-#: admin/class-image-optimizer.php:585
+#: admin/class-image-optimizer.php:321
+#: admin/class-image-optimizer.php:550
+#: admin/class-image-optimizer.php:609
 msgid ""
 "Refresh the page and try "
 "again."
@@ -87,27 +87,27 @@ msgid ""
 "stopped."
 msgstr ""
 
-#: admin/class-image-optimizer.php:327
-#: admin/class-image-optimizer.php:333
+#: admin/class-image-optimizer.php:330
+#: admin/class-image-optimizer.php:336
 msgid ""
 "No image uploaded, try "
 "again."
 msgstr ""
 
-#: admin/class-image-optimizer.php:535
-#: admin/class-image-optimizer.php:592
+#: admin/class-image-optimizer.php:557
+#: admin/class-image-optimizer.php:616
 msgid "No attachment id."
 msgstr ""
 
-#: admin/class-image-optimizer.php:540
+#: admin/class-image-optimizer.php:562
 msgid "Already optimized."
 msgstr ""
 
-#: admin/class-image-optimizer.php:550
+#: admin/class-image-optimizer.php:572
 msgid "Not a valid image."
 msgstr ""
 
-#: admin/class-image-optimizer.php:608
+#: admin/class-image-optimizer.php:632
 msgid "Not optimized."
 msgstr ""
 
@@ -116,7 +116,7 @@ msgid "Quickwebp Settings"
 msgstr ""
 
 #: admin/class-settings.php:71
-#: admin/class-wp-media-extends.php:116
+#: admin/class-wp-media-extends.php:121
 msgid "Quickwebp"
 msgstr ""
 
@@ -224,28 +224,36 @@ msgid ""
 "your image."
 msgstr ""
 
-#: admin/class-wp-media-extends.php:131
+#: admin/class-wp-media-extends.php:97
+#: admin/class-wp-media-extends.php:148
+#: admin/class-wp-media-extends.php:176
+msgid ""
+"Error attempting to "
+"optimize this image"
+msgstr ""
+
+#: admin/class-wp-media-extends.php:136
 msgid ""
 "Image type not supported"
 msgstr ""
 
-#: admin/class-wp-media-extends.php:183
+#: admin/class-wp-media-extends.php:201
 msgid "Original Image: "
 msgstr ""
 
-#: admin/class-wp-media-extends.php:187
+#: admin/class-wp-media-extends.php:205
 msgid "Webp: "
 msgstr ""
 
-#: admin/class-wp-media-extends.php:191
+#: admin/class-wp-media-extends.php:209
 msgid "Save: "
 msgstr ""
 
-#: admin/class-wp-media-extends.php:196
+#: admin/class-wp-media-extends.php:214
 msgid "Undo optimization"
 msgstr ""
 
-#: admin/class-wp-media-extends.php:217
+#: admin/class-wp-media-extends.php:235
 msgid "Optimize"
 msgstr ""
 
