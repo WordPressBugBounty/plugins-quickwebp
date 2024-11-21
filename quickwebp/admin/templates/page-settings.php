@@ -1,11 +1,36 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 /**
  * The admin settings of the plugin.
  * @since      1.0.0
  */
+$wpmtk_is_active = in_array( 'wpmastertoolkit/wp-mastertoolkit.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
 ?>
 <h1><?php _e( "QuickWebp Settings", QUICKWEBP_TEXT_DOMAIN ); ?></h1>
 
+<div class="notice notice-info">
+    <p>
+        <?php _e( "QuickWebP is now part of the WPMasterToolKit plugin. You can download it for free on the WordPress repository.", QUICKWEBP_TEXT_DOMAIN ); ?>
+    </p>
+    <!-- <img src="<?php echo esc_url( QUICKWEBP_PLUGIN_URL . 'public/assets/img/wpmastertoolkit.gif' ); ?>" alt="WPMasterToolKit" style="max-width: 100%;"> -->
+        <video autoplay loop muted controls style="max-width: 600px;">
+        <source src="<?php echo esc_url( QUICKWEBP_PLUGIN_URL . 'public/assets/video/wpmastertoolkit.mp4' ); ?>" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <?php if ( $wpmtk_is_active ) : ?>
+        <p>
+            <?php esc_html_e( "You can now deactivate QuickWebP and finish the migration.", QUICKWEBP_TEXT_DOMAIN ); ?>
+        </p>
+    <?php else : ?>
+        <p>
+            <a href="<?php echo esc_url( admin_url( 'plugin-install.php?s=wpmastertoolkit&tab=search&type=term' ) ); ?>" class="button button-primary" target="_blank"><?php esc_html_e( "Download WPMasterToolKit", QUICKWEBP_TEXT_DOMAIN ); ?></a>
+            <a href="https://wordpress.org/plugins/wpmastertoolkit/" class="button button-secondary" target="_blank"><?php esc_html_e( "Download WPMasterToolKit from wordpress.org", QUICKWEBP_TEXT_DOMAIN ); ?></a>
+        </p>
+    <?php endif; ?>
+</div>
+    
 <form action="" method="post">
 
     <table class="form-table">

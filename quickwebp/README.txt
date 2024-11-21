@@ -2,9 +2,9 @@
 Contributors: ludwigyou
 Tags: Easy, Fast, Image, Multiple, One-click, SEO, Site, WebP, compression, conversion, conversion, format, friendly, image, improvement, optimization, quality, reduction, size, speed, drag, drop, wpmedia, jquery
 Requires at least: 4.0.0
-Tested up to: 6.6
+Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 3.2.2
+Stable tag: 3.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 
@@ -13,6 +13,10 @@ QuickWebP is a free and easy-to-use WordPress plugin that automatically converts
 == Description ==
 
 QuickWebP is an image compression and optimization plugin for WordPress that automatically converts images to WebP when they are uploaded to the media library. It also optimizes the image to improve your site's performance. The plugin also renames the image file to the WebP format and cleans up the file name for better SEO. Additionally, the plugin uses the cleaned up name to pre-populate the alt, caption, description, legend, and title metadata, making image management on your site easier. You can also set a maximum width and height for the image, which will automatically resize it if necessary. No API is required and the plugin is completely free, with no subscriptions or additional fees.
+
+== Important ==
+QuickWebP is now include in WPMasterToolKit plugin. You can download it here : [WPMasterToolKit](https://wordpress.org/plugins/wpmastertoolkit/)
+For use like QuickWebP, you can activate the module "Media encoder" in the settings of WPMasterToolKit.
 
 == Features ==
 
@@ -108,6 +112,10 @@ You can copy the images from any software like Adobe Photoshop & Illustrator, GI
 2. Settings page of QuickWebP
 
 == Changelog ==
+
+= 3.2.3 =
+* FIX: problem with translation on WP 6.7.
+* Add informations for migrate to WPMasterToolKit plugin.
 
 = 3.2.2 =
 * FIX: problem if an image file has a special character in the name.
