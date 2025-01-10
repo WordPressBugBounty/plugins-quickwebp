@@ -1,14 +1,14 @@
 === QuickWebP - Compress / Optimize Images & Convert WebP | SEO Friendly ===
 Contributors: ludwigyou
-Tags: Easy, Fast, Image, Multiple, One-click, SEO, Site, WebP, compression, conversion, conversion, format, friendly, image, improvement, optimization, quality, reduction, size, speed, drag, drop, wpmedia, jquery
-Requires at least: 4.0.0
+Tags: WebP, Image Optimization, SEO, Image Compression, Performance
+Requires at least: 6.0.0
 Tested up to: 6.7
 Requires PHP: 7.4
 Stable tag: 3.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 
-QuickWebP is a free and easy-to-use WordPress plugin that automatically converts and optimizes images to WebP for faster performance and improved SEO. It also pre-populates image metadata and allows for automatic resizing. No API required.
+QuickWebP is a free WordPress plugin that converts images to WebP, optimizes performance, improves SEO, auto-fills metadata, and resizes images—no API needed.
 
 == Description ==
 
