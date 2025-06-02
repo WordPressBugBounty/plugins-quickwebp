@@ -305,7 +305,7 @@ class Quickwebp_Image_Optimizer {
 	 */
 	public function change_wp_quality( $default_quality, $mime_type ) {
 
-		$default_quality = 100;
+		$default_quality = 99;
 
 		return $default_quality;
 	}

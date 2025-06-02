@@ -2,9 +2,9 @@
 Contributors: ludwigyou
 Tags: WebP, Image Optimization, SEO, Image Compression, Performance
 Requires at least: 6.0.0
-Tested up to: 6.7
+Tested up to: 6.8.1
 Requires PHP: 7.4
-Stable tag: 3.2.3
+Stable tag: 3.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 
@@ -112,6 +112,9 @@ You can copy the images from any software like Adobe Photoshop & Illustrator, GI
 2. Settings page of QuickWebP
 
 == Changelog ==
+
+= 3.2.4 =
+* FIX: problem with image weight after resize.
 
 = 3.2.3 =
 * FIX: problem with translation on WP 6.7.
