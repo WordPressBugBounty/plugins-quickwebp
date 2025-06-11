@@ -275,7 +275,7 @@ class Quickwebp_Image_Optimizer {
 
 			case 'image/webp':
 				if ( in_array( 'checked', $ignore_webp ) ){
-					$quality = 100;
+					$quality = 99;
 				}
 			break;
 		}
@@ -305,7 +305,7 @@ class Quickwebp_Image_Optimizer {
 	 */
 	public function change_wp_quality( $default_quality, $mime_type ) {
 
-		$default_quality = 99;
+		$default_quality = 90;
 
 		return $default_quality;
 	}
