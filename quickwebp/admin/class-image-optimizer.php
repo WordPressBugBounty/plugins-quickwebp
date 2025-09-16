@@ -286,14 +286,13 @@ class Quickwebp_Image_Optimizer {
 	/**
 	 * Change the default size of wp editor
 	 */
-	public function change_wp_max_size( $max_size, $imagesize, $file, $attachment_id ) {
+	public function change_wp_max_size( $max_size = 2560 ) {
 
 		$settings		= $this->get_settings();
 		$resize_active	= $settings['quickwebp_settings_resize'];
 		$resize_value	= $settings['quickwebp_settings_resize_value'];
 
 		if ( $resize_active == '1' ) {
-
 			$max_size = $resize_value;
 		}
 

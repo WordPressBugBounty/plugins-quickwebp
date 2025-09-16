@@ -193,7 +193,7 @@ class Quickwebp {
 		$quickwebp_image_optimizer = new Quickwebp_Image_Optimizer( $this->get_plugin_name(), $this->get_version() );
 		$this->loader->add_filter( 'wp_handle_upload_prefilter', $quickwebp_image_optimizer, 'image_optimizition' );
 		$this->loader->add_filter( 'wp_generate_attachment_metadata', $quickwebp_image_optimizer, 'add_data_to_attachment', 10, 3 );
-		$this->loader->add_filter( 'big_image_size_threshold', $quickwebp_image_optimizer, 'change_wp_max_size', PHP_INT_MAX, 4 );
+		$this->loader->add_filter( 'big_image_size_threshold', $quickwebp_image_optimizer, 'change_wp_max_size', PHP_INT_MAX, 1 );
 		$this->loader->add_filter( 'wp_editor_set_quality', $quickwebp_image_optimizer, 'change_wp_quality', PHP_INT_MAX, 2 );
 		$this->loader->add_action( 'wp_ajax_image_optimizition_ajax', $quickwebp_image_optimizer, 'image_optimizition_ajax' );
 		$this->loader->add_action( 'wp_ajax_single_optimizition_ajax', $quickwebp_image_optimizer, 'single_optimizition_ajax' );
