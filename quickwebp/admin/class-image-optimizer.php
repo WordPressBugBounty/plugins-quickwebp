@@ -78,7 +78,54 @@ class Quickwebp_Image_Optimizer {
 		}
 
 		$manager	= new ImageManager(array('driver'=>$extension_to_use));
-		$image		= $manager->make($image_file['tmp_name']);
+		$image		= $manager->make($image_file['tmp_name']);	
+		
+		$exif_data = @exif_read_data( $image_file['tmp_name'] );
+		if ( ! empty( $exif_data['Orientation'] ) ) {
+			$orientation = (int) $exif_data['Orientation'];
+			$orientation = apply_filters( 'wp_image_maybe_exif_rotate', $orientation, $image_file['tmp_name'] );
+			if ( $orientation && 1 !== $orientation ) {
+				switch ( $orientation ) {
+					case 2:
+						// Flip horizontally.
+						$result = $image->flip( false, true );
+						break;
+					case 3:
+						/*
+						* Rotate 180 degrees or flip horizontally and vertically.
+						* Flipping seems faster and uses less resources.
+						*/
+						$result = $image->flip( true, true );
+						break;
+					case 4:
+						// Flip vertically.
+						$result = $image->flip( true, false );
+						break;
+					case 5:
+						// Rotate 90 degrees counter-clockwise and flip vertically.
+						$result = $image->rotate( 90 );
+						if ( ! is_wp_error( $result ) ) {
+							$result = $image->flip( true, false );
+						}
+						break;
+					case 6:
+						// Rotate 90 degrees clockwise (270 counter-clockwise).
+						$result = $image->rotate( 270 );
+						break;
+					case 7:
+						// Rotate 90 degrees counter-clockwise and flip horizontally.
+						$result = $image->rotate( 90 );
+						if ( ! is_wp_error( $result ) ) {
+							$result = $image->flip( false, true );
+						}
+						break;
+					case 8:
+						// Rotate 90 degrees counter-clockwise.
+						$result = $image->rotate( 90 );
+						break;
+				}
+			}
+		}
 		$quality 	= $this->get_quality( $image_file['tmp_name'], $settings );
 
 		$image->sharpen($settings['quickwebp_settings_conversion_sharpen']);
