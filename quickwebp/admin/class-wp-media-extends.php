@@ -63,6 +63,10 @@ class Quickwebp_Wp_Media_Extends {
 			));
 		}
 
+		if ( ! current_user_can( 'upload_files' ) ) {
+			return;
+		}
+
 		$admin_attachment_assets = include( QUICKWEBP_PLUGIN_PATH . 'public/assets/build/admin-attachment.asset.php' );
 		wp_enqueue_style( 'quickwebp-admin-attachment', QUICKWEBP_PLUGIN_URL . 'public/assets/build/admin-attachment.css', array(), $admin_attachment_assets['version'], 'all' );
 		wp_enqueue_script( 'quickwebp-admin-attachment', QUICKWEBP_PLUGIN_URL . 'public/assets/build/admin-attachment.js', $admin_attachment_assets['dependencies'], $admin_attachment_assets['version'], true );

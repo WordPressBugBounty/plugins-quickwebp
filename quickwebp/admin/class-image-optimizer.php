@@ -538,6 +538,86 @@ class Quickwebp_Image_Optimizer {
 	}
 
 	/**
+	 * Validate that a post is an optimizable attachment.
+	 */
+	public function get_valid_attachment( $attachment_id ) {
+
+		$attachment_id = absint( $attachment_id );
+		if ( ! $attachment_id ) {
+			return false;
+		}
+
+		$attachment = get_post( $attachment_id );
+		if ( ! $attachment || 'attachment' !== $attachment->post_type ) {
+			return false;
+		}
+
+		$mime_types	= $this->allowed_mime_types;
+		$index 		= array_search( 'image/webp', $mime_types, true );
+		if ( false !== $index ) {
+			unset( $mime_types[ $index ] );
+		}
+
+		$mime_type = get_post_mime_type( $attachment_id );
+		if ( ! in_array( $mime_type, $mime_types, true ) ) {
+			return false;
+		}
+
+		return $attachment;
+	}
+
+	/**
+	 * Check whether the current user can manage a specific attachment.
+	 */
+	public function current_user_can_manage_attachment( $attachment_id ) {
+
+		return current_user_can( 'upload_files' ) && current_user_can( 'edit_post', $attachment_id );
+	}
+
+	/**
+	 * Check whether a generated WebP path is safe to delete.
+	 */
+	public function is_safe_generated_webp_path( $path ) {
+
+		if ( empty( $path ) || ! is_string( $path ) ) {
+			return false;
+		}
+
+		$uploads = wp_get_upload_dir();
+		if ( empty( $uploads['basedir'] ) ) {
+			return false;
+		}
+
+		$normalized_path = wp_normalize_path( $path );
+		$normalized_base = trailingslashit( wp_normalize_path( $uploads['basedir'] ) );
+
+		if ( 0 !== strpos( $normalized_path, $normalized_base ) ) {
+			return false;
+		}
+
+		return '.webp' === strtolower( substr( $normalized_path, -5 ) );
+	}
+
+	/**
+	 * Get the generated WebP files for an attachment.
+	 */
+	public function get_generated_webp_paths( $attachment_id ) {
+
+		$paths = array();
+		$sizes = $this->get_media_files( $attachment_id );
+
+		foreach ( $sizes as $size ) {
+			$path = isset( $size['path'] ) ? $size['path'] . '.webp' : '';
+
+			if ( $this->is_safe_generated_webp_path( $path ) ) {
+				$paths[] = $path;
+			}
+		}
+
+		return array_values( array_unique( $paths ) );
+	}
+
+	/**
 	 * Optimize a local file
 	 */
 	public function optimize_local_file( $size ) {
@@ -597,25 +677,23 @@ class Quickwebp_Image_Optimizer {
 		}
 
 		// Sanitize data
-		$attachment_id	= isset( $_POST['attachment_id'] ) ? sanitize_text_field( $_POST['attachment_id'] ) : false;
+		$attachment_id	= isset( $_POST['attachment_id'] ) ? absint( wp_unslash( $_POST['attachment_id'] ) ) : 0;
 
 		if ( ! $attachment_id ) {
 			wp_send_json_error( __( 'No attachment id.', QUICKWEBP_TEXT_DOMAIN ) );
 		}
 
+		if ( ! $this->get_valid_attachment( $attachment_id ) ) {
+			wp_send_json_error( __( 'Not a valid image.', QUICKWEBP_TEXT_DOMAIN ), 400 );
+		}
+
+		if ( ! $this->current_user_can_manage_attachment( $attachment_id ) ) {
+			wp_send_json_error( __( 'You are not allowed to manage this attachment.', QUICKWEBP_TEXT_DOMAIN ), 403 );
+		}
+
 		$already_optimized = get_post_meta( $attachment_id, 'quickwebp_already_optimized', true );
 		if ( $already_optimized === '1' ) {
 			wp_send_json_error( __( 'Already optimized.', QUICKWEBP_TEXT_DOMAIN ) );
-		}
-
-		// check the mime type
-		$mime_types	= $this->allowed_mime_types;
-		$index 		= array_search( 'image/webp', $mime_types );
-		unset( $mime_types[$index] );
-		$mime_type 	= get_post_mime_type( $attachment_id );
-
-		if ( ! in_array( $mime_type, $mime_types ) ) {
-			wp_send_json_error( __( 'Not a valid image.', QUICKWEBP_TEXT_DOMAIN ) );
 		}
 
 		$sizes	= $this->get_media_files( $attachment_id );
@@ -656,10 +734,18 @@ class Quickwebp_Image_Optimizer {
 		}
 
 		// Sanitize data
-		$attachment_id	= isset( $_POST['attachment_id'] ) ? sanitize_text_field( $_POST['attachment_id'] ) : false;
+		$attachment_id	= isset( $_POST['attachment_id'] ) ? absint( wp_unslash( $_POST['attachment_id'] ) ) : 0;
 
 		if ( ! $attachment_id ) {
 			wp_send_json_error( __( 'No attachment id.', QUICKWEBP_TEXT_DOMAIN ) );
+		}
+
+		if ( ! $this->get_valid_attachment( $attachment_id ) ) {
+			wp_send_json_error( __( 'Not a valid image.', QUICKWEBP_TEXT_DOMAIN ), 400 );
+		}
+
+		if ( ! $this->current_user_can_manage_attachment( $attachment_id ) ) {
+			wp_send_json_error( __( 'You are not allowed to manage this attachment.', QUICKWEBP_TEXT_DOMAIN ), 403 );
 		}
 
 		$already_optimized = get_post_meta( $attachment_id, 'quickwebp_already_optimized', true );
@@ -685,17 +771,11 @@ class Quickwebp_Image_Optimizer {
 	 */
 	public function remove_related_files( $id ) {
 
-		$data = get_post_meta( $id, 'quickwebp_data', true );
-			
-		if ( ! empty( $data ) ) {
-			
-			foreach ( $data as $key => $value ) {
-			
-				$path = $value['path'] ?? '';
+		$paths = $this->get_generated_webp_paths( $id );
 
-				if ( !empty($path) && file_exists( $path ) ) {
-					wp_delete_file($path);
-				}
+		foreach ( $paths as $path ) {
+			if ( file_exists( $path ) ) {
+				wp_delete_file( $path );
 			}
 		}
 
