@@ -2,7 +2,7 @@
 Contributors: ludwigyou
 Tags: WebP, Image Optimization, SEO, Image Compression, Performance
 Requires at least: 6.0.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 3.2.8
 License: GPLv2 or later
