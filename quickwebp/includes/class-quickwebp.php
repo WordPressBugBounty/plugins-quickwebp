@@ -189,6 +189,7 @@ class Quickwebp {
 		$this->loader->add_filter( 'plugin_action_links', $quickwebp_settings, 'add_settings_link', 10, 2 );
 		$this->loader->add_action( 'admin_init', $quickwebp_settings, 'show_notice_if_library_not_exist' );
 		$this->loader->add_filter( 'sanitize_option_quickwebp_settings_conversion_display_webp_mode', $quickwebp_settings, 'add_rewrite_rules', 5 );
+		$this->loader->add_filter( 'sanitize_option_quickwebp_settings_conversion_display_webp_mode', $quickwebp_settings, 'sanitize_display_mode_for_consistency', 10, 3 );
 		
 		$quickwebp_image_optimizer = new Quickwebp_Image_Optimizer( $this->get_plugin_name(), $this->get_version() );
 		$this->loader->add_filter( 'wp_handle_upload_prefilter', $quickwebp_image_optimizer, 'image_optimizition' );

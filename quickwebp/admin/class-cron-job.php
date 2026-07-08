@@ -60,6 +60,10 @@ class Quickwebp_Cron_Job {
 
 		$time_start = microtime(true);
 
+		if ( ! $this->is_save_original_enabled() ) {
+			$this->end_cron_job();
+		}
+
 		$quickwebp_image_optimizer  = new Quickwebp_Image_Optimizer( QUICKWEBP_TEXT_DOMAIN, QUICKWEBP_VERSION );
 		$media_ids                  = $quickwebp_image_optimizer->get_unoptimized_media_ids();
 
@@ -120,6 +124,10 @@ class Quickwebp_Cron_Job {
 
 		$quickwebp_image_optimizer  = new Quickwebp_Image_Optimizer( QUICKWEBP_TEXT_DOMAIN, QUICKWEBP_VERSION );
 		$media_ids                  = $quickwebp_image_optimizer->get_unoptimized_media_ids();
+
+		if ( ! $this->is_save_original_enabled() ) {
+			wp_send_json_error( __( 'Bulk optimization is available only when "Save original images" is enabled.', QUICKWEBP_TEXT_DOMAIN ) );
+		}
 
 		if ( empty( $media_ids ) ) {
 			wp_send_json_error( __( 'No images to optimize.', QUICKWEBP_TEXT_DOMAIN ) );
@@ -217,6 +225,21 @@ class Quickwebp_Cron_Job {
 
 		$this->clear_bulk_optimization();
 		exit;
+	}
+
+	/**
+	 * Check whether the plugin preserves original images.
+	 */
+	private function is_save_original_enabled() {
+
+		$save_original = get_option(
+			'quickwebp_settings_conversion_save_original',
+			quickwebp_settings_default( 'quickwebp_settings_conversion_save_original' )
+		);
+
+		$save_original = is_array( $save_original ) ? $save_original : array();
+
+		return in_array( 'checked', $save_original, true );
 	}
 
 }

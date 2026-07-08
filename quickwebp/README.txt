@@ -4,7 +4,7 @@ Tags: WebP, Image Optimization, SEO, Image Compression, Performance
 Requires at least: 6.0.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.2.8
+Stable tag: 3.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 
@@ -112,6 +112,17 @@ You can copy the images from any software like Adobe Photoshop & Illustrator, GI
 2. Settings page of QuickWebP
 
 == Changelog ==
+
+= 3.3.0 =
+* UI/UX: Fully redesigned settings page with a modern card-based layout, quick navigation, and a live configuration summary.
+* UX: Added first-configuration onboarding assistant with recommended presets for new sites vs existing sites.
+* UX: Onboarding assistant is now shown only during first configuration.
+* UX: Added live examples for SEO metadata automation and filename cleanup, including realistic filenames with spaces, apostrophes, and accents.
+* UX: Live previews now update instantly when related options are checked/unchecked.
+* LOGIC: Enforced coherent setting combinations for WebP display mode based on conversion and original-image preservation options.
+* LOGIC: Display mode "Deactivate" is automatically forced when originals are not preserved or conversion is disabled.
+* LOGIC: Display mode "Deactivate" is no longer selectable when originals are preserved and conversion is enabled.
+* LOGIC: Bulk optimization is now available only when "Save original images" is enabled.
 
 = 3.2.8 =
 * SECURITY: Hardened AJAX attachment actions with capability and attachment validation.

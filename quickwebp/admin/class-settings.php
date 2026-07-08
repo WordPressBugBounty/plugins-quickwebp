@@ -243,4 +243,78 @@ class Quickwebp_Settings {
 		return $values;
 	}
 
+	/**
+	 * Ensure display mode remains consistent with conversion mode.
+	 */
+	public function sanitize_display_mode_for_consistency( $value, $option = '', $original_value = '' ) {
+
+		$allowed_modes = array( 'disabled', 'picture', 'rewrite' );
+		$value         = sanitize_text_field( (string) $value );
+
+		if ( ! in_array( $value, $allowed_modes, true ) ) {
+			$value = 'disabled';
+		}
+
+		$conversion_enabled = $this->is_conversion_enabled_from_request_or_option();
+		if ( ! $conversion_enabled ) {
+			return 'disabled';
+		}
+
+		$save_original = $this->is_save_original_enabled_from_request_or_option();
+		if ( ! $save_original ) {
+			return 'disabled';
+		}
+
+		if ( 'disabled' === $value ) {
+			return 'picture';
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Get whether original images should be preserved.
+	 */
+	private function is_save_original_enabled_from_request_or_option() {
+
+		if ( isset( $_POST['quickwebp_settings_conversion_save_original'] ) ) {
+			$raw_value = wp_unslash( $_POST['quickwebp_settings_conversion_save_original'] );
+
+			if ( is_array( $raw_value ) ) {
+				$raw_value = array_map( 'sanitize_text_field', $raw_value );
+				return in_array( 'checked', $raw_value, true );
+			}
+
+			return false;
+		}
+
+		$saved_value = get_option(
+			'quickwebp_settings_conversion_save_original',
+			quickwebp_settings_default( 'quickwebp_settings_conversion_save_original' )
+		);
+
+		$saved_value = is_array( $saved_value ) ? $saved_value : array();
+		return in_array( 'checked', $saved_value, true );
+	}
+
+	/**
+	 * Get whether image conversion is enabled.
+	 */
+	private function is_conversion_enabled_from_request_or_option() {
+
+		if ( isset( $_POST['quickwebp_settings_conversion'] ) ) {
+			$raw_value = wp_unslash( $_POST['quickwebp_settings_conversion'] );
+			$raw_value = sanitize_text_field( (string) $raw_value );
+
+			return '1' === $raw_value;
+		}
+
+		$saved_value = get_option(
+			'quickwebp_settings_conversion',
+			quickwebp_settings_default( 'quickwebp_settings_conversion' )
+		);
+
+		return '1' === (string) $saved_value;
+	}
+
 }
