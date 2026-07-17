@@ -137,7 +137,7 @@ class Quickwebp_Wp_Media_Extends {
 		}
 
 		if ( ! $this->valid_mimetype( $attachment_id ) ) {
-			echo __( 'Image type not supported', QUICKWEBP_TEXT_DOMAIN );
+			echo esc_html__( 'Image type not supported', QUICKWEBP_TEXT_DOMAIN );
 			return;
 		}
 
@@ -202,20 +202,20 @@ class Quickwebp_Wp_Media_Extends {
 
 				?>
 					<div>
-						<strong><?php _e( 'Original Image: ', QUICKWEBP_TEXT_DOMAIN ); ?></strong>
-						<span><?php echo round( $full_image_data['original_size'] / 1024, 2 ) . 'KB'; ?></span>
+						<strong><?php esc_html_e( 'Original Image: ', QUICKWEBP_TEXT_DOMAIN ); ?></strong>
+						<span><?php echo esc_html( round( $full_image_data['original_size'] / 1024, 2 ) . 'KB' ); ?></span>
 					</div>
 					<div>
-						<strong><?php _e( 'Webp: ', QUICKWEBP_TEXT_DOMAIN ); ?></strong>
-						<span><?php echo round( $full_image_data['optimized_size'] / 1024, 2 ) . 'KB'; ?></span>
+						<strong><?php esc_html_e( 'Webp: ', QUICKWEBP_TEXT_DOMAIN ); ?></strong>
+						<span><?php echo esc_html( round( $full_image_data['optimized_size'] / 1024, 2 ) . 'KB' ); ?></span>
 					</div>
 					<div>
-						<strong><?php _e( 'Save: ', QUICKWEBP_TEXT_DOMAIN ); ?></strong>
-						<span><?php echo $full_image_data['percent'] . '%'; ?></span>
+						<strong><?php esc_html_e( 'Save: ', QUICKWEBP_TEXT_DOMAIN ); ?></strong>
+						<span><?php echo esc_html( $full_image_data['percent'] . '%' ); ?></span>
 					</div>
 					<div>
 						<button class="button button-sacondary quickwebp-undo-single-optimization-btn" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
-							<?php _e( 'Undo optimization', QUICKWEBP_TEXT_DOMAIN ); ?>
+							<?php esc_html_e( 'Undo optimization', QUICKWEBP_TEXT_DOMAIN ); ?>
 							<div class="spinner"></div>
 						</button>
 						<div class="quickwebp-undo-single-optimization-msg"></div>
@@ -236,7 +236,7 @@ class Quickwebp_Wp_Media_Extends {
 
 			?>
 				<button class="button button-sacondary quickwebp-single-optimization-btn" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
-					<?php _e( 'Optimize', QUICKWEBP_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Optimize', QUICKWEBP_TEXT_DOMAIN ); ?>
 					<div class="spinner"></div>
 				</button>
 				<div class="quickwebp-single-optimization-msg"></div>

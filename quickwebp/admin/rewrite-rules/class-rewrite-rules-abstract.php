@@ -16,7 +16,7 @@ abstract class Rewrite_Rules_Abstract {
 			add_action( 'admin_notices', function() use ( $result ) {
 				?>
 					<div class="notice notice-error">
-						<p><?php echo $result->get_error_message(); ?></p>
+						<p><?php echo esc_html( $result->get_error_message() ); ?></p>
 					</div>
 				<?php
 			});
@@ -36,7 +36,7 @@ abstract class Rewrite_Rules_Abstract {
 			add_action( 'admin_notices', function() use ( $result ) {
 				?>
 					<div class="notice notice-error">
-						<p><?php echo $result->get_error_message(); ?></p>
+						<p><?php echo esc_html( $result->get_error_message() ); ?></p>
 					</div>
 				<?php
 			});
@@ -99,7 +99,9 @@ abstract class Rewrite_Rules_Abstract {
 		 * Friend, each time an attempt is made to improve this method, and especially this part, please increment the following counter.
 		 * Improvement attempts: 3.
 		 */
-		$document_root     = realpath( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ); // `realpath()` is needed for those cases where $_SERVER['DOCUMENT_ROOT'] is totally different from ABSPATH.
+		$document_root_raw = isset( $_SERVER['DOCUMENT_ROOT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) : '';
+		$document_root     = realpath( $document_root_raw ); // `realpath()` is needed for those cases where $_SERVER['DOCUMENT_ROOT'] is totally different from ABSPATH.
+		$document_root     = $document_root ? $document_root : ABSPATH;
 		$document_root     = trailingslashit( str_replace( '\\', '/', $document_root ) );
 		$path_current_site = trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' );
 		$root_path         = trailingslashit( wp_normalize_path( $document_root . $path_current_site ) );

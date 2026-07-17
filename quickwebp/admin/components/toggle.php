@@ -6,8 +6,9 @@
 $key_option = sanitize_key( $data['name'] );
 
 if( isset( $key_option, $_POST[ $key_option ] ) ) {
-    $value_to_save = $_POST[ $key_option ] == '1' ? '1' : '0';
-    update_option( $key_option, sanitize_text_field( $_POST[ $key_option ] ) );
+    $raw_value     = sanitize_text_field( wp_unslash( $_POST[ $key_option ] ) );
+    $value_to_save = '1' === $raw_value ? '1' : '0';
+    update_option( $key_option, $value_to_save );
 }
 ?>
 <label class="switch">

@@ -6,7 +6,8 @@ $key_option = sanitize_key( $data['name'] );
 
 if( isset( $key_option, $_POST[ $key_option ] ) ) {
 
-    $value = is_array($_POST[ $key_option ]) ? array_map( 'sanitize_text_field', $_POST[ $key_option ] ) : array();
+    $raw_value = wp_unslash( $_POST[ $key_option ] );
+    $value     = is_array( $raw_value ) ? array_map( 'sanitize_text_field', $raw_value ) : array();
     update_option( $key_option, $value );
     
 }

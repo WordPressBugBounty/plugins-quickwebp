@@ -221,20 +221,24 @@ class Quickwebp_Image_Optimizer {
 	 */
 	public function get_ajax_settings() {
 
-		$settings	= isset($_POST['settings']) ? sanitize_text_field($_POST['settings']) : array();
-		$settings 	= json_decode( stripslashes( $settings ), true );
+		$raw_settings = isset( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : '';
+		$settings     = is_string( $raw_settings ) ? json_decode( $raw_settings, true ) : array();
+
+		if ( ! is_array( $settings ) ) {
+			$settings = array();
+		}
 
 		return array(
-			'quickwebp_settings_conversion'				=> isset( $settings['quickwebp_settings_conversion'] ) ? $settings['quickwebp_settings_conversion'] : '',
-			'quickwebp_settings_conversion_quality'		=> isset( $settings['quickwebp_settings_conversion_quality'] ) ? $settings['quickwebp_settings_conversion_quality'] : '',
-			'quickwebp_settings_conversion_sharpen'		=> isset( $settings['quickwebp_settings_conversion_sharpen'] ) ? $settings['quickwebp_settings_conversion_sharpen'] : '',
-			'quickwebp_settings_conversion_ignore_webp'	=> isset( $settings['quickwebp_settings_conversion_ignore_webp'] ) ? $settings['quickwebp_settings_conversion_ignore_webp'] : array(),
-			'quickwebp_settings_resize'					=> isset( $settings['quickwebp_settings_resize'] ) ? $settings['quickwebp_settings_resize'] : '',
-			'quickwebp_settings_resize_value'			=> isset( $settings['quickwebp_settings_resize_value'] ) ? $settings['quickwebp_settings_resize_value'] : '',
-			'quickwebp_settings_completion'				=> isset( $settings['quickwebp_settings_completion'] ) ? $settings['quickwebp_settings_completion'] : '',
-			'quickwebp_settings_completion_options'		=> isset( $settings['quickwebp_settings_completion_options'] ) ? $settings['quickwebp_settings_completion_options'] : array(),
-			'quickwebp_settings_cleanup'				=> isset( $settings['quickwebp_settings_cleanup'] ) ? $settings['quickwebp_settings_cleanup'] : '',
-			'quickwebp_settings_library'				=> isset( $settings['quickwebp_settings_library'] ) ? $settings['quickwebp_settings_library'] : ''
+			'quickwebp_settings_conversion'				=> isset( $settings['quickwebp_settings_conversion'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_conversion'] ) : '',
+			'quickwebp_settings_conversion_quality'		=> isset( $settings['quickwebp_settings_conversion_quality'] ) ? absint( $settings['quickwebp_settings_conversion_quality'] ) : 0,
+			'quickwebp_settings_conversion_sharpen'		=> isset( $settings['quickwebp_settings_conversion_sharpen'] ) ? absint( $settings['quickwebp_settings_conversion_sharpen'] ) : 0,
+			'quickwebp_settings_conversion_ignore_webp'	=> isset( $settings['quickwebp_settings_conversion_ignore_webp'] ) && is_array( $settings['quickwebp_settings_conversion_ignore_webp'] ) ? array_map( 'sanitize_text_field', $settings['quickwebp_settings_conversion_ignore_webp'] ) : array(),
+			'quickwebp_settings_resize'					=> isset( $settings['quickwebp_settings_resize'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_resize'] ) : '',
+			'quickwebp_settings_resize_value'			=> isset( $settings['quickwebp_settings_resize_value'] ) ? absint( $settings['quickwebp_settings_resize_value'] ) : 0,
+			'quickwebp_settings_completion'				=> isset( $settings['quickwebp_settings_completion'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_completion'] ) : '',
+			'quickwebp_settings_completion_options'		=> isset( $settings['quickwebp_settings_completion_options'] ) && is_array( $settings['quickwebp_settings_completion_options'] ) ? array_map( 'sanitize_text_field', $settings['quickwebp_settings_completion_options'] ) : array(),
+			'quickwebp_settings_cleanup'				=> isset( $settings['quickwebp_settings_cleanup'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_cleanup'] ) : '',
+			'quickwebp_settings_library'				=> isset( $settings['quickwebp_settings_library'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_library'] ) : ''
 		);
 	}
 
@@ -254,7 +258,7 @@ class Quickwebp_Image_Optimizer {
 
 		if ( isset($_FILES['async-upload']['original_name']) ) {
 
-			$original_name = sanitize_text_field( $_FILES['async-upload']['original_name'] );
+			$original_name = sanitize_text_field( wp_unslash( $_FILES['async-upload']['original_name'] ) );
 			$original_name = pathinfo( $original_name, PATHINFO_FILENAME );
 
 			$post_arr = array(
@@ -361,8 +365,12 @@ class Quickwebp_Image_Optimizer {
 	 */
 	public function image_optimizition_ajax() {
 
+		if ( ! current_user_can( 'upload_files' ) ) {
+			wp_send_json_error( __( 'You are not allowed to upload files.', QUICKWEBP_TEXT_DOMAIN ), 403 );
+		}
+
 		// verify the nonce.
-		$nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if( !wp_verify_nonce( $nonce, 'image_optimize_nonce' ) ) {
 			wp_send_json_error( __( 'Refresh the page and try again.', QUICKWEBP_TEXT_DOMAIN ) );
 		}
@@ -671,7 +679,7 @@ class Quickwebp_Image_Optimizer {
 	public function single_optimizition_ajax() {
 
 		// verify the nonce.
-		$nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if( !wp_verify_nonce( $nonce, 'quickwebp_admin_attachment' ) ) {
 			wp_send_json_error( __( 'Refresh the page and try again.', QUICKWEBP_TEXT_DOMAIN ) );
 		}
@@ -728,7 +736,7 @@ class Quickwebp_Image_Optimizer {
 	public function undo_single_optimizition_ajax() {
 
 		// verify the nonce.
-		$nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if( !wp_verify_nonce( $nonce, 'quickwebp_admin_attachment' ) ) {
 			wp_send_json_error( __( 'Refresh the page and try again.', QUICKWEBP_TEXT_DOMAIN ) );
 		}

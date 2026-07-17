@@ -6,7 +6,8 @@
 $key_option = sanitize_key( $data['name'] );
 
 if( isset( $key_option, $_POST[ $key_option ] ) ) {
-    update_option( $key_option, $_POST[ $key_option ] );
+    $value_to_save = wp_kses_post( wp_unslash( $_POST[ $key_option ] ) );
+    update_option( $key_option, $value_to_save );
 }
 ?>
 <textarea 
@@ -27,7 +28,8 @@ if ( $settings ) {
     wp_add_inline_script(
         'code-editor',
         sprintf(
-            'jQuery( function() { wp.codeEditor.initialize( "'. $key_option .'", %s ); } );',
+            'jQuery( function() { wp.codeEditor.initialize( %1$s, %2$s ); } );',
+            wp_json_encode( (string) $key_option ),
             wp_json_encode( $settings )
         )
     );

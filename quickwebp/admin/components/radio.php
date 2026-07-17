@@ -6,7 +6,18 @@
 $key_option = sanitize_key( $data['name'] );
 
 if( isset( $key_option, $_POST[ $key_option ] ) ) {
-    update_option( $key_option, sanitize_text_field( $_POST[ $key_option ] ) );
+    $value_to_save = sanitize_text_field( wp_unslash( $_POST[ $key_option ] ) );
+    $allowed_values = array();
+
+    if ( isset( $data['options'] ) && is_array( $data['options'] ) ) {
+        foreach ( $data['options'] as $option ) {
+            $allowed_values[] = isset( $option['value'] ) ? (string) $option['value'] : '';
+        }
+    }
+
+    if ( in_array( $value_to_save, $allowed_values, true ) ) {
+        update_option( $key_option, $value_to_save );
+    }
 }
 if(isset($data['options']) && is_array($data['options'])) {
     ?>

@@ -4,7 +4,7 @@ Tags: WebP, Image Optimization, SEO, Image Compression, Performance
 Requires at least: 6.0.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 
@@ -112,6 +112,9 @@ You can copy the images from any software like Adobe Photoshop & Illustrator, GI
 2. Settings page of QuickWebP
 
 == Changelog ==
+
+= 3.3.1 =
+* FIX: replace sanitize_filename() with sanitize_text_field() to preserve special characters in the filename for autocomplete seo features.
 
 = 3.3.0 =
 * UI/UX: Fully redesigned settings page with a modern card-based layout, quick navigation, and a live configuration summary.

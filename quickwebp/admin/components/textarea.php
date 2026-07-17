@@ -6,7 +6,8 @@
 $key_option = sanitize_key( $data['name'] );
 
 if( isset( $key_option, $_POST[ $key_option ] ) ) {
-    update_option( $key_option, stripslashes( sanitize_textarea_field( $_POST[ $key_option ] ) ) );
+    $value_to_save = sanitize_textarea_field( wp_unslash( $_POST[ $key_option ] ) );
+    update_option( $key_option, $value_to_save );
 }
 ?>
 <textarea 

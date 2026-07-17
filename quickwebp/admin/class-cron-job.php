@@ -116,8 +116,12 @@ class Quickwebp_Cron_Job {
 	 */
 	public function start_bulk_optimization() {
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'You are not allowed to manage plugin settings.', QUICKWEBP_TEXT_DOMAIN ), 403 );
+		}
+
 		// verify the nonce.
-		$nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if( !wp_verify_nonce( $nonce, 'image_optimize_nonce' ) ) {
 			wp_send_json_error( __( 'Refresh the page and try again.', QUICKWEBP_TEXT_DOMAIN ) );
 		}
@@ -163,9 +167,13 @@ class Quickwebp_Cron_Job {
 	 * Stop bulk optimization
 	 */
 	public function stop_bulk_optimization() {
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'You are not allowed to manage plugin settings.', QUICKWEBP_TEXT_DOMAIN ), 403 );
+		}
 		
 		// verify the nonce.
-		$nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if( !wp_verify_nonce( $nonce, 'image_optimize_nonce' ) ) {
 			wp_send_json_error( __( 'Refresh the page and try again.', QUICKWEBP_TEXT_DOMAIN ) );
 		}
@@ -183,8 +191,12 @@ class Quickwebp_Cron_Job {
 	 */
 	public function check_bulk_optimization_progress() {
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'You are not allowed to manage plugin settings.', QUICKWEBP_TEXT_DOMAIN ), 403 );
+		}
+
 		// verify the nonce.
-		$nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if( !wp_verify_nonce( $nonce, 'image_optimize_nonce' ) ) {
 			wp_send_json_error( __( 'Refresh the page and try again.', QUICKWEBP_TEXT_DOMAIN ) );
 		}

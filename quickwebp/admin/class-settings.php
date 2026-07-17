@@ -234,7 +234,7 @@ class Quickwebp_Settings {
 			add_action( 'admin_notices', function() use ( $result ) {
 				?>
 					<div class="notice notice-error">
-						<p><?php echo $result->get_error_message(); ?></p>
+						<p><?php echo esc_html( $result->get_error_message() ); ?></p>
 					</div>
 				<?php
 			});
