@@ -1,40 +1,44 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * Radio component for the settings page
  */
 
-$key_option = sanitize_key( $data['name'] );
+$quickwebp_key_option = sanitize_key( $data['name'] );
 
-if( isset( $key_option, $_POST[ $key_option ] ) ) {
-    $value_to_save = sanitize_text_field( wp_unslash( $_POST[ $key_option ] ) );
-    $allowed_values = array();
+//phpcs:ignore WordPress.Security.NonceVerification.Missing
+if( isset( $quickwebp_key_option, $_POST[ $quickwebp_key_option ] ) ) {
+	//phpcs:ignore WordPress.Security.NonceVerification.Missing
+    $quickwebp_value_to_save  = sanitize_text_field( wp_unslash( $_POST[ $quickwebp_key_option ] ) );
+    $quickwebp_allowed_values = array();
 
     if ( isset( $data['options'] ) && is_array( $data['options'] ) ) {
-        foreach ( $data['options'] as $option ) {
-            $allowed_values[] = isset( $option['value'] ) ? (string) $option['value'] : '';
+        foreach ( $data['options'] as $quickwebp_option ) {
+            $quickwebp_allowed_values[] = isset( $quickwebp_option['value'] ) ? (string) $quickwebp_option['value'] : '';
         }
     }
 
-    if ( in_array( $value_to_save, $allowed_values, true ) ) {
-        update_option( $key_option, $value_to_save );
+    if ( in_array( $quickwebp_value_to_save, $quickwebp_allowed_values, true ) ) {
+        update_option( $quickwebp_key_option, $quickwebp_value_to_save );
     }
 }
 if(isset($data['options']) && is_array($data['options'])) {
     ?>
-    <input type="hidden" name="<?php echo esc_attr( $key_option ?? '' ); ?>" value="">
+    <input type="hidden" name="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>" value="">
     <div class="quickwebp-options">
         <?php
-        foreach( $data['options'] as $option ) {
+        foreach( $data['options'] as $quickwebp_option ) {
             ?>
             <label>
                 <input 
                     type="radio" 
-                    name="<?php echo esc_attr( $key_option ?? '' ); ?>"
-                    id="<?php echo esc_attr( $key_option ?? '' ); ?>"
-                    value="<?php echo esc_attr( $option['value'] ?? '' ); ?>"
-                    <?php checked( $option['value'], get_option( $key_option, $data['default'] ) ); ?>
+                    name="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>"
+                    id="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>"
+                    value="<?php echo esc_attr( $quickwebp_option['value'] ?? '' ); ?>"
+                    <?php checked( $quickwebp_option['value'], get_option( $quickwebp_key_option, $data['default'] ) ); ?>
                 >
-                <?php echo esc_html( $option['label'] ?? '' ); ?>
+                <?php echo esc_html( $quickwebp_option['label'] ?? '' ); ?>
             </label>
             <?php
         }

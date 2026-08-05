@@ -39,41 +39,42 @@ class Quickwebp_Wp_Media_Extends {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
 	}
 
-	public function enqueue_scripts(){
-		global $pagenow;
-		
-		if ( get_option('quickwebp_settings_paste_image', quickwebp_settings_default('quickwebp_settings_paste_image')) == '1' ){
+	/**
+	 * Enqueue scripts and styles for the media uploader
+	 */
+	public function enqueue_scripts( $hook_suffix ){
+		global $post_type;
 
-			$wp_media_extends_assets = include( QUICKWEBP_PLUGIN_PATH . 'public/assets/build/wp-media-extends.asset.php' );
-			wp_enqueue_style( 'quickwebp-wp-media-extends', QUICKWEBP_PLUGIN_URL . 'public/assets/build/wp-media-extends.css', array(), $wp_media_extends_assets['version'], 'all' );
-			wp_enqueue_script( 'quickwebp-wp-media-extends', QUICKWEBP_PLUGIN_URL . 'public/assets/build/wp-media-extends.js', $wp_media_extends_assets['dependencies'], $wp_media_extends_assets['version'], true );
-			wp_localize_script( 'quickwebp-wp-media-extends', 'quickwebp_wp_media_extends', array(
-				'is_upload_page' 			=> $pagenow ? $pagenow === 'upload.php' : false,
-				'nonce' 					=> wp_create_nonce( 'media-form' ),
-				'tmpl_tab_media_paste'		=> file_get_contents( QUICKWEBP_PLUGIN_PATH . 'admin/templates/tab-media-paste.php' ),
-				'tmpl_button_media_paste'	=> file_get_contents( QUICKWEBP_PLUGIN_PATH . 'admin/templates/button-media-paste.php' ),
-				'l10n'						=> array(
-					'prompt_text'	=> __( 'Please enter the name of your image', QUICKWEBP_TEXT_DOMAIN ),
-					'button_text'	=> __( 'Quickwebp paste image', QUICKWEBP_TEXT_DOMAIN ),
-					'click_paste'	=> __( 'Click here, and paste your image.', QUICKWEBP_TEXT_DOMAIN )
-				)
+		if ( 'upload.php' === $hook_suffix || ( ! empty( $post_type ) && 'post.php' === $hook_suffix && 'attachment' === $post_type ) ) {
+			
+			if ( get_option('quickwebp_settings_paste_image', quickwebp_settings_default('quickwebp_settings_paste_image')) == '1' ){
+	
+				$wp_media_extends_assets = include( QUICKWEBP_PLUGIN_PATH . 'public/assets/build/wp-media-extends.asset.php' );
+				wp_enqueue_style( 'quickwebp-wp-media-extends', QUICKWEBP_PLUGIN_URL . 'public/assets/build/wp-media-extends.css', array(), $wp_media_extends_assets['version'], 'all' );
+				wp_enqueue_script( 'quickwebp-wp-media-extends', QUICKWEBP_PLUGIN_URL . 'public/assets/build/wp-media-extends.js', $wp_media_extends_assets['dependencies'], $wp_media_extends_assets['version'], true );
+				wp_localize_script( 'quickwebp-wp-media-extends', 'quickwebp_wp_media_extends', array(
+					'is_upload_page' 			=> $hook_suffix === 'upload.php',
+					'nonce' 					=> wp_create_nonce( 'media-form' ),
+					'tmpl_tab_media_paste'		=> file_get_contents( QUICKWEBP_PLUGIN_PATH . 'admin/templates/tab-media-paste.php' ),
+					'tmpl_button_media_paste'	=> file_get_contents( QUICKWEBP_PLUGIN_PATH . 'admin/templates/button-media-paste.php' ),
+					'l10n'						=> array(
+						'prompt_text'	=> __( 'Please enter the name of your image', 'quickwebp' ),
+						'button_text'	=> __( 'Quickwebp paste image', 'quickwebp' ),
+						'click_paste'	=> __( 'Click here, and paste your image.', 'quickwebp' )
+					)
+				));
+			}
+	
+			$admin_attachment_assets = include( QUICKWEBP_PLUGIN_PATH . 'public/assets/build/admin-attachment.asset.php' );
+			wp_enqueue_style( 'quickwebp-admin-attachment', QUICKWEBP_PLUGIN_URL . 'public/assets/build/admin-attachment.css', array(), $admin_attachment_assets['version'], 'all' );
+			wp_enqueue_script( 'quickwebp-admin-attachment', QUICKWEBP_PLUGIN_URL . 'public/assets/build/admin-attachment.js', $admin_attachment_assets['dependencies'], $admin_attachment_assets['version'], true );
+			wp_localize_script( 'quickwebp-admin-attachment', 'QUICKWEBP_ADMIN_ATTACHMENT', array(
+				'nonce' 	=> wp_create_nonce( 'quickwebp_admin_attachment' ),
+				'ajaxUrl'	=> admin_url( 'admin-ajax.php' )
 			));
 		}
-
-		if ( ! current_user_can( 'upload_files' ) ) {
-			return;
-		}
-
-		$admin_attachment_assets = include( QUICKWEBP_PLUGIN_PATH . 'public/assets/build/admin-attachment.asset.php' );
-		wp_enqueue_style( 'quickwebp-admin-attachment', QUICKWEBP_PLUGIN_URL . 'public/assets/build/admin-attachment.css', array(), $admin_attachment_assets['version'], 'all' );
-		wp_enqueue_script( 'quickwebp-admin-attachment', QUICKWEBP_PLUGIN_URL . 'public/assets/build/admin-attachment.js', $admin_attachment_assets['dependencies'], $admin_attachment_assets['version'], true );
-		wp_localize_script( 'quickwebp-admin-attachment', 'QUICKWEBP_ADMIN_ATTACHMENT', array(
-			'nonce' 	=> wp_create_nonce( 'quickwebp_admin_attachment' ),
-			'ajaxUrl'	=> admin_url( 'admin-ajax.php' )
-		));
 	}
 
 	/**
@@ -90,23 +91,45 @@ class Quickwebp_Wp_Media_Extends {
 			return $form_fields;
 		}
 
-		$data      = get_post_meta( $post->ID, 'quickwebp_data', true );
-		$has_error = get_post_meta( $post->ID, 'quickwebp_has_error', true );
+		$image_optimizer = new Quickwebp_Image_Optimizer( $this->plugin_name, $this->version );
+		$settings        = $image_optimizer->get_settings();
 
-		if ( ! is_array( $data ) ) {
+		$html              = '';
+		$status            = '0';
+		$already_optimized = get_post_meta( $post->ID, 'quickwebp_already_optimized', true );
+		$data              = get_post_meta( $post->ID, 'quickwebp_data', true );
 
-			$html = $this->optimize_btn( $post->ID );
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
 
-			if ( ! empty( $has_error ) ) {
-				$html .= '<br>' . esc_html__( 'Error attempting to optimize this image', QUICKWEBP_TEXT_DOMAIN );	
+		if ( '1' == $already_optimized && ( '1' == $mode_enabled || '0' == $mode_enabled ) ) {
+			if ( is_array( $data ) ) {
+				$status = '1';
+			} else {
+				$status = '2';
 			}
-
-		} else {
-
-			$html = $this->attachment_data( $data, $post->ID );
 		}
 
-		$form_fields['quickwebp'] = array(
+		if ( '2' == $already_optimized && ( '2' == $mode_enabled || '0' == $mode_enabled ) ) {
+			if ( is_array( $data ) ) {
+				$status = '1';
+			} else {
+				$status = '2';
+			}
+		}
+
+		switch ( $status ) {
+			case '0':
+				$html = $this->optimize_btn( $post->ID );
+			break;
+			case '1':
+				$html = $this->attachment_data( $data, $post->ID );
+			break;
+			case '2':
+				$html = '<br>' . esc_html__( 'Image already optimized.', 'quickwebp' );
+			break;
+		}
+
+		$form_fields['wpmtk_media_encoder'] = array(
 			'label' 		=> 'Quickwebp',
 			'input' 		=> 'html',
 			'html' 			=> $html,
@@ -121,9 +144,7 @@ class Quickwebp_Wp_Media_Extends {
 	 * Add "quickwebp" column in upload.php
 	 */
 	public function add_media_columns( $columns ) {
-
-		$columns['quickwebp'] = __( 'Quickwebp', QUICKWEBP_TEXT_DOMAIN );
-
+		$columns['quickwebp'] = 'QuickWebP';
 		return $columns;
 	}
 
@@ -137,24 +158,46 @@ class Quickwebp_Wp_Media_Extends {
 		}
 
 		if ( ! $this->valid_mimetype( $attachment_id ) ) {
-			echo esc_html__( 'Image type not supported', QUICKWEBP_TEXT_DOMAIN );
+			echo esc_html__( 'Image type not supported', 'quickwebp' );
 			return;
 		}
 
-		$data      = get_post_meta( $attachment_id, 'quickwebp_data', true );
-		$has_error = get_post_meta( $attachment_id, 'quickwebp_has_error', true );
+		$image_optimizer = new Quickwebp_Image_Optimizer( $this->plugin_name, $this->version );
+		$settings        = $image_optimizer->get_settings();
 
-		if ( ! is_array( $data ) ) {
+		$html              = '';
+		$status            = '0';
+		$already_optimized = get_post_meta( $attachment_id, 'quickwebp_already_optimized', true );
+		$data              = get_post_meta( $attachment_id, 'quickwebp_data', true );
 
-			echo $this->optimize_btn( $attachment_id );
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
 
-			if ( ! empty( $has_error ) ) {
-				echo esc_html__( 'Error attempting to optimize this image', QUICKWEBP_TEXT_DOMAIN );	
+		if ( '1' == $already_optimized && ( '1' == $mode_enabled || '0' == $mode_enabled ) ) {
+			if ( is_array( $data ) ) {
+				$status = '1';
+			} else {
+				$status = '2';
 			}
+		}
 
-		} else {
+		if ( '2' == $already_optimized && ( '2' == $mode_enabled || '0' == $mode_enabled ) ) {
+			if ( is_array( $data ) ) {
+				$status = '1';
+			} else {
+				$status = '2';
+			}
+		}
 
-			echo $this->attachment_data( $data, $attachment_id );
+		switch ( $status ) {
+			case '0':
+				echo wp_kses_post( $this->optimize_btn( $attachment_id ) );
+			break;
+			case '1':
+				echo wp_kses_post( $this->attachment_data( $data, $attachment_id ) );
+			break;
+			case '2':
+				echo wp_kses_post( '<br>' . esc_html__( 'Image already optimized.', 'quickwebp' ) );
+			break;
 		}
 	}
 
@@ -168,54 +211,73 @@ class Quickwebp_Wp_Media_Extends {
 			return;
 		}
 
-		$data      = get_post_meta( $post->ID, 'quickwebp_data', true );
-		$has_error = get_post_meta( $post->ID, 'quickwebp_has_error', true );
+		$image_optimizer = new Quickwebp_Image_Optimizer( $this->plugin_name, $this->version );
+		$settings        = $image_optimizer->get_settings();
 
-		if ( ! is_array( $data ) ) {
+		$html              = '';
+		$status            = '0';
+		$already_optimized = get_post_meta( $post->ID, 'quickwebp_already_optimized', true );
+		$data              = get_post_meta( $post->ID, 'quickwebp_data', true );
 
-			echo '<table><tr><td>';
-			echo $this->optimize_btn( $post->ID );
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
 
-			if ( ! empty( $has_error ) ) {
-				echo esc_html__( 'Error attempting to optimize this image', QUICKWEBP_TEXT_DOMAIN );
+		if ( '1' == $already_optimized && ( '1' == $mode_enabled || '0' == $mode_enabled ) ) {
+			if ( is_array( $data ) ) {
+				$status = '1';
+			} else {
+				$status = '2';
 			}
-
-			echo '</td></tr></table>';
-
-		} else {
-
-			echo '<table><tr><td>' . $this->attachment_data( $data, $post->ID ) . '</td></tr></table>';
 		}
 
+		if ( '2' == $already_optimized && ( '2' == $mode_enabled || '0' == $mode_enabled ) ) {
+			if ( is_array( $data ) ) {
+				$status = '1';
+			} else {
+				$status = '2';
+			}
+		}
+
+		echo '<table><tr><td><div><strong>QuickWebP</strong></div>';
+		switch ( $status ) {
+			case '0':
+				echo wp_kses_post( $this->optimize_btn( $post->ID ) );
+			break;
+			case '1':
+				echo wp_kses_post( $this->attachment_data( $data, $post->ID ) );
+			break;
+			case '2':
+				echo esc_html__( 'Image already optimized.', 'quickwebp' );
+			break;
+		}
+		echo '</td></tr></table>';
 	}
 
 	/**
 	 * Get all data to display for a specific media
 	 */
 	public function attachment_data( $data, $attachment_id ) {
-
-		$full_image_data = $data['full'] ?? array();
+		$available_formats = array( '1' => 'WebP', '2' => 'AVIF' );
+		$full_image_data   = $data['full'] ?? array();
+		$format		       = $available_formats[ $full_image_data['format'] ?? '' ] ?? '';
 
 		if ( ! empty( $full_image_data ) ) {
-
 			ob_start();
-
 				?>
 					<div>
-						<strong><?php esc_html_e( 'Original Image: ', QUICKWEBP_TEXT_DOMAIN ); ?></strong>
+						<strong><?php esc_html_e( 'Original Image: ', 'quickwebp' ); ?></strong>
 						<span><?php echo esc_html( round( $full_image_data['original_size'] / 1024, 2 ) . 'KB' ); ?></span>
 					</div>
 					<div>
-						<strong><?php esc_html_e( 'Webp: ', QUICKWEBP_TEXT_DOMAIN ); ?></strong>
+						<strong><?php echo esc_html( $format ); ?>: </strong>
 						<span><?php echo esc_html( round( $full_image_data['optimized_size'] / 1024, 2 ) . 'KB' ); ?></span>
 					</div>
 					<div>
-						<strong><?php esc_html_e( 'Save: ', QUICKWEBP_TEXT_DOMAIN ); ?></strong>
+						<strong><?php esc_html_e( 'Save: ', 'quickwebp' ); ?></strong>
 						<span><?php echo esc_html( $full_image_data['percent'] . '%' ); ?></span>
 					</div>
 					<div>
 						<button class="button button-sacondary quickwebp-undo-single-optimization-btn" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
-							<?php esc_html_e( 'Undo optimization', QUICKWEBP_TEXT_DOMAIN ); ?>
+							<?php esc_html_e( 'Undo optimization', 'quickwebp' ); ?>
 							<div class="spinner"></div>
 						</button>
 						<div class="quickwebp-undo-single-optimization-msg"></div>
@@ -224,19 +286,16 @@ class Quickwebp_Wp_Media_Extends {
 
 			return ob_get_clean();
 		}
-
 	}
 
 	/**
 	 * Display optimize button in the media uploader
 	 */
 	public function optimize_btn( $attachment_id ) {
-
 		ob_start();
-
 			?>
 				<button class="button button-sacondary quickwebp-single-optimization-btn" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
-					<?php esc_html_e( 'Optimize', QUICKWEBP_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Optimize', 'quickwebp' ); ?>
 					<div class="spinner"></div>
 				</button>
 				<div class="quickwebp-single-optimization-msg"></div>
@@ -248,16 +307,11 @@ class Quickwebp_Wp_Media_Extends {
 	/**
 	 * Check the mimetype of the file
 	 */
-	public function valid_mimetype( $post_id ) {
+	private function valid_mimetype( $post_id ) {
+		$image_optimizer    = new Quickwebp_Image_Optimizer( $this->plugin_name, $this->version );
+		$allowed_mime_types = $image_optimizer->allowed_mime_types;
+		$post_mime_type     = get_post_mime_type( $post_id );
 
-		// check the mime type
-		$image_optimizer	= new Quickwebp_Image_Optimizer( $this->plugin_name, $this->version );
-		$mime_types			= $image_optimizer->allowed_mime_types;
-		$index 				= array_search( 'image/webp', $mime_types );
-		unset( $mime_types[$index] );
-		$mime_type 			= get_post_mime_type( $post_id );
-
-		return in_array( $mime_type, $mime_types );
+		return in_array( $post_mime_type, $allowed_mime_types );
 	}
-
 }

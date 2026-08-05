@@ -1,8 +1,9 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 include_once QUICKWEBP_PLUGIN_PATH . 'admin/rewrite-rules/class-rewrite-rules-abstract.php';
 
-class Nginx extends Rewrite_Rules_Abstract {
+class Quickwebp_Nginx extends Quickwebp_Rewrite_Rules_Abstract {
 
 	/**
 	 * Get the path to the file.
@@ -23,27 +24,38 @@ class Nginx extends Rewrite_Rules_Abstract {
 	 * @return string
 	 */
 	protected function get_raw_new_contents() {
-        $extensions = 'jpg|jpeg|jpe|png';
-		$home_root  = wp_parse_url( home_url( '/' ) );
-		$home_root  = $home_root['path'];
+		$home_root = wp_parse_url( home_url( '/' ) );
+		$home_root = $home_root['path'];
 
-		return trim( '
-# BEGIN ' . $this->tag_name . '
-location ~* ^(' . $home_root . '.+)\.(' . $extensions . ')$ {
-	add_header Vary Accept;
+		$content  = "# BEGIN " . $this->tag_name . "\n";
+		$content .= "location ~* ^($home_root.+)\\.(jpg|jpeg|jpe|png)$ {";
+		$content .= "\n\tadd_header Vary Accept;";
+	
+		// Check for AVIF support and file existence
+		$content .= "\n\n\tif (\$http_accept ~* \"avif\") {";
+		$content .= "\n\t\tset \$imavif A;";
+		$content .= "\n\t}";
+		$content .= "\n\tif (-f \$request_filename.avif) {";
+		$content .= "\n\t\tset \$imavif \"\${imavif}B\";";
+		$content .= "\n\t}";
+		$content .= "\n\tif (\$imavif = AB) {";
+		$content .= "\n\t\trewrite ^(.*) \$1.avif break;";
+		$content .= "\n\t}";
+	
+		// Check for WebP support and file existence
+		$content .= "\n\n\tif (\$http_accept ~* \"webp\") {";
+		$content .= "\n\t\tset \$imwebp A;";
+		$content .= "\n\t}";
+		$content .= "\n\tif (-f \$request_filename.webp) {";
+		$content .= "\n\t\tset \$imwebp \"\${imwebp}B\";";
+		$content .= "\n\t}";
+		$content .= "\n\tif (\$imwebp = AB) {";
+		$content .= "\n\t\trewrite ^(.*) \$1.webp break;";
+		$content .= "\n\t}";
+	
+		$content .= "\n}";
+		$content .= "\n# END " . $this->tag_name;
 
-	if ($http_accept ~* "webp"){
-		set $imwebp A;
+        return trim( $content );
 	}
-	if (-f $request_filename.webp) {
-		set $imwebp  "${imwebp}B";
-	}
-	if ($imwebp = AB) {
-		rewrite ^(.*) $1.webp;
-	}
-}
-# END ' . $this->tag_name . '');
-	}
-
-
 }

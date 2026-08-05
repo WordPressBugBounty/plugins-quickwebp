@@ -46,16 +46,15 @@ class Quickwebp_Deactivator {
 		include_once QUICKWEBP_PLUGIN_PATH . 'admin/rewrite-rules/class-iis.php';
 
 		if ( $is_apache ) {
-			$rules = new Apache();
+			$rules = new Quickwebp_Apache();
 		} elseif ( $is_iis7 ) {
-			$rules = new IIS();
+			$rules = new Quickwebp_IIS();
 		} elseif ( $is_nginx ) {
-			$rules = new Nginx();
+			$rules = new Quickwebp_Nginx();
 		} else {
 			return;
 		}
 
 		$rules->remove();
 	}
-
 }

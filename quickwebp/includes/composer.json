@@ -1,7 +1,6 @@
 {
     "require": {
-        "php": "^7.4",
-        "intervention/image": "^2.7"
+        "php": "^7.4"
     },
     "config": {
         "platform": {

@@ -10,6 +10,9 @@
  */
 class Quickwebp_Settings {
 
+	const QUICKWEBP_GET_LICENSE_URL    = 'https://solutions.leyoweb.com/products/quickwebp/';
+	const QUICKWEBP_GET_MY_ACCOUNT_URL = 'https://solutions.leyoweb.com/customer-dashboard/';
+
 	/**
 	 * The ID of this plugin.
 	 *
@@ -53,8 +56,10 @@ class Quickwebp_Settings {
 			wp_enqueue_style( 'quickwebpoi_admin_main_settings', QUICKWEBP_PLUGIN_URL . 'public/assets/build/admin-main-settings.css', array(), $admin_main_settings_assets['version'], 'all' );
 			wp_enqueue_script( 'quickwebpoi_admin_main_settings', QUICKWEBP_PLUGIN_URL . 'public/assets/build/admin-main-settings.js', $admin_main_settings_assets['dependencies'], $admin_main_settings_assets['version'], true );
 			wp_localize_script( 'quickwebpoi_admin_main_settings', 'QUICKWEBP_ADMIN_SETTINGS', array(
-				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-				'nonce'     => wp_create_nonce( 'image_optimize_nonce' ),
+				'ajaxUrl'            => admin_url( 'admin-ajax.php' ),
+				'nonce'              => wp_create_nonce( 'image_optimize_nonce' ),
+				'preview_image_data' => $this->get_preview_image_data(),
+				'default_image_url'  => QUICKWEBP_PLUGIN_URL . 'public/assets/img/preview.jpg',
 			));
 		}
 	}
@@ -67,8 +72,8 @@ class Quickwebp_Settings {
 	public function add_settings_menu() {
 		add_submenu_page(
 			'upload.php',
-			__('Quickwebp Settings', QUICKWEBP_TEXT_DOMAIN),
-			__('Quickwebp', QUICKWEBP_TEXT_DOMAIN),
+			__('QuickWebP Settings', 'quickwebp'),
+			__('QuickWebP', 'quickwebp'),
 			'manage_options',
 			'quickwebp-settings',
 			array( $this, 'render_settings_page' )
@@ -81,7 +86,41 @@ class Quickwebp_Settings {
 	 * @return void
 	 */
 	public function render_settings_page() {
-		global $is_nginx;
+		global $is_nginx, $quickwebp_surecart_client;
+
+		$php_version_valid = version_compare( PHP_VERSION, '8.1', '>=' );
+		$license_valid     = false;
+		if ( $quickwebp_surecart_client ) {
+			$license_valid = $quickwebp_surecart_client->license()->is_valid();
+		}
+		
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST['quickwebp_settings_conversion'] ) ) {
+			update_option( 'quickwebp_settings_onboarding_completed', '1' );
+		}
+
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+		$wpmtk_is_active       = in_array( 'wpmastertoolkit/wp-mastertoolkit.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
+		$show_onboarding       = '1' !== (string) get_option( 'quickwebp_settings_onboarding_completed', '0' );
+		$conversion            = get_option( 'quickwebp_settings_conversion', quickwebp_settings_default( 'quickwebp_settings_conversion' ) );
+		$conversion_enabled    = '1' === (string) $conversion;
+		$save_original         = get_option( 'quickwebp_settings_conversion_save_original', quickwebp_settings_default( 'quickwebp_settings_conversion_save_original' ) );
+		$save_original         = is_array( $save_original ) ? $save_original : array();
+		$save_original_enabled = in_array( 'checked', $save_original, true );
+		$display_mode          = get_option( 'quickwebp_settings_conversion_display_webp_mode', quickwebp_settings_default( 'quickwebp_settings_conversion_display_webp_mode' ) );
+		$conversion_quality    = get_option( 'quickwebp_settings_conversion_quality', quickwebp_settings_default( 'quickwebp_settings_conversion_quality' ) );
+
+		$profile_label = __( 'Custom profile', 'quickwebp' );
+		if ( $conversion_enabled && ! $save_original_enabled ) {
+			$profile_label = __( 'New site profile', 'quickwebp' );
+		}
+		if ( $conversion_enabled && $save_original_enabled ) {
+			$profile_label = __( 'Existing site profile', 'quickwebp' );
+		}
+
+		$preview_image_data      = $this->get_preview_image_data();
+		$preview_image_data_webp = $preview_image_data['1_' . $conversion_quality] ?? $preview_image_data['1_medium'];
+		$preview_image_data_avif = $preview_image_data['2_' . $conversion_quality] ?? $preview_image_data['2_medium'];
 
 		require_once QUICKWEBP_PLUGIN_PATH . 'admin/templates/page-settings.php';
 	}
@@ -127,68 +166,14 @@ class Quickwebp_Settings {
 
 		if ( 'quickwebp/quickwebp.php' === $plugin_file ) {
 
-			$new_actions['settings'] = sprintf( __( '<a href="%s">Settings</a>', QUICKWEBP_TEXT_DOMAIN ),  esc_url( admin_url( 'upload.php?page=quickwebp-settings' ) ) );
+			$new_actions['settings'] = sprintf(
+				// translators: %s is a placeholder for the link to the settings page.
+				__( '<a href="%s">Settings</a>', 'quickwebp' ),
+				esc_url( admin_url( 'upload.php?page=quickwebp-settings' ) )
+			);
 		}
 
 		return array_merge( $new_actions, $plugin_actions );
-	}
-
-	/**
-	 * Show notice
-	 */
-	public function show_notice_if_library_not_exist() {
-
-		$library_to_use = get_option( 'quickwebp_settings_library', quickwebp_settings_default('quickwebp_settings_library') );
-
-		switch ($library_to_use) {
-			case 'gd':
-
-				if ( ! extension_loaded('gd') ) {
-					add_action( 'admin_notices', function() {
-						?>
-							<div class="notice notice-error">
-								<p><?php _e( 'Oops! QuickWebP needs the GD library to function properly, but it looks like the library is not installed on your server.', QUICKWEBP_TEXT_DOMAIN ); ?></p>
-								<p><?php _e( 'Please contact your hosting provider and ask them to install the GD library for PHP. They should be able to assist you with this process. Once the library is installed, QuickWebP should work as expected.', QUICKWEBP_TEXT_DOMAIN ); ?></p>
-								<p><?php _e( 'Thank you for using QuickWebP!', QUICKWEBP_TEXT_DOMAIN ); ?></p>
-							</div>
-						<?php
-					});
-				}
-
-			break;
-
-			case 'imagick':
-
-				if ( ! extension_loaded('imagick') ) {
-					add_action( 'admin_notices', function() {
-						?>
-							<div class="notice notice-error">
-								<p><?php _e( 'Oops! QuickWebP needs the Imagick library to function properly, but it looks like the library is not installed on your server.', QUICKWEBP_TEXT_DOMAIN ); ?></p>
-								<p><?php _e( 'Please contact your hosting provider and ask them to install the Imagick library for PHP. They should be able to assist you with this process. Once the library is installed, QuickWebP should work as expected.', QUICKWEBP_TEXT_DOMAIN ); ?></p>
-								<p><?php _e( 'Thank you for using QuickWebP!', QUICKWEBP_TEXT_DOMAIN ); ?></p>
-							</div>
-						<?php
-					});
-				}
-				
-			break;
-			
-			default:
-
-				add_action( 'admin_notices', function() {
-					?>
-						<div class="notice notice-error">
-							<p><?php _e( 'Oops! QuickWebP needs the Imagick or GD library to function properly, but it looks like the no Imagick nor GD is not installed on your server.', QUICKWEBP_TEXT_DOMAIN ); ?></p>
-							<p><?php _e( 'Please contact your hosting provider and ask them to install the Imagick or GD library for PHP. They should be able to assist you with this process. Once the library is installed, QuickWebP should work as expected.', QUICKWEBP_TEXT_DOMAIN ); ?></p>
-							<p><?php _e( 'Thank you for using QuickWebP!', QUICKWEBP_TEXT_DOMAIN ); ?></p>
-						</div>
-					<?php
-				});
-				
-			break;
-		}
-
-		
 	}
 
 	/**
@@ -215,11 +200,11 @@ class Quickwebp_Settings {
 		}
 
 		if ( $is_apache ) {
-			$rules = new Apache();
+			$rules = new Quickwebp_Apache();
 		} elseif ( $is_iis7 ) {
-			$rules = new IIS();
+			$rules = new Quickwebp_IIS();
 		} elseif ( $is_nginx ) {
-			$rules = new Nginx();
+			$rules = new Quickwebp_Nginx();
 		} else {
 			return $values;
 		}
@@ -277,7 +262,9 @@ class Quickwebp_Settings {
 	 */
 	private function is_save_original_enabled_from_request_or_option() {
 
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST['quickwebp_settings_conversion_save_original'] ) ) {
+			//phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$raw_value = wp_unslash( $_POST['quickwebp_settings_conversion_save_original'] );
 
 			if ( is_array( $raw_value ) ) {
@@ -302,7 +289,9 @@ class Quickwebp_Settings {
 	 */
 	private function is_conversion_enabled_from_request_or_option() {
 
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST['quickwebp_settings_conversion'] ) ) {
+			//phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$raw_value = wp_unslash( $_POST['quickwebp_settings_conversion'] );
 			$raw_value = sanitize_text_field( (string) $raw_value );
 
@@ -317,4 +306,62 @@ class Quickwebp_Settings {
 		return '1' === (string) $saved_value;
 	}
 
+	/**
+	 * Data for the preview image used in the settings page.
+	 */
+	private function get_preview_image_data() {
+		return array(
+			'name'       => 'preview.jpg',
+			'size'       => '423.17 KB',
+			'dimensions' => '1264 x 848',
+			'1_low' => array(
+				'size'         => '175.32 KB',
+				'save'         => '247.85 KB',
+				'save_percent' => '59%',
+				'percent'      => '41%',
+			),
+			'1_medium' => array(
+				'size'         => '196.08 KB',
+				'save'         => '227.09 KB',
+				'save_percent' => '54%',
+				'percent'      => '46%',
+			),
+			'1_high' => array(
+				'size'         => '229.29 KB',
+				'save'         => '193.88 KB',
+				'save_percent' => '46%',
+				'percent'      => '54%',
+			),
+			'1_extra_high' => array(
+				'size'         => '387.46 KB',
+				'save'         => '35.71 KB',
+				'save_percent' => '8%',
+				'percent'      => '92%',
+			),
+			'2_low' => array(
+				'size'         => '73.44 KB',
+				'save'         => '349.73 KB',
+				'save_percent' => '83%',
+				'percent'      => '17%',
+			),
+			'2_medium' => array(
+				'size'         => '120.06 KB',
+				'save'         => '303.11 KB',
+				'save_percent' => '72%',
+				'percent'      => '28%',
+			),
+			'2_high' => array(
+				'size'         => '183.21 KB',
+				'save'         => '239.96 KB',
+				'save_percent' => '57%',
+				'percent'      => '43%',
+			),
+			'2_extra_high' => array(
+				'size'         => '290.54 KB',
+				'save'         => '132.63 KB',
+				'save_percent' => '31%',
+				'percent'      => '69%',
+			),
+		);
+	}
 }

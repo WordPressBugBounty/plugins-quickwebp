@@ -30,33 +30,7 @@ class Quickwebp_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-
-		self::update_library();
 		self::maybe_add_rewrite_rules();
-
-	}
-
-	/**
-	 * Update library
-	 */
-	public static function update_library() {
-
-		$library_to_use		= get_option( 'quickwebp_settings_library', quickwebp_settings_default('quickwebp_settings_library') );
-
-		switch ($library_to_use) {
-
-			case 'gd':
-				if ( !extension_loaded('gd') ) {
-					update_option( 'quickwebp_settings_library', 'imagick' );
-				}
-			break;
-
-			case 'imagick':
-				if ( !extension_loaded('imagick') ) {
-					update_option( 'quickwebp_settings_library', 'gd' );
-				}
-			break;
-		}
 	}
 
 	/**
@@ -76,16 +50,15 @@ class Quickwebp_Activator {
 		include_once QUICKWEBP_PLUGIN_PATH . 'admin/rewrite-rules/class-iis.php';
 
 		if ( $is_apache ) {
-			$rules = new Apache();
+			$rules = new Quickwebp_Apache();
 		} elseif ( $is_iis7 ) {
-			$rules = new IIS();
+			$rules = new Quickwebp_IIS();
 		} elseif ( $is_nginx ) {
-			$rules = new Nginx();
+			$rules = new Quickwebp_Nginx();
 		} else {
 			return;
 		}
 
 		$rules->add();
 	}
-
 }

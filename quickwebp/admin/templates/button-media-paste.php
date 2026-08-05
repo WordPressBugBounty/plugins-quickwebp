@@ -1,1 +1,5 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+?>
+
 <button type="button" role="tab" class="media-menu-item" id="menu-item-quickwebp-tab-media-paste" aria-selected="false" tabindex="-1">{{button_text}}</button>

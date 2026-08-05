@@ -1,13 +1,17 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * Range slider component for the settings page
  */
 
-$key_option = sanitize_key( $data['name'] );
+$quickwebp_key_option = sanitize_key( $data['name'] );
 
-if( isset( $key_option, $_POST[ $key_option ] ) ) {
-    $value_to_save = sanitize_text_field( wp_unslash( $_POST[ $key_option ] ) );
-    update_option( $key_option, $value_to_save );
+//phpcs:ignore WordPress.Security.NonceVerification.Missing
+if( isset( $quickwebp_key_option, $_POST[ $quickwebp_key_option ] ) ) {
+	//phpcs:ignore WordPress.Security.NonceVerification.Missing
+    $quickwebp_value_to_save = sanitize_text_field( wp_unslash( $_POST[ $quickwebp_key_option ] ) );
+    update_option( $quickwebp_key_option, $quickwebp_value_to_save );
 }
 ?>
 
@@ -17,13 +21,13 @@ if( isset( $key_option, $_POST[ $key_option ] ) ) {
         min="<?php echo esc_attr( $data['min'] ?? 1 ); ?>"
         max="<?php echo esc_attr( $data['max'] ?? 100 ); ?>"
         step="<?php echo esc_attr( $data['step'] ?? 1 ); ?>"
-        name="<?php echo esc_attr( $key_option ?? '' ); ?>"
-        id="<?php echo esc_attr( $key_option ?? '' ); ?>"
-        value="<?php echo esc_html( get_option( $key_option ?? '', $data['default'] ?? '' ) ); ?>"
+        name="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>"
+        id="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>"
+        value="<?php echo esc_html( get_option( $quickwebp_key_option ?? '', $data['default'] ?? '' ) ); ?>"
         <?php echo isset( $data['pattern'] ) ? 'pattern="' . esc_attr( $data['pattern'] ) . '"' : ''; ?>
     >
     <span class="value">
-        <span class="value-num"><?php echo esc_html( get_option( $key_option ?? '', $data['default'] ?? '' ) ); ?></span>
+        <span class="value-num"><?php echo esc_html( get_option( $quickwebp_key_option ?? '', $data['default'] ?? '' ) ); ?></span>
         <span class="value-unit"><?php echo esc_html( $data['unit'] ?? '' ); ?></span>
     </span>
     <div class="progress"></div>

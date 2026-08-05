@@ -10,7 +10,7 @@ msgstr ""
 "Webdeclic "
 "<contact@webdeclic.com>\n"
 "POT-Creation-Date: "
-"2024-11-21 16:28+0100\n"
+"2026-07-29 12:50+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: "
 "Webdeclic "
@@ -32,20 +32,9 @@ msgstr ""
 "X-Poedit-SourceCharset: "
 "UTF-8\n"
 "X-Poedit-KeywordsList: "
-"__;_e;esc_html_e;"
-"esc_html_x:1,2c;"
-"esc_html__;esc_attr_e;"
-"esc_attr_x:1,2c;"
-"esc_attr__;_ex:1,2c;"
-"_nx:4c,1,2;"
-"_nx_noop:4c,1,2;_x:1,2c;"
-"_n:1,2;_n_noop:1,2;"
-"__ngettext:1,2;"
-"__ngettext_noop:1,2;_c,"
-"_nc:4c,1,2\n"
+"__;_e;esc_html_e;esc_html_x:1,2c;esc_html__;esc_attr_e;esc_attr_x:1,2c;esc_attr__;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_x:1,2c;_n:1,2;_n_noop:1,2;__ngettext:1,2;__ngettext_noop:1,2;_c,_nc:4c,1,2\n"
 "X-Poedit-Basepath: ..\n"
-"X-Generator: Poedit "
-"3.4.4\n"
+"X-Generator: Poedit 3.9\n"
 "X-Poedit-"
 "SearchPath-0: .\n"
 "X-Poedit-"
@@ -54,705 +43,375 @@ msgstr ""
 "node_modules\n"
 
 #: admin/class-cron-job.php:50
-#: svn/tags/3.0.0/admin/class-cron-job.php:50
-#: svn/tags/3.1.0/admin/class-cron-job.php:50
-#: svn/tags/3.2.0/admin/class-cron-job.php:50
-#: svn/tags/3.2.1/admin/class-cron-job.php:50
-#: svn/tags/3.2.2/admin/class-cron-job.php:50
-#: svn/trunk/admin/class-cron-job.php:50
 msgid "Every minute"
 msgstr ""
 
-#: admin/class-cron-job.php:118
-#: admin/class-cron-job.php:150
-#: admin/class-cron-job.php:162
-#: admin/class-cron-job.php:169
-#: admin/class-cron-job.php:181
-#: admin/class-image-optimizer.php:321
-#: admin/class-image-optimizer.php:550
-#: admin/class-image-optimizer.php:609
-#: svn/tags/3.0.0/admin/class-cron-job.php:118
-#: svn/tags/3.0.0/admin/class-cron-job.php:150
-#: svn/tags/3.0.0/admin/class-cron-job.php:162
-#: svn/tags/3.0.0/admin/class-cron-job.php:169
-#: svn/tags/3.0.0/admin/class-cron-job.php:181
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:292
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:502
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:559
-#: svn/tags/3.1.0/admin/class-cron-job.php:118
-#: svn/tags/3.1.0/admin/class-cron-job.php:150
-#: svn/tags/3.1.0/admin/class-cron-job.php:162
-#: svn/tags/3.1.0/admin/class-cron-job.php:169
-#: svn/tags/3.1.0/admin/class-cron-job.php:181
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:292
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:502
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:559
-#: svn/tags/3.2.0/admin/class-cron-job.php:118
-#: svn/tags/3.2.0/admin/class-cron-job.php:150
-#: svn/tags/3.2.0/admin/class-cron-job.php:162
-#: svn/tags/3.2.0/admin/class-cron-job.php:169
-#: svn/tags/3.2.0/admin/class-cron-job.php:181
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:292
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:502
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:559
-#: svn/tags/3.2.1/admin/class-cron-job.php:118
-#: svn/tags/3.2.1/admin/class-cron-job.php:150
-#: svn/tags/3.2.1/admin/class-cron-job.php:162
-#: svn/tags/3.2.1/admin/class-cron-job.php:169
-#: svn/tags/3.2.1/admin/class-cron-job.php:181
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:318
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:537
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:594
-#: svn/tags/3.2.2/admin/class-cron-job.php:118
-#: svn/tags/3.2.2/admin/class-cron-job.php:150
-#: svn/tags/3.2.2/admin/class-cron-job.php:162
-#: svn/tags/3.2.2/admin/class-cron-job.php:169
-#: svn/tags/3.2.2/admin/class-cron-job.php:181
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:321
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:550
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:609
-#: svn/trunk/admin/class-cron-job.php:118
-#: svn/trunk/admin/class-cron-job.php:150
-#: svn/trunk/admin/class-cron-job.php:162
-#: svn/trunk/admin/class-cron-job.php:169
-#: svn/trunk/admin/class-cron-job.php:181
-#: svn/trunk/admin/class-image-optimizer.php:321
-#: svn/trunk/admin/class-image-optimizer.php:550
-#: svn/trunk/admin/class-image-optimizer.php:609
+#: admin/class-cron-job.php:132
+#: admin/class-cron-job.php:185
+#: admin/class-cron-job.php:207
+msgid ""
+"You are not allowed to "
+"manage plugin settings."
+msgstr ""
+
+#: admin/class-cron-job.php:138
+#: admin/class-cron-job.php:176
+#: admin/class-cron-job.php:191
+#: admin/class-cron-job.php:198
+#: admin/class-cron-job.php:213
+#: admin/class-image-optimizer.php:286
+#: admin/class-image-optimizer.php:342
+#: admin/class-image-optimizer.php:419
+#: admin/class-image-optimizer.php:461
 msgid ""
 "Refresh the page and try "
 "again."
 msgstr ""
 
-#: admin/class-cron-job.php:125
-#: svn/tags/3.0.0/admin/class-cron-job.php:125
-#: svn/tags/3.1.0/admin/class-cron-job.php:125
-#: svn/tags/3.2.0/admin/class-cron-job.php:125
-#: svn/tags/3.2.1/admin/class-cron-job.php:125
-#: svn/tags/3.2.2/admin/class-cron-job.php:125
-#: svn/trunk/admin/class-cron-job.php:125
+#: admin/class-cron-job.php:146
+#: admin/class-image-optimizer.php:355
+msgid ""
+"Choose an image format "
+"and save the settings."
+msgstr ""
+
+#: admin/class-cron-job.php:151
 msgid ""
 "No images to optimize."
 msgstr ""
 
-#: admin/class-cron-job.php:130
-#: svn/tags/3.0.0/admin/class-cron-job.php:130
-#: svn/tags/3.1.0/admin/class-cron-job.php:130
-#: svn/tags/3.2.0/admin/class-cron-job.php:130
-#: svn/tags/3.2.1/admin/class-cron-job.php:130
-#: svn/tags/3.2.2/admin/class-cron-job.php:130
-#: svn/trunk/admin/class-cron-job.php:130
+#: admin/class-cron-job.php:156
 msgid ""
 "Bulk optimization is "
 "already running."
 msgstr ""
 
-#: admin/class-cron-job.php:166
-#: svn/tags/3.0.0/admin/class-cron-job.php:166
-#: svn/tags/3.1.0/admin/class-cron-job.php:166
-#: svn/tags/3.2.0/admin/class-cron-job.php:166
-#: svn/tags/3.2.1/admin/class-cron-job.php:166
-#: svn/tags/3.2.2/admin/class-cron-job.php:166
-#: svn/trunk/admin/class-cron-job.php:166
+#: admin/class-cron-job.php:195
 msgid ""
 "Bulk optimization "
 "stopped."
 msgstr ""
 
-#: admin/class-image-optimizer.php:330
-#: admin/class-image-optimizer.php:336
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:301
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:307
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:301
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:307
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:301
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:307
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:327
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:333
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:330
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:336
-#: svn/trunk/admin/class-image-optimizer.php:330
-#: svn/trunk/admin/class-image-optimizer.php:336
+#: admin/class-image-optimizer.php:280
+msgid ""
+"You are not allowed to "
+"upload files."
+msgstr ""
+
+#: admin/class-image-optimizer.php:292
+#: admin/class-image-optimizer.php:299
+#: admin/class-image-optimizer.php:467
+#: admin/class-image-optimizer.php:472
 msgid ""
 "No image uploaded, try "
 "again."
 msgstr ""
 
-#: admin/class-image-optimizer.php:557
-#: admin/class-image-optimizer.php:616
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:509
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:566
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:509
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:566
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:509
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:566
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:544
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:601
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:557
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:616
-#: svn/trunk/admin/class-image-optimizer.php:557
-#: svn/trunk/admin/class-image-optimizer.php:616
+#: admin/class-image-optimizer.php:349
+#: admin/class-image-optimizer.php:426
 msgid "No attachment id."
 msgstr ""
 
-#: admin/class-image-optimizer.php:562
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:514
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:514
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:514
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:549
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:562
-#: svn/trunk/admin/class-image-optimizer.php:562
+#: admin/class-image-optimizer.php:361
+#: admin/class-image-optimizer.php:365
 msgid "Already optimized."
 msgstr ""
 
-#: admin/class-image-optimizer.php:572
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:524
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:524
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:524
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:559
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:572
-#: svn/trunk/admin/class-image-optimizer.php:572
+#: admin/class-image-optimizer.php:370
 msgid "Not a valid image."
 msgstr ""
 
-#: admin/class-image-optimizer.php:632
-#: svn/tags/3.0.0/admin/class-image-optimizer.php:582
-#: svn/tags/3.1.0/admin/class-image-optimizer.php:582
-#: svn/tags/3.2.0/admin/class-image-optimizer.php:582
-#: svn/tags/3.2.1/admin/class-image-optimizer.php:617
-#: svn/tags/3.2.2/admin/class-image-optimizer.php:632
-#: svn/trunk/admin/class-image-optimizer.php:632
+#: admin/class-image-optimizer.php:439
 msgid "Not optimized."
 msgstr ""
 
-#: admin/class-settings.php:70
-#: svn/tags/1.0.0/admin/class-settings.php:66
-#: svn/tags/1.0.0/admin/templates/page-settings.php:7
-#: svn/tags/2.0.0/admin/class-settings.php:66
-#: svn/tags/2.1.0/admin/class-settings.php:66
-#: svn/tags/3.0.0/admin/class-settings.php:70
-#: svn/tags/3.1.0/admin/class-settings.php:70
-#: svn/tags/3.2.0/admin/class-settings.php:70
-#: svn/tags/3.2.1/admin/class-settings.php:70
-#: svn/tags/3.2.2/admin/class-settings.php:70
-#: svn/trunk/admin/class-settings.php:70
-msgid "Quickwebp Settings"
+#: admin/class-settings.php:75
+#: admin/templates/page-settings.php:12
+msgid "QuickWebP Settings"
 msgstr ""
 
-#: admin/class-settings.php:71
-#: admin/class-wp-media-extends.php:121
-#: svn/tags/1.0.0/admin/class-settings.php:67
-#: svn/tags/2.0.0/admin/class-settings.php:67
-#: svn/tags/2.1.0/admin/class-settings.php:67
-#: svn/tags/3.0.0/admin/class-settings.php:71
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:116
-#: svn/tags/3.1.0/admin/class-settings.php:71
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:116
-#: svn/tags/3.2.0/admin/class-settings.php:71
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:116
-#: svn/tags/3.2.1/admin/class-settings.php:71
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:116
-#: svn/tags/3.2.2/admin/class-settings.php:71
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:121
-#: svn/trunk/admin/class-settings.php:71
-#: svn/trunk/admin/class-wp-media-extends.php:121
-msgid "Quickwebp"
+#: admin/class-settings.php:76
+msgid "QuickWebP"
 msgstr ""
 
-#: admin/class-settings.php:130
-#: svn/tags/2.1.0/admin/class-settings.php:124
-#: svn/tags/3.0.0/admin/class-settings.php:128
-#: svn/tags/3.1.0/admin/class-settings.php:130
-#: svn/tags/3.2.0/admin/class-settings.php:130
-#: svn/tags/3.2.1/admin/class-settings.php:130
-#: svn/tags/3.2.2/admin/class-settings.php:130
-#: svn/trunk/admin/class-settings.php:130
+#: admin/class-settings.php:113
+#: admin/templates/page-settings.php:679
+msgid "Custom profile"
+msgstr ""
+
+#: admin/class-settings.php:115
+#: admin/templates/page-settings.php:677
+msgid "New site profile"
+msgstr ""
+
+#: admin/class-settings.php:118
+#: admin/templates/page-settings.php:678
+msgid ""
+"Existing site profile"
+msgstr ""
+
+#: admin/class-settings.php:171
 #, php-format
 msgid ""
 "<a href=\"%s\">Settings</"
 "a>"
 msgstr ""
 
-#: admin/class-settings.php:150
-#: svn/tags/2.1.0/admin/class-settings.php:144
-#: svn/tags/3.0.0/admin/class-settings.php:148
-#: svn/tags/3.1.0/admin/class-settings.php:150
-#: svn/tags/3.2.0/admin/class-settings.php:150
-#: svn/tags/3.2.1/admin/class-settings.php:150
-#: svn/tags/3.2.2/admin/class-settings.php:150
-#: svn/trunk/admin/class-settings.php:150
-msgid ""
-"Oops! QuickWebP needs "
-"the GD library to "
-"function properly, but "
-"it looks like the "
-"library is not installed "
-"on your server."
+#: admin/class-surecart.php:54
+#: admin/class-surecart.php:55
+msgid "QuickWebP License"
 msgstr ""
 
-#: admin/class-settings.php:151
-#: svn/tags/2.1.0/admin/class-settings.php:145
-#: svn/tags/3.0.0/admin/class-settings.php:149
-#: svn/tags/3.1.0/admin/class-settings.php:151
-#: svn/tags/3.2.0/admin/class-settings.php:151
-#: svn/tags/3.2.1/admin/class-settings.php:151
-#: svn/tags/3.2.2/admin/class-settings.php:151
-#: svn/trunk/admin/class-settings.php:151
-msgid ""
-"Please contact your "
-"hosting provider and ask "
-"them to install the GD "
-"library for PHP. They "
-"should be able to assist "
-"you with this process. "
-"Once the library is "
-"installed, QuickWebP "
-"should work as expected."
+#: admin/class-surecart.php:82
+msgid "Upgrade Pro"
 msgstr ""
 
-#: admin/class-settings.php:152
-#: admin/class-settings.php:168
-#: admin/class-settings.php:183
-#: svn/tags/2.1.0/admin/class-settings.php:146
-#: svn/tags/2.1.0/admin/class-settings.php:162
-#: svn/tags/2.1.0/admin/class-settings.php:177
-#: svn/tags/3.0.0/admin/class-settings.php:150
-#: svn/tags/3.0.0/admin/class-settings.php:166
-#: svn/tags/3.0.0/admin/class-settings.php:181
-#: svn/tags/3.1.0/admin/class-settings.php:152
-#: svn/tags/3.1.0/admin/class-settings.php:168
-#: svn/tags/3.1.0/admin/class-settings.php:183
-#: svn/tags/3.2.0/admin/class-settings.php:152
-#: svn/tags/3.2.0/admin/class-settings.php:168
-#: svn/tags/3.2.0/admin/class-settings.php:183
-#: svn/tags/3.2.1/admin/class-settings.php:152
-#: svn/tags/3.2.1/admin/class-settings.php:168
-#: svn/tags/3.2.1/admin/class-settings.php:183
-#: svn/tags/3.2.2/admin/class-settings.php:152
-#: svn/tags/3.2.2/admin/class-settings.php:168
-#: svn/tags/3.2.2/admin/class-settings.php:183
-#: svn/trunk/admin/class-settings.php:152
-#: svn/trunk/admin/class-settings.php:168
-#: svn/trunk/admin/class-settings.php:183
-msgid ""
-"Thank you for using "
-"QuickWebP!"
-msgstr ""
-
-#: admin/class-settings.php:166
-#: svn/tags/2.1.0/admin/class-settings.php:160
-#: svn/tags/3.0.0/admin/class-settings.php:164
-#: svn/tags/3.1.0/admin/class-settings.php:166
-#: svn/tags/3.2.0/admin/class-settings.php:166
-#: svn/tags/3.2.1/admin/class-settings.php:166
-#: svn/tags/3.2.2/admin/class-settings.php:166
-#: svn/trunk/admin/class-settings.php:166
-msgid ""
-"Oops! QuickWebP needs "
-"the Imagick library to "
-"function properly, but "
-"it looks like the "
-"library is not installed "
-"on your server."
-msgstr ""
-
-#: admin/class-settings.php:167
-#: svn/tags/2.1.0/admin/class-settings.php:161
-#: svn/tags/3.0.0/admin/class-settings.php:165
-#: svn/tags/3.1.0/admin/class-settings.php:167
-#: svn/tags/3.2.0/admin/class-settings.php:167
-#: svn/tags/3.2.1/admin/class-settings.php:167
-#: svn/tags/3.2.2/admin/class-settings.php:167
-#: svn/trunk/admin/class-settings.php:167
-msgid ""
-"Please contact your "
-"hosting provider and ask "
-"them to install the "
-"Imagick library for PHP. "
-"They should be able to "
-"assist you with this "
-"process. Once the "
-"library is installed, "
-"QuickWebP should work as "
-"expected."
-msgstr ""
-
-#: admin/class-settings.php:181
-#: svn/tags/2.1.0/admin/class-settings.php:175
-#: svn/tags/3.0.0/admin/class-settings.php:179
-#: svn/tags/3.1.0/admin/class-settings.php:181
-#: svn/tags/3.2.0/admin/class-settings.php:181
-#: svn/tags/3.2.1/admin/class-settings.php:181
-#: svn/tags/3.2.2/admin/class-settings.php:181
-#: svn/trunk/admin/class-settings.php:181
-msgid ""
-"Oops! QuickWebP needs "
-"the Imagick or GD "
-"library to function "
-"properly, but it looks "
-"like the no Imagick nor "
-"GD is not installed on "
-"your server."
-msgstr ""
-
-#: admin/class-settings.php:182
-#: svn/tags/2.1.0/admin/class-settings.php:176
-#: svn/tags/3.0.0/admin/class-settings.php:180
-#: svn/tags/3.1.0/admin/class-settings.php:182
-#: svn/tags/3.2.0/admin/class-settings.php:182
-#: svn/tags/3.2.1/admin/class-settings.php:182
-#: svn/tags/3.2.2/admin/class-settings.php:182
-#: svn/trunk/admin/class-settings.php:182
-msgid ""
-"Please contact your "
-"hosting provider and ask "
-"them to install the "
-"Imagick or GD library "
-"for PHP. They should be "
-"able to assist you with "
-"this process. Once the "
-"library is installed, "
-"QuickWebP should work as "
-"expected."
-msgstr ""
-
-#: admin/class-wp-media-extends.php:59
-#: svn/tags/2.0.0/admin/class-wp-media-extends.php:56
-#: svn/tags/2.1.0/admin/class-wp-media-extends.php:56
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:59
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:59
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:59
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:59
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:59
-#: svn/trunk/admin/class-wp-media-extends.php:59
+#: admin/class-wp-media-extends.php:63
 msgid ""
 "Please enter the name of "
 "your image"
 msgstr ""
 
-#: admin/class-wp-media-extends.php:60
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:60
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:60
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:60
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:60
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:60
-#: svn/trunk/admin/class-wp-media-extends.php:60
+#: admin/class-wp-media-extends.php:64
 msgid ""
 "Quickwebp paste image"
 msgstr ""
 
-#: admin/class-wp-media-extends.php:61
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:61
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:61
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:61
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:61
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:61
-#: svn/trunk/admin/class-wp-media-extends.php:61
+#: admin/class-wp-media-extends.php:65
 msgid ""
 "Click here, and paste "
 "your image."
 msgstr ""
 
-#: admin/class-wp-media-extends.php:97
-#: admin/class-wp-media-extends.php:148
-#: admin/class-wp-media-extends.php:176
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:97
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:148
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:176
-#: svn/trunk/admin/class-wp-media-extends.php:97
-#: svn/trunk/admin/class-wp-media-extends.php:148
-#: svn/trunk/admin/class-wp-media-extends.php:176
+#: admin/class-wp-media-extends.php:128
+#: admin/class-wp-media-extends.php:199
+#: admin/class-wp-media-extends.php:249
 msgid ""
-"Error attempting to "
-"optimize this image"
+"Image already optimized."
 msgstr ""
 
-#: admin/class-wp-media-extends.php:136
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:131
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:131
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:131
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:131
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:136
-#: svn/trunk/admin/class-wp-media-extends.php:136
+#: admin/class-wp-media-extends.php:161
 msgid ""
 "Image type not supported"
 msgstr ""
 
-#: admin/class-wp-media-extends.php:201
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:183
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:183
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:183
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:183
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:201
-#: svn/trunk/admin/class-wp-media-extends.php:201
+#: admin/class-wp-media-extends.php:267
 msgid "Original Image: "
 msgstr ""
 
-#: admin/class-wp-media-extends.php:205
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:187
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:187
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:187
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:187
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:205
-#: svn/trunk/admin/class-wp-media-extends.php:205
-msgid "Webp: "
-msgstr ""
-
-#: admin/class-wp-media-extends.php:209
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:191
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:191
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:191
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:191
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:209
-#: svn/trunk/admin/class-wp-media-extends.php:209
+#: admin/class-wp-media-extends.php:275
 msgid "Save: "
 msgstr ""
 
-#: admin/class-wp-media-extends.php:214
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:196
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:196
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:196
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:196
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:214
-#: svn/trunk/admin/class-wp-media-extends.php:214
+#: admin/class-wp-media-extends.php:280
 msgid "Undo optimization"
 msgstr ""
 
-#: admin/class-wp-media-extends.php:235
-#: svn/tags/3.0.0/admin/class-wp-media-extends.php:217
-#: svn/tags/3.1.0/admin/class-wp-media-extends.php:217
-#: svn/tags/3.2.0/admin/class-wp-media-extends.php:217
-#: svn/tags/3.2.1/admin/class-wp-media-extends.php:217
-#: svn/tags/3.2.2/admin/class-wp-media-extends.php:235
-#: svn/trunk/admin/class-wp-media-extends.php:235
+#: admin/class-wp-media-extends.php:298
 msgid "Optimize"
 msgstr ""
 
-#: admin/components/media.php:21
-#: svn/tags/1.0.0/admin/components/media.php:21
-#: svn/tags/2.0.0/admin/components/media.php:21
-#: svn/tags/2.1.0/admin/components/media.php:21
-#: svn/tags/3.0.0/admin/components/media.php:21
-#: svn/tags/3.1.0/admin/components/media.php:21
-#: svn/tags/3.2.0/admin/components/media.php:21
-#: svn/tags/3.2.1/admin/components/media.php:21
-#: svn/tags/3.2.2/admin/components/media.php:21
-#: svn/trunk/admin/components/media.php:21
+#: admin/components/media.php:26
 msgid "No image selected"
 msgstr ""
 
-#: admin/components/media.php:47
-#: admin/components/media.php:65
-#: svn/tags/1.0.0/admin/components/media.php:47
-#: svn/tags/1.0.0/admin/components/media.php:65
-#: svn/tags/2.0.0/admin/components/media.php:47
-#: svn/tags/2.0.0/admin/components/media.php:65
-#: svn/tags/2.1.0/admin/components/media.php:47
-#: svn/tags/2.1.0/admin/components/media.php:65
-#: svn/tags/3.0.0/admin/components/media.php:47
-#: svn/tags/3.0.0/admin/components/media.php:65
-#: svn/tags/3.1.0/admin/components/media.php:47
-#: svn/tags/3.1.0/admin/components/media.php:65
-#: svn/tags/3.2.0/admin/components/media.php:47
-#: svn/tags/3.2.0/admin/components/media.php:65
-#: svn/tags/3.2.1/admin/components/media.php:47
-#: svn/tags/3.2.1/admin/components/media.php:65
-#: svn/tags/3.2.2/admin/components/media.php:47
-#: svn/tags/3.2.2/admin/components/media.php:65
-#: svn/trunk/admin/components/media.php:47
-#: svn/trunk/admin/components/media.php:65
+#: admin/components/media.php:53
+#: admin/components/media.php:71
 msgid "Select media"
 msgstr ""
 
-#: admin/components/media.php:53
-#: svn/tags/1.0.0/admin/components/media.php:53
-#: svn/tags/2.0.0/admin/components/media.php:53
-#: svn/tags/2.1.0/admin/components/media.php:53
-#: svn/tags/3.0.0/admin/components/media.php:53
-#: svn/tags/3.1.0/admin/components/media.php:53
-#: svn/tags/3.2.0/admin/components/media.php:53
-#: svn/tags/3.2.1/admin/components/media.php:53
-#: svn/tags/3.2.2/admin/components/media.php:53
-#: svn/trunk/admin/components/media.php:53
+#: admin/components/media.php:59
 msgid "Remove medias"
 msgstr ""
 
-#: admin/components/select.php:19
-#: svn/tags/1.0.0/admin/components/select.php:18
-#: svn/tags/2.0.0/admin/components/select.php:18
-#: svn/tags/2.1.0/admin/components/select.php:19
-#: svn/tags/3.0.0/admin/components/select.php:19
-#: svn/tags/3.1.0/admin/components/select.php:19
-#: svn/tags/3.2.0/admin/components/select.php:19
-#: svn/tags/3.2.1/admin/components/select.php:19
-#: svn/tags/3.2.2/admin/components/select.php:19
-#: svn/trunk/admin/components/select.php:19
+#: admin/components/select.php:34
 msgid "Select an option"
 msgstr ""
 
-#: admin/rewrite-rules/class-rewrite-rules-abstract.php:136
-#: svn/tags/3.1.0/admin/rewrite-rules/class-rewrite-rules-abstract.php:136
-#: svn/tags/3.2.0/admin/rewrite-rules/class-rewrite-rules-abstract.php:136
-#: svn/tags/3.2.1/admin/rewrite-rules/class-rewrite-rules-abstract.php:136
-#: svn/tags/3.2.2/admin/rewrite-rules/class-rewrite-rules-abstract.php:136
-#: svn/trunk/admin/rewrite-rules/class-rewrite-rules-abstract.php:136
+#: admin/rewrite-rules/class-rewrite-rules-abstract.php:141
 #, php-format
 msgid ""
 "The %s file could not be "
 "read."
 msgstr ""
 
-#: admin/rewrite-rules/class-rewrite-rules-abstract.php:160
-#: svn/tags/3.1.0/admin/rewrite-rules/class-rewrite-rules-abstract.php:160
-#: svn/tags/3.2.0/admin/rewrite-rules/class-rewrite-rules-abstract.php:160
-#: svn/tags/3.2.1/admin/rewrite-rules/class-rewrite-rules-abstract.php:160
-#: svn/tags/3.2.2/admin/rewrite-rules/class-rewrite-rules-abstract.php:160
-#: svn/trunk/admin/rewrite-rules/class-rewrite-rules-abstract.php:160
+#: admin/rewrite-rules/class-rewrite-rules-abstract.php:166
 #, php-format
 msgid ""
 "Could not write into the "
 "%s file."
 msgstr ""
 
-#: admin/templates/bulk-optimization.php:21
-#: svn/tags/3.0.0/admin/templates/bulk-optimization.php:21
-#: svn/tags/3.1.0/admin/templates/bulk-optimization.php:21
-#: svn/tags/3.2.0/admin/templates/bulk-optimization.php:21
-#: svn/tags/3.2.1/admin/templates/bulk-optimization.php:21
-#: svn/tags/3.2.2/admin/templates/bulk-optimization.php:21
-#: svn/trunk/admin/templates/bulk-optimization.php:21
+#: admin/templates/bulk-optimization.php:23
 msgid "Start"
 msgstr ""
 
-#: admin/templates/bulk-optimization.php:26
-#: svn/tags/3.0.0/admin/templates/bulk-optimization.php:26
-#: svn/tags/3.1.0/admin/templates/bulk-optimization.php:26
-#: svn/tags/3.2.0/admin/templates/bulk-optimization.php:26
-#: svn/tags/3.2.1/admin/templates/bulk-optimization.php:26
-#: svn/tags/3.2.2/admin/templates/bulk-optimization.php:26
-#: svn/trunk/admin/templates/bulk-optimization.php:26
+#: admin/templates/bulk-optimization.php:28
 msgid "Stop"
 msgstr ""
 
-#: admin/templates/page-settings.php:11
-#: svn/tags/2.0.0/admin/templates/page-settings.php:7
-#: svn/tags/2.1.0/admin/templates/page-settings.php:7
-#: svn/tags/3.0.0/admin/templates/page-settings.php:7
-#: svn/tags/3.1.0/admin/templates/page-settings.php:7
-#: svn/tags/3.2.0/admin/templates/page-settings.php:7
-#: svn/tags/3.2.1/admin/templates/page-settings.php:7
-#: svn/tags/3.2.2/admin/templates/page-settings.php:7
-#: svn/trunk/admin/templates/page-settings.php:7
-msgid "QuickWebp Settings"
+#: admin/templates/page-settings.php:13
+msgid ""
+"Configure your image "
+"workflow with coherent "
+"presets, guarded "
+"options, and an "
+"optimized media delivery "
+"strategy."
 msgstr ""
 
-#: admin/templates/page-settings.php:15
+#: admin/templates/page-settings.php:22
+#: admin/templates/page-settings.php:474
 msgid ""
-"QuickWebP is now part of "
-"the WPMasterToolKit "
-"plugin. You can download "
-"it for free on the "
-"WordPress repository."
+"Quick setup assistant"
 msgstr ""
 
-#: admin/templates/page-settings.php:24
+#: admin/templates/page-settings.php:23
 msgid ""
-"You can now deactivate "
-"QuickWebP and finish the "
-"migration."
+"Start from a recommended "
+"profile and refine only "
+"what you need."
 msgstr ""
 
 #: admin/templates/page-settings.php:28
 msgid ""
-"Download WPMasterToolKit"
+"New site with few media"
 msgstr ""
 
 #: admin/templates/page-settings.php:29
 msgid ""
-"Download WPMasterToolKit "
-"from wordpress.org"
+"Replace originals on "
+"upload for the simplest "
+"and fastest workflow."
 msgstr ""
 
-#: admin/templates/page-settings.php:41
-#: svn/tags/1.0.0/admin/templates/page-settings.php:15
-#: svn/tags/2.0.0/admin/templates/page-settings.php:15
-#: svn/tags/2.1.0/admin/templates/page-settings.php:15
-#: svn/tags/3.0.0/admin/templates/page-settings.php:16
-#: svn/tags/3.1.0/admin/templates/page-settings.php:16
-#: svn/tags/3.2.0/admin/templates/page-settings.php:16
-#: svn/tags/3.2.1/admin/templates/page-settings.php:16
-#: svn/tags/3.2.2/admin/templates/page-settings.php:16
-#: svn/trunk/admin/templates/page-settings.php:16
+#: admin/templates/page-settings.php:32
 msgid ""
-"Enable/disable image "
-"conversion to WEBP format"
+"Existing site with many "
+"media"
 msgstr ""
 
-#: admin/templates/page-settings.php:55
-#: svn/tags/1.0.0/admin/templates/page-settings.php:39
-#: svn/tags/2.0.0/admin/templates/page-settings.php:39
-#: svn/tags/2.1.0/admin/templates/page-settings.php:39
-#: svn/tags/3.0.0/admin/templates/page-settings.php:30
-#: svn/tags/3.1.0/admin/templates/page-settings.php:30
-#: svn/tags/3.2.0/admin/templates/page-settings.php:30
-#: svn/tags/3.2.1/admin/templates/page-settings.php:30
-#: svn/tags/3.2.2/admin/templates/page-settings.php:30
-#: svn/trunk/admin/templates/page-settings.php:30
-msgid "Quality"
+#: admin/templates/page-settings.php:33
+msgid ""
+"Keep originals, enable "
+"rewrite delivery, and "
+"run bulk optimization."
 msgstr ""
 
-#: admin/templates/page-settings.php:66
-#: svn/tags/1.0.0/admin/templates/page-settings.php:46
-#: svn/tags/2.0.0/admin/templates/page-settings.php:46
-#: svn/tags/2.1.0/admin/templates/page-settings.php:46
-#: svn/tags/3.0.0/admin/templates/page-settings.php:41
-#: svn/tags/3.1.0/admin/templates/page-settings.php:41
-#: svn/tags/3.2.0/admin/templates/page-settings.php:41
-#: svn/tags/3.2.1/admin/templates/page-settings.php:41
-#: svn/tags/3.2.2/admin/templates/page-settings.php:41
-#: svn/trunk/admin/templates/page-settings.php:41
-msgid "Sharpen"
+#: admin/templates/page-settings.php:43
+msgid ""
+"Conversion and Delivery"
 msgstr ""
 
-#: admin/templates/page-settings.php:73
-#: svn/tags/3.0.0/admin/templates/page-settings.php:48
-#: svn/tags/3.1.0/admin/templates/page-settings.php:48
-#: svn/tags/3.2.0/admin/templates/page-settings.php:48
-#: svn/tags/3.2.1/admin/templates/page-settings.php:48
-#: svn/tags/3.2.2/admin/templates/page-settings.php:48
-#: svn/trunk/admin/templates/page-settings.php:48
+#: admin/templates/page-settings.php:44
+msgid ""
+"Define how images are "
+"converted, preserved, "
+"and delivered on "
+"frontend pages."
+msgstr ""
+
+#: admin/templates/page-settings.php:52
+msgid ""
+"Image Format Optimization"
+msgstr ""
+
+#: admin/templates/page-settings.php:56
+msgid "Off"
+msgstr ""
+
+#: admin/templates/page-settings.php:58
+#: admin/templates/popup-settings-preview.php:41
+msgid "0% saved"
+msgstr ""
+
+#: admin/templates/page-settings.php:63
+#: admin/templates/popup-settings-preview.php:47
+msgid "WebP"
+msgstr ""
+
+#: admin/templates/page-settings.php:65
+#: admin/templates/popup-settings-preview.php:56
+msgid ""
+"≈ −30% on average across "
+"a site"
+msgstr ""
+
+#: admin/templates/page-settings.php:70
+#: admin/templates/popup-settings-preview.php:64
+msgid "AVIF"
+msgstr ""
+
+#: admin/templates/page-settings.php:72
+#: admin/templates/popup-settings-preview.php:73
+msgid ""
+"≈ −50% on average across "
+"a site"
+msgstr ""
+
+#: admin/templates/page-settings.php:89
+#: admin/templates/page-settings.php:125
+msgid "Recommended"
+msgstr ""
+
+#: admin/templates/page-settings.php:103
+msgid "Image Quality"
+msgstr ""
+
+#: admin/templates/page-settings.php:107
+msgid "Low"
+msgstr ""
+
+#: admin/templates/page-settings.php:110
+msgid "Smallest size"
+msgstr ""
+
+#: admin/templates/page-settings.php:113
+msgid "Medium"
+msgstr ""
+
+#: admin/templates/page-settings.php:116
+msgid "Good balance"
+msgstr ""
+
+#: admin/templates/page-settings.php:119
+msgid "High"
+msgstr ""
+
+#: admin/templates/page-settings.php:122
+msgid ""
+"High quality & good size"
+msgstr ""
+
+#: admin/templates/page-settings.php:132
+msgid "Extra High"
+msgstr ""
+
+#: admin/templates/page-settings.php:135
+msgid "Maximum quality"
+msgstr ""
+
+#: admin/templates/page-settings.php:141
+msgid "Preview"
+msgstr ""
+
+#: admin/templates/page-settings.php:150
 msgid ""
 "Do not compress images "
-"already in WebP"
+"already in same format"
 msgstr ""
 
-#: admin/templates/page-settings.php:86
-#: svn/tags/3.2.1/admin/templates/page-settings.php:61
-#: svn/tags/3.2.2/admin/templates/page-settings.php:61
-#: svn/trunk/admin/templates/page-settings.php:61
+#: admin/templates/page-settings.php:163
 msgid ""
 "Save original images"
 msgstr ""
 
-#: admin/templates/page-settings.php:98
-#: svn/tags/3.0.0/admin/templates/page-settings.php:60
-#: svn/tags/3.1.0/admin/templates/page-settings.php:60
-#: svn/tags/3.2.0/admin/templates/page-settings.php:60
-#: svn/tags/3.2.1/admin/templates/page-settings.php:73
-#: svn/tags/3.2.2/admin/templates/page-settings.php:73
-#: svn/trunk/admin/templates/page-settings.php:73
+#: admin/templates/page-settings.php:175
 msgid ""
-"Before saving, test your "
-"configuration with "
-"preview mode."
+"Consistency guidance"
 msgstr ""
 
-#: admin/templates/page-settings.php:106
-#: svn/tags/3.1.0/admin/templates/page-settings.php:68
-#: svn/tags/3.2.0/admin/templates/page-settings.php:68
-#: svn/tags/3.2.1/admin/templates/page-settings.php:81
-#: svn/tags/3.2.2/admin/templates/page-settings.php:81
-#: svn/trunk/admin/templates/page-settings.php:81
+#: admin/templates/page-settings.php:185
 msgid ""
 "If you choose to use "
 "rewrite rules, the file "
@@ -764,24 +423,13 @@ msgid ""
 "server)."
 msgstr ""
 
-#: admin/templates/page-settings.php:111
-#: svn/tags/3.0.0/admin/templates/page-settings.php:70
-#: svn/tags/3.1.0/admin/templates/page-settings.php:73
-#: svn/tags/3.2.0/admin/templates/page-settings.php:73
-#: svn/tags/3.2.1/admin/templates/page-settings.php:86
-#: svn/tags/3.2.2/admin/templates/page-settings.php:86
-#: svn/trunk/admin/templates/page-settings.php:86
+#: admin/templates/page-settings.php:190
 msgid ""
 "Display images in WebP "
 "format on the site"
 msgstr ""
 
-#: admin/templates/page-settings.php:112
-#: svn/tags/3.1.0/admin/templates/page-settings.php:74
-#: svn/tags/3.2.0/admin/templates/page-settings.php:74
-#: svn/tags/3.2.1/admin/templates/page-settings.php:87
-#: svn/tags/3.2.2/admin/templates/page-settings.php:87
-#: svn/trunk/admin/templates/page-settings.php:87
+#: admin/templates/page-settings.php:193
 #, php-format
 msgid ""
 "If activated, this "
@@ -793,64 +441,49 @@ msgid ""
 "import). %s"
 msgstr ""
 
-#: admin/templates/page-settings.php:116
-#: svn/tags/3.1.0/admin/templates/page-settings.php:78
-#: svn/tags/3.2.0/admin/templates/page-settings.php:78
-#: svn/tags/3.2.1/admin/templates/page-settings.php:91
-#: svn/tags/3.2.2/admin/templates/page-settings.php:91
-#: svn/trunk/admin/templates/page-settings.php:91
+#: admin/templates/page-settings.php:199
 msgid "Deactivate"
 msgstr ""
 
-#: admin/templates/page-settings.php:120
-#: svn/tags/3.1.0/admin/templates/page-settings.php:82
-#: svn/tags/3.2.0/admin/templates/page-settings.php:82
-#: svn/tags/3.2.1/admin/templates/page-settings.php:95
-#: svn/tags/3.2.2/admin/templates/page-settings.php:95
-#: svn/trunk/admin/templates/page-settings.php:95
+#: admin/templates/page-settings.php:203
 msgid "Use <picture> tags"
 msgstr ""
 
-#: admin/templates/page-settings.php:124
-#: svn/tags/3.1.0/admin/templates/page-settings.php:86
-#: svn/tags/3.2.0/admin/templates/page-settings.php:86
-#: svn/tags/3.2.1/admin/templates/page-settings.php:99
-#: svn/tags/3.2.2/admin/templates/page-settings.php:99
-#: svn/trunk/admin/templates/page-settings.php:99
+#: admin/templates/page-settings.php:209
 #, php-format
 msgid ""
 "Use rewrite rules %s"
 msgstr ""
 
-#: admin/templates/page-settings.php:133
-#: svn/tags/3.0.0/admin/templates/page-settings.php:83
-#: svn/tags/3.1.0/admin/templates/page-settings.php:95
-#: svn/tags/3.2.0/admin/templates/page-settings.php:95
-#: svn/tags/3.2.1/admin/templates/page-settings.php:108
-#: svn/tags/3.2.2/admin/templates/page-settings.php:108
-#: svn/trunk/admin/templates/page-settings.php:108
+#: admin/templates/page-settings.php:220
+msgid "Why this is locked"
+msgstr ""
+
+#: admin/templates/page-settings.php:229
+#: admin/templates/page-settings.php:461
 msgid "Bulk optimization"
 msgstr ""
 
-#: admin/templates/page-settings.php:151
-#: svn/tags/3.0.0/admin/templates/page-settings.php:101
-#: svn/tags/3.1.0/admin/templates/page-settings.php:113
-#: svn/tags/3.2.0/admin/templates/page-settings.php:113
-#: svn/tags/3.2.1/admin/templates/page-settings.php:126
-#: svn/tags/3.2.2/admin/templates/page-settings.php:126
-#: svn/trunk/admin/templates/page-settings.php:126
+#: admin/templates/page-settings.php:244
+#: admin/templates/page-settings.php:477
+msgid "Resize"
+msgstr ""
+
+#: admin/templates/page-settings.php:245
+msgid ""
+"Keep your uploads under "
+"control to reduce "
+"bandwidth and processing "
+"costs."
+msgstr ""
+
+#: admin/templates/page-settings.php:252
 msgid ""
 "Enable/disable image "
 "resizing"
 msgstr ""
 
-#: admin/templates/page-settings.php:154
-#: svn/tags/3.0.0/admin/templates/page-settings.php:104
-#: svn/tags/3.1.0/admin/templates/page-settings.php:116
-#: svn/tags/3.2.0/admin/templates/page-settings.php:116
-#: svn/tags/3.2.1/admin/templates/page-settings.php:129
-#: svn/tags/3.2.2/admin/templates/page-settings.php:129
-#: svn/trunk/admin/templates/page-settings.php:129
+#: admin/templates/page-settings.php:255
 msgid ""
 "By default, WordPress "
 "limits the maximum width "
@@ -858,41 +491,31 @@ msgid ""
 "2560 pixels."
 msgstr ""
 
-#: admin/templates/page-settings.php:162
-#: svn/tags/3.0.0/admin/templates/page-settings.php:112
-#: svn/tags/3.1.0/admin/templates/page-settings.php:124
-#: svn/tags/3.2.0/admin/templates/page-settings.php:124
-#: svn/tags/3.2.1/admin/templates/page-settings.php:137
-#: svn/tags/3.2.2/admin/templates/page-settings.php:137
-#: svn/trunk/admin/templates/page-settings.php:137
+#: admin/templates/page-settings.php:262
 msgid "Max size"
 msgstr ""
 
-#: admin/templates/page-settings.php:177
-#: svn/tags/1.0.0/admin/templates/page-settings.php:61
-#: svn/tags/2.0.0/admin/templates/page-settings.php:61
-#: svn/tags/2.1.0/admin/templates/page-settings.php:61
-#: svn/tags/3.0.0/admin/templates/page-settings.php:127
-#: svn/tags/3.1.0/admin/templates/page-settings.php:139
-#: svn/tags/3.2.0/admin/templates/page-settings.php:139
-#: svn/tags/3.2.1/admin/templates/page-settings.php:152
-#: svn/tags/3.2.2/admin/templates/page-settings.php:152
-#: svn/trunk/admin/templates/page-settings.php:152
+#: admin/templates/page-settings.php:272
+#: admin/templates/page-settings.php:478
+msgid ""
+"SEO metadata automation"
+msgstr ""
+
+#: admin/templates/page-settings.php:273
+msgid ""
+"Auto-fill media fields "
+"from image names for a "
+"faster editorial "
+"workflow."
+msgstr ""
+
+#: admin/templates/page-settings.php:280
 msgid ""
 "Enable/disable smart "
 "media completion for SEO"
 msgstr ""
 
-#: admin/templates/page-settings.php:180
-#: svn/tags/1.0.0/admin/templates/page-settings.php:64
-#: svn/tags/2.0.0/admin/templates/page-settings.php:64
-#: svn/tags/2.1.0/admin/templates/page-settings.php:64
-#: svn/tags/3.0.0/admin/templates/page-settings.php:130
-#: svn/tags/3.1.0/admin/templates/page-settings.php:142
-#: svn/tags/3.2.0/admin/templates/page-settings.php:142
-#: svn/tags/3.2.1/admin/templates/page-settings.php:155
-#: svn/tags/3.2.2/admin/templates/page-settings.php:155
-#: svn/trunk/admin/templates/page-settings.php:155
+#: admin/templates/page-settings.php:283
 msgid ""
 "This feature will "
 "automatically complete "
@@ -902,119 +525,114 @@ msgid ""
 "the image name."
 msgstr ""
 
-#: admin/templates/page-settings.php:191
-#: svn/tags/1.0.0/admin/templates/page-settings.php:75
-#: svn/tags/2.0.0/admin/templates/page-settings.php:75
-#: svn/tags/2.1.0/admin/templates/page-settings.php:75
-#: svn/tags/3.0.0/admin/templates/page-settings.php:141
-#: svn/tags/3.1.0/admin/templates/page-settings.php:153
-#: svn/tags/3.2.0/admin/templates/page-settings.php:153
-#: svn/tags/3.2.1/admin/templates/page-settings.php:166
-#: svn/tags/3.2.2/admin/templates/page-settings.php:166
-#: svn/trunk/admin/templates/page-settings.php:166
+#: admin/templates/page-settings.php:293
 msgid ""
 "Title completion from "
 "image name"
 msgstr ""
 
-#: admin/templates/page-settings.php:195
-#: svn/tags/1.0.0/admin/templates/page-settings.php:79
-#: svn/tags/2.0.0/admin/templates/page-settings.php:79
-#: svn/tags/2.1.0/admin/templates/page-settings.php:79
-#: svn/tags/3.0.0/admin/templates/page-settings.php:145
-#: svn/tags/3.1.0/admin/templates/page-settings.php:157
-#: svn/tags/3.2.0/admin/templates/page-settings.php:157
-#: svn/tags/3.2.1/admin/templates/page-settings.php:170
-#: svn/tags/3.2.2/admin/templates/page-settings.php:170
-#: svn/trunk/admin/templates/page-settings.php:170
+#: admin/templates/page-settings.php:297
 msgid ""
 "Caption completion from "
 "image name."
 msgstr ""
 
-#: admin/templates/page-settings.php:199
-#: svn/tags/1.0.0/admin/templates/page-settings.php:83
-#: svn/tags/2.0.0/admin/templates/page-settings.php:83
-#: svn/tags/2.1.0/admin/templates/page-settings.php:83
-#: svn/tags/3.0.0/admin/templates/page-settings.php:149
-#: svn/tags/3.1.0/admin/templates/page-settings.php:161
-#: svn/tags/3.2.0/admin/templates/page-settings.php:161
-#: svn/tags/3.2.1/admin/templates/page-settings.php:174
-#: svn/tags/3.2.2/admin/templates/page-settings.php:174
-#: svn/trunk/admin/templates/page-settings.php:174
+#: admin/templates/page-settings.php:301
 msgid ""
 "Alt text completion from "
 "image name."
 msgstr ""
 
-#: admin/templates/page-settings.php:203
-#: svn/tags/1.0.0/admin/templates/page-settings.php:87
-#: svn/tags/2.0.0/admin/templates/page-settings.php:87
-#: svn/tags/2.1.0/admin/templates/page-settings.php:87
-#: svn/tags/3.0.0/admin/templates/page-settings.php:153
-#: svn/tags/3.1.0/admin/templates/page-settings.php:165
-#: svn/tags/3.2.0/admin/templates/page-settings.php:165
-#: svn/tags/3.2.1/admin/templates/page-settings.php:178
-#: svn/tags/3.2.2/admin/templates/page-settings.php:178
-#: svn/trunk/admin/templates/page-settings.php:178
+#: admin/templates/page-settings.php:305
 msgid ""
 "Description completion "
 "from image name."
 msgstr ""
 
-#: admin/templates/page-settings.php:220
-#: svn/tags/1.0.0/admin/templates/page-settings.php:104
-#: svn/tags/2.0.0/admin/templates/page-settings.php:104
-#: svn/tags/2.1.0/admin/templates/page-settings.php:104
-#: svn/tags/3.0.0/admin/templates/page-settings.php:170
-#: svn/tags/3.1.0/admin/templates/page-settings.php:182
-#: svn/tags/3.2.0/admin/templates/page-settings.php:182
-#: svn/tags/3.2.1/admin/templates/page-settings.php:195
-#: svn/tags/3.2.2/admin/templates/page-settings.php:195
-#: svn/trunk/admin/templates/page-settings.php:195
+#: admin/templates/page-settings.php:314
+msgid "Live example"
+msgstr ""
+
+#: admin/templates/page-settings.php:315
+msgid ""
+"Use a descriptive "
+"filename once (including "
+"spaces or apostrophes), "
+"and metadata is auto-"
+"filled from that "
+"original filename "
+"without the extension."
+msgstr ""
+
+#: admin/templates/page-settings.php:320
+msgid ""
+"SEO metadata example "
+"filename"
+msgstr ""
+
+#: admin/templates/page-settings.php:325
+msgid "Title"
+msgstr ""
+
+#: admin/templates/page-settings.php:329
+msgid "Caption"
+msgstr ""
+
+#: admin/templates/page-settings.php:333
+msgid "Alt text"
+msgstr ""
+
+#: admin/templates/page-settings.php:337
+msgid "Description"
+msgstr ""
+
+#: admin/templates/page-settings.php:347
+#: admin/templates/page-settings.php:479
+msgid "Other tools"
+msgstr ""
+
+#: admin/templates/page-settings.php:348
+msgid ""
+"Fine tune file naming, "
+"paste behavior, and "
+"backend image library."
+msgstr ""
+
+#: admin/templates/page-settings.php:355
 msgid ""
 "Enable/disable file name "
 "cleanup"
 msgstr ""
 
-#: admin/templates/page-settings.php:222
-#: svn/tags/1.0.0/admin/templates/page-settings.php:106
-#: svn/tags/2.0.0/admin/templates/page-settings.php:106
-#: svn/tags/2.1.0/admin/templates/page-settings.php:106
-#: svn/tags/3.0.0/admin/templates/page-settings.php:172
-#: svn/tags/3.1.0/admin/templates/page-settings.php:184
-#: svn/tags/3.2.0/admin/templates/page-settings.php:184
-#: svn/tags/3.2.1/admin/templates/page-settings.php:197
-#: svn/tags/3.2.2/admin/templates/page-settings.php:197
-#: svn/trunk/admin/templates/page-settings.php:197
+#: admin/templates/page-settings.php:366
 msgid ""
-"Remove special "
-"characters from file "
-"names."
+"Use a filename with "
+"spaces, apostrophes, or "
+"accents to preview the "
+"cleaned filename."
 msgstr ""
 
-#: admin/templates/page-settings.php:234
-#: svn/tags/2.1.0/admin/templates/page-settings.php:118
-#: svn/tags/3.0.0/admin/templates/page-settings.php:184
-#: svn/tags/3.1.0/admin/templates/page-settings.php:196
-#: svn/tags/3.2.0/admin/templates/page-settings.php:196
-#: svn/tags/3.2.1/admin/templates/page-settings.php:209
-#: svn/tags/3.2.2/admin/templates/page-settings.php:209
-#: svn/trunk/admin/templates/page-settings.php:209
+#: admin/templates/page-settings.php:371
+msgid ""
+"Cleanup filename example "
+"input"
+msgstr ""
+
+#: admin/templates/page-settings.php:375
+msgid "Original filename"
+msgstr ""
+
+#: admin/templates/page-settings.php:379
+msgid "Cleaned filename"
+msgstr ""
+
+#: admin/templates/page-settings.php:390
 msgid ""
 "Enable/disable paste "
 "picture directly (beta)"
 msgstr ""
 
-#: admin/templates/page-settings.php:236
-#: svn/tags/2.0.0/admin/templates/page-settings.php:120
-#: svn/tags/2.1.0/admin/templates/page-settings.php:120
-#: svn/tags/3.0.0/admin/templates/page-settings.php:186
-#: svn/tags/3.1.0/admin/templates/page-settings.php:198
-#: svn/tags/3.2.0/admin/templates/page-settings.php:198
-#: svn/tags/3.2.1/admin/templates/page-settings.php:211
-#: svn/tags/3.2.2/admin/templates/page-settings.php:211
-#: svn/trunk/admin/templates/page-settings.php:211
+#: admin/templates/page-settings.php:392
 msgid ""
 "With this feature you "
 "can paste directly your "
@@ -1022,150 +640,495 @@ msgid ""
 "media."
 msgstr ""
 
-#: admin/templates/page-settings.php:258
-#: svn/tags/2.1.0/admin/templates/page-settings.php:142
-#: svn/tags/3.0.0/admin/templates/page-settings.php:208
-#: svn/tags/3.1.0/admin/templates/page-settings.php:220
-#: svn/tags/3.2.0/admin/templates/page-settings.php:220
-#: svn/tags/3.2.1/admin/templates/page-settings.php:233
-#: svn/tags/3.2.2/admin/templates/page-settings.php:233
-#: svn/trunk/admin/templates/page-settings.php:233
-msgid "Library to use"
+#: admin/templates/page-settings.php:400
+#: admin/templates/page-settings.php:480
+msgid "Migration notice"
 msgstr ""
 
-#: admin/templates/page-settings.php:260
-#: svn/tags/2.1.0/admin/templates/page-settings.php:144
-#: svn/tags/3.0.0/admin/templates/page-settings.php:210
-#: svn/tags/3.1.0/admin/templates/page-settings.php:222
-#: svn/tags/3.2.0/admin/templates/page-settings.php:222
-#: svn/tags/3.2.1/admin/templates/page-settings.php:235
-#: svn/tags/3.2.2/admin/templates/page-settings.php:235
-#: svn/trunk/admin/templates/page-settings.php:235
+#: admin/templates/page-settings.php:401
 msgid ""
-"We use the GD library as "
-"the default option. "
-"However, if the GD "
-"library is not "
-"available, we will use "
-"Imagick instead."
+"QuickWebP is now "
+"available inside "
+"WPMasterToolKit."
 msgstr ""
 
-#: admin/templates/page-settings.php:268
-#: svn/tags/3.2.0/admin/templates/page-settings.php:230
-#: svn/tags/3.2.1/admin/templates/page-settings.php:243
-#: svn/tags/3.2.2/admin/templates/page-settings.php:243
-#: svn/trunk/admin/templates/page-settings.php:243
-msgid "Credits"
+#: admin/templates/page-settings.php:404
+msgid ""
+"QuickWebP is now part of "
+"the WPMasterToolKit "
+"plugin. You can download "
+"it for free on the "
+"WordPress repository."
 msgstr ""
 
-#: admin/templates/page-settings.php:271
-#: svn/tags/3.2.0/admin/templates/page-settings.php:233
-#: svn/tags/3.2.1/admin/templates/page-settings.php:246
-#: svn/tags/3.2.2/admin/templates/page-settings.php:246
-#: svn/trunk/admin/templates/page-settings.php:246
+#: admin/templates/page-settings.php:407
+msgid ""
+"Your browser does not "
+"support the video tag."
+msgstr ""
+
+#: admin/templates/page-settings.php:410
+msgid ""
+"You can now deactivate "
+"QuickWebP and finish the "
+"migration."
+msgstr ""
+
+#: admin/templates/page-settings.php:413
+msgid ""
+"Download WPMasterToolKit"
+msgstr ""
+
+#: admin/templates/page-settings.php:414
+msgid ""
+"Download WPMasterToolKit "
+"from wordpress.org"
+msgstr ""
+
+#: admin/templates/page-settings.php:421
+msgid "Save settings"
+msgstr ""
+
+#: admin/templates/page-settings.php:422
+msgid ""
+"Your consistency rules "
+"are enforced "
+"automatically when "
+"saving."
+msgstr ""
+
+#: admin/templates/page-settings.php:427
 msgid ""
 "This plugin is developed "
 "by"
 msgstr ""
 
-#: admin/templates/page-settings.php:273
-#: svn/tags/3.2.0/admin/templates/page-settings.php:235
-#: svn/tags/3.2.1/admin/templates/page-settings.php:248
-#: svn/tags/3.2.2/admin/templates/page-settings.php:248
-#: svn/trunk/admin/templates/page-settings.php:248
+#: admin/templates/page-settings.php:429
 msgid ""
 "You can support this "
 "project here:"
 msgstr ""
 
-#: admin/templates/page-settings.php:279
-#: svn/tags/3.2.0/admin/templates/page-settings.php:241
-#: svn/tags/3.2.1/admin/templates/page-settings.php:254
-#: svn/tags/3.2.2/admin/templates/page-settings.php:254
-#: svn/trunk/admin/templates/page-settings.php:254
+#: admin/templates/page-settings.php:430
+msgid "Buy me a coffee"
+msgstr ""
+
+#: admin/templates/page-settings.php:433
 msgid ""
 "You can show all "
-"Webdeclic's plugins on "
+"Webdeclic plugins on"
 msgstr ""
 
-#: admin/templates/page-settings.php:280
-#: svn/tags/3.2.0/admin/templates/page-settings.php:242
-#: svn/tags/3.2.1/admin/templates/page-settings.php:255
-#: svn/tags/3.2.2/admin/templates/page-settings.php:255
-#: svn/trunk/admin/templates/page-settings.php:255
-msgid "wordpress.org"
+#: admin/templates/page-settings.php:443
+msgid ""
+"Live configuration "
+"summary"
 msgstr ""
 
-#: admin/templates/popup-settings-preview.php:10
-#: svn/tags/3.0.0/admin/templates/popup-settings-preview.php:10
-#: svn/tags/3.1.0/admin/templates/popup-settings-preview.php:10
-#: svn/tags/3.2.0/admin/templates/popup-settings-preview.php:10
-#: svn/tags/3.2.1/admin/templates/popup-settings-preview.php:10
-#: svn/tags/3.2.2/admin/templates/popup-settings-preview.php:10
-#: svn/trunk/admin/templates/popup-settings-preview.php:10
-msgid "Preview"
+#: admin/templates/page-settings.php:444
+msgid ""
+"This panel updates "
+"instantly while you edit "
+"your settings."
 msgstr ""
 
-#: admin/templates/popup-settings-preview.php:19
-#: svn/tags/3.0.0/admin/templates/popup-settings-preview.php:19
-#: svn/tags/3.1.0/admin/templates/popup-settings-preview.php:19
-#: svn/tags/3.2.0/admin/templates/popup-settings-preview.php:19
-#: svn/tags/3.2.1/admin/templates/popup-settings-preview.php:19
-#: svn/tags/3.2.2/admin/templates/popup-settings-preview.php:19
-#: svn/trunk/admin/templates/popup-settings-preview.php:19
+#: admin/templates/page-settings.php:449
+msgid "Conversion"
+msgstr ""
+
+#: admin/templates/page-settings.php:450
+#: admin/templates/page-settings.php:680
+msgid "Enabled"
+msgstr ""
+
+#: admin/templates/page-settings.php:450
+#: admin/templates/page-settings.php:681
+msgid "Disabled"
+msgstr ""
+
+#: admin/templates/page-settings.php:453
+msgid "Original images"
+msgstr ""
+
+#: admin/templates/page-settings.php:454
+#: admin/templates/page-settings.php:682
+msgid "Preserved"
+msgstr ""
+
+#: admin/templates/page-settings.php:454
+#: admin/templates/page-settings.php:683
+msgid "Replaced"
+msgstr ""
+
+#: admin/templates/page-settings.php:457
+msgid "Frontend display"
+msgstr ""
+
+#: admin/templates/page-settings.php:462
+#: admin/templates/page-settings.php:684
+msgid "Available"
+msgstr ""
+
+#: admin/templates/page-settings.php:462
+#: admin/templates/page-settings.php:685
+msgid "Unavailable"
+msgstr ""
+
+#: admin/templates/page-settings.php:470
+msgid "Quick navigation"
+msgstr ""
+
+#: admin/templates/page-settings.php:476
+msgid ""
+"Conversion and delivery"
+msgstr ""
+
+#: admin/templates/page-settings.php:486
+msgid "License"
+msgstr ""
+
+#: admin/templates/page-settings.php:490
+#: licensing/src/Settings.php:250
+msgid "State"
+msgstr ""
+
+#: admin/templates/page-settings.php:498
+#: licensing/src/Settings.php:273
+msgid ""
+"Deactivate the license"
+msgstr ""
+
+#: admin/templates/page-settings.php:501
+#: licensing/src/Settings.php:268
+msgid ""
+"Activate the license"
+msgstr ""
+
+#: admin/templates/page-settings.php:519
+#: admin/templates/popup-settings-preview.php:76
+#: licensing/src/Settings.php:291
+msgid "Pro"
+msgstr ""
+
+#: admin/templates/page-settings.php:520
+#: licensing/src/Settings.php:292
+msgid "AVIF Format"
+msgstr ""
+
+#: admin/templates/page-settings.php:523
+#: licensing/src/Settings.php:295
+msgid "Go further with"
+msgstr ""
+
+#: admin/templates/page-settings.php:527
+#: licensing/src/Settings.php:299
+msgid ""
+"The next-generation "
+"image format, available "
+"with"
+msgstr ""
+
+#: admin/templates/page-settings.php:544
+#: licensing/src/Settings.php:313
+msgid ""
+"Vs jpeg/png on average"
+msgstr ""
+
+#: admin/templates/page-settings.php:554
+#: licensing/src/Settings.php:323
+msgid "Vs webp on average"
+msgstr ""
+
+#: admin/templates/page-settings.php:564
+#: licensing/src/Settings.php:333
+msgid ""
+"of modern browsers "
+"supported"
+msgstr ""
+
+#: admin/templates/page-settings.php:577
+#: licensing/src/Settings.php:346
+#, php-format
+msgid ""
+"The best compression "
+"available %s images "
+"typically half the size "
+"of your originals."
+msgstr ""
+
+#: admin/templates/page-settings.php:589
+#: licensing/src/Settings.php:358
+#, php-format
+msgid ""
+"Sharper images at lower "
+"weight %s for faster "
+"pages and better Core "
+"Web Vitals."
+msgstr ""
+
+#: admin/templates/page-settings.php:601
+#: licensing/src/Settings.php:370
+#, php-format
+msgid ""
+"Automatic fallback %s so "
+"older browsers keep "
+"receiving a compatible "
+"format."
+msgstr ""
+
+#: admin/templates/page-settings.php:614
+#: licensing/src/Settings.php:383
+msgid ""
+"Upgrade to QuickWebP Pro"
+msgstr ""
+
+#: admin/templates/page-settings.php:623
+msgid ""
+"I already have a license"
+msgstr ""
+
+#: admin/templates/page-settings.php:670
+msgid ""
+"Current mode: originals "
+"are replaced on upload. "
+"Frontend display mode "
+"and bulk optimization "
+"are hidden because they "
+"are designed for "
+"preserved originals."
+msgstr ""
+
+#: admin/templates/page-settings.php:671
+msgid ""
+"Current mode: originals "
+"are preserved. Choose a "
+"frontend display "
+"strategy and run bulk "
+"optimization for "
+"existing media."
+msgstr ""
+
+#: admin/templates/page-settings.php:672
+msgid ""
+"Conversion is disabled. "
+"Frontend display mode is "
+"forced to Deactivate."
+msgstr ""
+
+#: admin/templates/page-settings.php:673
+msgid ""
+"Display mode is locked "
+"to Deactivate because "
+"original images are not "
+"preserved."
+msgstr ""
+
+#: admin/templates/page-settings.php:674
+msgid ""
+"Display mode is locked "
+"to Deactivate because "
+"image conversion is "
+"disabled."
+msgstr ""
+
+#: admin/templates/page-settings.php:675
+msgid ""
+"Preset applied: New site "
+"profile. Originals are "
+"replaced and display "
+"mode is set to "
+"Deactivate."
+msgstr ""
+
+#: admin/templates/page-settings.php:676
+msgid ""
+"Preset applied: Existing "
+"site profile. Originals "
+"are preserved and "
+"rewrite mode is selected."
+msgstr ""
+
+#: admin/templates/page-settings.php:686
+msgid ""
+"Disabled in current "
+"settings"
+msgstr ""
+
+#: admin/templates/page-settings.php:687
+msgid ""
+"Cleanup disabled in "
+"current settings"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:18
+msgid ""
+"Preview on your typical "
+"photo"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:23
+#, php-format
+msgid ""
+"WebP saves %s on this "
+"photo"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:29
+#, php-format
+msgid ""
+"AVIF saves %s on this "
+"photo"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:36
+msgid "Original"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:42
+msgid ""
+"No compression applied"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:54
+#: admin/templates/popup-settings-preview.php:71
+msgid "on this photo"
+msgstr ""
+
+#: admin/templates/popup-settings-preview.php:91
 msgid "Add image"
 msgstr ""
 
-#: admin/templates/popup-settings-preview.php:45
-#: svn/tags/3.0.0/admin/templates/popup-settings-preview.php:45
-#: svn/tags/3.1.0/admin/templates/popup-settings-preview.php:45
-#: svn/tags/3.2.0/admin/templates/popup-settings-preview.php:45
-#: svn/tags/3.2.1/admin/templates/popup-settings-preview.php:45
-#: svn/tags/3.2.2/admin/templates/popup-settings-preview.php:45
-#: svn/trunk/admin/templates/popup-settings-preview.php:45
+#: admin/templates/popup-settings-preview.php:117
 msgid "Original Image"
 msgstr ""
 
-#: quickwebp.php:108
-#: svn/tags/2.1.0/quickwebp.php:108
-#: svn/tags/3.0.0/quickwebp.php:108
-#: svn/tags/3.1.0/quickwebp.php:108
-#: svn/tags/3.2.0/quickwebp.php:108
-#: svn/tags/3.2.1/quickwebp.php:108
-#: svn/tags/3.2.2/quickwebp.php:108
-#: svn/trunk/quickwebp.php:108
+#: admin/templates/popup-settings-preview.php:154
+msgid "Replace image"
+msgstr ""
+
+#: licensing/src/Activation.php:49
+#: licensing/src/Activation.php:103
+msgid ""
+"Please enter a license "
+"key"
+msgstr ""
+
+#: licensing/src/Activation.php:72
+msgid ""
+"Could not activate the "
+"license."
+msgstr ""
+
+#: licensing/src/Client.php:309
+msgid "Not found"
+msgstr ""
+
+#: licensing/src/Client.php:315
+msgid ""
+"Unknown error occurred, "
+"Please try again."
+msgstr ""
+
+#: licensing/src/License.php:131
+msgid ""
+"Please enter a license "
+"key."
+msgstr ""
+
+#: licensing/src/License.php:136
+msgid ""
+"This license is not yet "
+"activated."
+msgstr ""
+
+#: licensing/src/License.php:163
+#: licensing/src/License.php:168
+msgid ""
+"This is not a valid "
+"license. Please double-"
+"check it and try again."
+msgstr ""
+
+#: licensing/src/License.php:171
+msgid ""
+"This license has been "
+"revoked. Please re-"
+"purchase to obtain a new "
+"license."
+msgstr ""
+
+#: licensing/src/License.php:199
+msgid ""
+"This license is not "
+"valid for this product."
+msgstr ""
+
+#: licensing/src/License.php:261
+msgid ""
+"This license key is not "
+"valid. Please double "
+"check it and try again."
+msgstr ""
+
+#: licensing/src/Settings.php:238
+#, php-format
+msgid ""
+"Enter your license key "
+"to activate %s."
+msgstr ""
+
+#: licensing/src/Settings.php:244
+msgid ""
+"Your license is "
+"successfully activated "
+"for this site."
+msgstr ""
+
+#: licensing/src/Settings.php:257
+msgid ""
+"Enter the license..."
+msgstr ""
+
+#: licensing/src/Settings.php:280
+msgid "My account"
+msgstr ""
+
+#: licensing/src/Settings.php:407
+msgid ""
+"Your license has been "
+"deactivated for this "
+"site."
+msgstr ""
+
+#: licensing/src/Settings.php:426
+msgid ""
+"Please add all "
+"information"
+msgstr ""
+
+#: licensing/src/Settings.php:432
+msgid ""
+"You don't have "
+"permission to manage "
+"licenses."
+msgstr ""
+
+#: licensing/src/Settings.php:449
+msgid ""
+"This site was "
+"successfully activated."
+msgstr ""
+
+#: licensing/src/Settings.php:464
+msgid ""
+"This site was "
+"successfully deactivated."
+msgstr ""
+
+#: quickwebp.php:115
 msgid ""
 "Oops! QuickWebP isn't "
 "running because PHP is "
 "outdated. Update to PHP "
 "version 7.4"
-msgstr ""
-
-#: svn/tags/1.0.0/admin/templates/page-settings.php:25
-#: svn/tags/2.0.0/admin/templates/page-settings.php:25
-#: svn/tags/2.1.0/admin/templates/page-settings.php:25
-msgid "Max width"
-msgstr ""
-
-#: svn/tags/1.0.0/admin/templates/page-settings.php:32
-#: svn/tags/2.0.0/admin/templates/page-settings.php:32
-#: svn/tags/2.1.0/admin/templates/page-settings.php:32
-msgid "Max height"
-msgstr ""
-
-#: svn/tags/2.0.0/admin/templates/page-settings.php:118
-msgid ""
-"Enable/disable paste "
-"picture driectly (beta)"
-msgstr ""
-
-#: svn/tags/3.0.0/admin/templates/page-settings.php:71
-msgid ""
-"If activated, this "
-"option allows to deliver "
-"optimized images in bulk "
-"via QuickWebP in WebP "
-"format (useless for "
-"images converted to "
-"import)"
 msgstr ""

@@ -1,117 +1,125 @@
-=== QuickWebP - Compress / Optimize Images & Convert WebP | SEO Friendly ===
+=== QuickWebP - WebP & AVIF Image Optimizer, Compression & SEO for WordPress ===
 Contributors: ludwigyou
-Tags: WebP, Image Optimization, SEO, Image Compression, Performance
-Requires at least: 6.0.0
-Tested up to: 7.0
-Requires PHP: 7.4
-Stable tag: 3.3.1
+Tags: webp, avif, image optimization, seo, performance
+Requires at least: 6.8.2
+Tested up to: 7.0.2
+Requires PHP: 8.1
+Stable tag: 4.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 
-QuickWebP is a free WordPress plugin that converts images to WebP, optimizes performance, improves SEO, auto-fills metadata, and resizes images—no API needed.
+QuickWebP is a WordPress image optimizer that converts JPG and PNG to WebP, compresses uploads locally, improves image SEO, and unlocks AVIF with QuickWebP Pro.
 
 == Description ==
 
-QuickWebP is an image compression and optimization plugin for WordPress that automatically converts images to WebP when they are uploaded to the media library. It also optimizes the image to improve your site's performance. The plugin also renames the image file to the WebP format and cleans up the file name for better SEO. Additionally, the plugin uses the cleaned up name to pre-populate the alt, caption, description, legend, and title metadata, making image management on your site easier. You can also set a maximum width and height for the image, which will automatically resize it if necessary. No API is required and the plugin is completely free, with no subscriptions or additional fees.
+QuickWebP helps you optimize images in WordPress as soon as they are uploaded. It converts JPG and PNG files to WebP, compresses them locally without any external API, cleans filenames for better image SEO, pre-fills media metadata, and resizes oversized uploads automatically.
+
+If you want even smaller next-generation images, QuickWebP Pro adds AVIF conversion for supported servers. It is designed for faster pages, better Core Web Vitals, and a simpler image workflow inside the WordPress media library.
+
+== QuickWebP Free vs Pro ==
+
+= QuickWebP Free includes =
+
+* Automatic WebP conversion on upload
+* Local image compression without any external API
+* SEO-friendly filename cleanup
+* Automatic image metadata pre-fill for alt text, caption, description, legend, and title
+* Automatic resize with maximum width and height controls
+* Choice between GD and Imagick when available
+* Bulk optimization for older media when originals are preserved
+* Clipboard paste support inside the WordPress media frame
+* Optimization preview inside the settings screen
+
+= ⭐️ QuickWebP Pro includes ⭐️ =
+
+* Everything included in QuickWebP Free
+* AVIF conversion for supported servers with PHP 8.1+
+* Smaller files than JPG, PNG, and typically smaller than WebP
+
+🚀 Unlock AVIF conversion and more with QuickWebP Pro: [Upgrade now](https://solutions.leyoweb.com/products/quickwebp/?utm_source=quickwebp-plugin&utm_medium=documentation&utm_campaign=upgrade-pro&utm_content=readme-call-to-action)
 
 == Important ==
-QuickWebP is now include in WPMasterToolKit plugin. You can download it here : [WPMasterToolKit](https://wordpress.org/plugins/wpmastertoolkit/)
-For use like QuickWebP, you can activate the module "Media encoder" in the settings of WPMasterToolKit.
 
-== Features ==
+QuickWebP is also available inside [WPMasterToolKit](https://wordpress.org/plugins/wpmastertoolkit/). If you prefer an all-in-one toolkit, install WPMasterToolKit and enable the Media Encoder module.
 
-* Automatically converts images to WebP format when uploaded to the media library
-* Optimizes images for improved site performance
-* Renames image files to WebP format and cleans up file names for prevent special characters (ex : "Clé d'identification.jpg" becomes "cle-d-identification.webp")
-* Pre-populates image metadata (alt, caption, description, legend, and title)
-* Allows for automatic image resizing based on maximum width and height (by default max 2000px)
-* No API required for convertion and optimization
-* Entirely free, with no subscriptions or additional fees.
-* Directly paste image from clipboard or software like Photoshop (CTRL + V OR CMD + V) directly into the WP Media Frame.
-* Select library for images to convert to webp (GD or Imagick).
-* Bulk convert images to webp format and preserve original images (for old media on your website).
-* Preview image optimization in settings for better optimization.
+If you want the dedicated QuickWebP experience and access to AVIF, discover [QuickWebP Pro](https://solutions.leyoweb.com/products/quickwebp/?utm_source=quickwebp-plugin&utm_medium=documentation&utm_campaign=upgrade-pro&utm_content=readme-pro-section).
+
+== Why site owners use QuickWebP ==
+
+* Improve WordPress performance with lighter images
+* Reduce page weight to help Core Web Vitals
+* Keep image SEO cleaner with optimized filenames and metadata
+* Convert and compress images directly on your server
+* Manage image optimization from one simple settings page
 
 == Installation ==
 
-1. Install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Go to Media / QuickWebP and configure the plugin
+1. Install the plugin through the WordPress plugins screen.
+2. Activate the plugin through the Plugins screen in WordPress.
+3. Go to Media > QuickWebP and configure your optimization settings.
+4. If you want AVIF, purchase QuickWebP Pro and activate your license from the QuickWebP License screen.
 
 == Demos ==
+
 **How to install QuickWebP**
 [youtube https://www.youtube.com/watch?v=5Ja2engS5YA&rel=0]
 
-**Paste an picture from clipboard to wp media easily**
+**Paste a picture from the clipboard into WordPress media**
 [youtube https://www.youtube.com/watch?v=N5Yc-D8Hhyw]
-
-
-== Other plugin by Webdeclic ==
-[Webdeclic](https://webdeclic.com) is a French web agency based in Paris. We are specialized in the creation of websites and e-commerce sites. We are also the creator of the following plugins:
-* [WPMasterToolKit](https://wordpress.org/plugins/wpmastertoolkit/) : A complete toolkit for your WordPress site.
-* [Mentions Legales Par Webdeclic](https://wordpress.org/plugins/mentions-legales-par-webdeclic/)
-* [Cookie Dough Compliance and Consent for GDPR](https://wordpress.org/plugins/cookie-dough-compliance-and-consent-for-gdpr/)
-* [QuickWebP - Compress / Optimize Images & Convert WebP | SEO Friendly](https://wordpress.org/plugins/quickwebp/)
-* [Univeral Honey Pot](https://wordpress.org/plugins/universal-honey-pot/)
-* [Clean My WP](https://wordpress.org/plugins/clean-my-wp/)
-* [Show all plugins on WordPress.org](https://wordpress.org/plugins/search/webdeclic/)
-
-== Support us ==
-⭐️ If you like this plugin, please give us a 5 star rating on WordPress.org. This will motivate us to develop new features and write other plugins. ⭐️
-
-☕️ If you want buy me a coffee, you can do it here : [Buy me a coffee](https://bmc.link/ludwig) ☕️
 
 == Frequently Asked Questions ==
 
-= Does the extension replace existing images?=
-The extension converts the uploader image to webp format and replaces it with the webp image.
-The extension does not replace existing images. If you want this functionality you can contact us.
+= What is included in the free version? =
+The free version includes automatic WebP conversion, local compression, resize controls, filename cleanup for SEO, metadata pre-fill, bulk optimization, and clipboard paste support in the media library.
 
-= Can I resize my images with this extension?=
-Yes, you can configure it in the Resize tab.
+= What does QuickWebP Pro add? =
+QuickWebP Pro adds AVIF conversion on supported servers with PHP 8.1+, stronger compression, and automatic fallback so older browsers still receive a compatible image format.
 
-= Can I change the compression setting to save more space?=
-Yes, by default we set it to 75 but you can change that in the plugin settings.
+= Where can I get QuickWebP Pro? =
+You can get it here: [QuickWebP Pro](https://solutions.leyoweb.com/products/quickwebp/?utm_source=quickwebp-plugin&utm_medium=documentation&utm_campaign=upgrade-pro&utm_content=readme-upgrade-link).
 
-= Do you use the Imagify API, tinyPNG or other?=
-No, we do not use an API to compress images. Everything is done locally on your server at the time of upload.
+= Is QuickWebP still available in WPMasterToolKit? =
+Yes. QuickWebP is also available inside [WPMasterToolKit](https://wordpress.org/plugins/wpmastertoolkit/) through the Media Encoder module.
 
-= Can I use this extension with a CDN or with a caching plugin?=
-Yes, you can use this extension with a CDN or caching plugin such as WP Rocket, W3 Total Cache, WP Super Cache, etc.
+= Does QuickWebP use an API such as TinyPNG or Imagify or ShortPixel? =
+No. QuickWebP processes images locally on your server. No external compression API is required.
 
-= What image formats are supported?=
-Supported image formats are: JPG, PNG.
+= What image formats are supported? =
+QuickWebP converts JPG and PNG uploads to WebP. QuickWebP Pro also adds AVIF conversion on supported servers.
 
-= Does Quick WebP improve the performance of my site?=
-Yes, QuickWebP improves your site's performance by converting images to WebP format. Your images will be lighter and faster to load.
+= Can I resize my images automatically? =
+Yes. You can define maximum width and height values in the Resize settings.
 
-= How does QuickWebP help me with SEO?=
-QuickWebP makes SEO easy by automatically renaming image files to a clean, SEO-friendly filename when uploaded to media. It also uses this clean filename to pre-populate alt, caption, description, caption, and title metadata, which can help optimize image visibility on search engines. Additionally, by converting images to WebP format, QuickWebP can improve your site's performance, which can also contribute to better SEO rankings.
+= Does QuickWebP improve SEO? =
+Yes. QuickWebP cleans image filenames and uses them to pre-fill attachment metadata such as alt text, caption, description, legend, and title. Lighter images can also improve page speed signals.
 
-= Does QuickWebP work with other plugins?=
-Yes, QuickWebP works with other plugins. It is compatible with most caching plugins, such as WP Rocket, W3 Total Cache, WP Super Cache, etc. It is also compatible with most CDN plugins, such as Cloudflare, MaxCDN, etc.
+= Does QuickWebP work with caching plugins, CDNs, themes, page builders, and WooCommerce? =
+Yes. QuickWebP is designed to work with standard WordPress setups, including caching plugins, CDNs, most themes, major page builders, and WooCommerce.
 
-= Does QuickWebP work with all themes?=
-Yes, QuickWebP works with all themes. It is compatible with most themes, including the most popular ones, such as Astra, OceanWP, GeneratePress, etc.
-
-= Does QuickWebP work page builders?=
-Yes, QuickWebP works with page builders. It is compatible with most page builders, including the most popular ones, such as Elementor, Beaver Builder, Divi, Visual composer(WPBakery), Oxygen Builder, Gutenberg, Thrive Architect, Brizy, Live Composer, etc.
-
-= Does QuickWebP work with WooCommerce?=
-Yes, it works with WooCommerce.
-
-= Does QuickWebP work with SEO plugins?=
-Yes, it works with SEO plugins. It is compatible with most SEO plugins, including the most popular ones, such as Yoast SEO, All in One SEO, Rank Math, SEOPress, etc.
-
-= From where can i copy the images to paste? =
-You can copy the images from any software like Adobe Photoshop & Illustrator, GIMP, Canvas, Screenshot, Affinity Photo & Designer, a webpage, Finder, etc.
+= Can I paste images directly into the media library? =
+Yes. You can paste images from tools such as Photoshop, Illustrator, GIMP, Affinity, Finder, screenshots, and webpages directly into the WordPress media frame.
 
 == Screenshots ==
 
-1. Screenshot without QuickWebP and with QuickWebP
-2. Settings page of QuickWebP
+1. QuickWebP optimization results compared with the original image
+2. QuickWebP settings page
+
+== More from Webdeclic ==
+
+QuickWebP is developed by Webdeclic. If you want a broader WordPress toolbox, also check [Webdeclic plugins](https://wordpress.org/plugins/search/webdeclic/).
+
+== Support ==
+
+If you like QuickWebP, please leave a 5-star review on WordPress.org.
+
+If you want to support the project, you can do it here: [Buy me a coffee](https://bmc.link/ludwig)
 
 == Changelog ==
+
+= 4.0.0 =
+* Added QuickWebP Pro positioning with the AVIF upgrade path.
+* Reworked the README and plugin metadata to clarify Free vs Pro features.
+* Updated the QuickWebP Pro product link.
 
 = 3.3.1 =
 * FIX: replace sanitize_filename() with sanitize_text_field() to preserve special characters in the filename for autocomplete seo features.
@@ -127,53 +135,5 @@ You can copy the images from any software like Adobe Photoshop & Illustrator, GI
 * LOGIC: Display mode "Deactivate" is no longer selectable when originals are preserved and conversion is enabled.
 * LOGIC: Bulk optimization is now available only when "Save original images" is enabled.
 
-= 3.2.8 =
-* SECURITY: Hardened AJAX attachment actions with capability and attachment validation.
-* SECURITY: Undo optimization now deletes only expected generated WebP files inside uploads.
 
-= 3.2.7 =
-* FIX: Added support for EXIF ​​orientation data during image optimization
-
-= 3.2.6 =
-* FIX: problem with lite speed cache plugin.
-
-= 3.2.5 =
-* FIX: problem with image weight after resize if "Do not compress images already in WebP" is enabled.
-
-= 3.2.4 =
-* FIX: problem with image weight after resize.
-
-= 3.2.3 =
-* FIX: problem with translation on WP 6.7.
-* Add informations for migrate to WPMasterToolKit plugin.
-
-= 3.2.2 =
-* FIX: problem if an image file has a special character in the name.
-
-= 3.2.1 =
-* FIX: bug on bulk convertion.
-
-= 3.2.0 =
-* Add buymeacoffee link in settings page.
-
-= 3.1.0 =
-* Add new option on rewrite rules for webp images, for better compatibility with some website.
-
-= 3.0.0 =
-* Bulk convert images to webp format and preserve original images (for old media on your website).
-* Copy paste image on Elementor supported.
-* Preview feature in settings page.
-
-= 2.1.0 =
-* Add GD library, and assign by default.
-* Select for switch between GD or Imagick library.
-* Condition for convert only JPEG and PNG images (not GIF).
-* Admin notices if error.
-* Better compatibility with php extensions.
-
-= 2.0.0 =
-* Added new feature: paste image directly from clipboard (CTRL + V OR CMD + V) directly into the WP Media Frame.
-* French translation added.
-
-= 1.0.0 =
-* First version.
+[See changelog for all versions.](https://svn.wordpress.org/plugins/quickwebp/trunk/changelog.txt)

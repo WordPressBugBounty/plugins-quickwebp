@@ -1,3 +1,7 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+?>
+
 <div class="quickwebp-tab">
 
 	<div class="quickwebp-tab__content">

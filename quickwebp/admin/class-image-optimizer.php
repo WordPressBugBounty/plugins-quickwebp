@@ -1,7 +1,5 @@
 <?php
 
-use Intervention\Image\ImageManager;
-
 /**
  * The core functionality for image optimizing.
  *
@@ -45,201 +43,149 @@ class Quickwebp_Image_Optimizer {
 	 */
 	public function __construct( $plugin_name, $version ) {
 
-		$this->plugin_name			= $plugin_name;
-		$this->version				= $version;
-		$this->allowed_mime_types	= array( 'image/jpeg', 'image/png', 'image/webp' );
-
+		$this->plugin_name        = $plugin_name;
+		$this->version            = $version;
+		$this->allowed_mime_types = array( 'image/jpeg', 'image/png', 'image/webp', 'image/avif' );
 	}
 
 	/**
 	 * Optimize an image added in wp_media
 	 */
-	public function image_optimizition( $file ) {
+	public function image_optimization( $file ) {
+		global $quickwebp_surecart_client;
 
 		$settings	= $this->get_settings();
-
 		$image_file = $this->file_is_image( $file, $settings );
+
 		if ( ! $image_file ) {
 			return $file;
 		}
 
-		if ( $settings['quickwebp_settings_conversion'] != '1' ) {
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
+		if ( $mode_enabled === '0' ) {
 			return $image_file;
 		}
 
-		$save_original	= is_array( $settings['quickwebp_settings_conversion_save_original'] ) ? $settings['quickwebp_settings_conversion_save_original'] : array();
+		$save_original = is_array( $settings['quickwebp_settings_conversion_save_original'] ) ? $settings['quickwebp_settings_conversion_save_original'] : array();
 		if ( in_array( 'checked', $save_original ) ) {
 			return $image_file;
 		}
 
-		$extension_to_use = $this->image_extension_loaded( $settings );
-		if ( ! $extension_to_use ) {
-			return $image_file;
-		}
-
-		$manager	= new ImageManager(array('driver'=>$extension_to_use));
-		$image		= $manager->make($image_file['tmp_name']);	
-		
-		$exif_data = @exif_read_data( $image_file['tmp_name'] );
-		if ( ! empty( $exif_data['Orientation'] ) ) {
-			$orientation = (int) $exif_data['Orientation'];
-			$orientation = apply_filters( 'wp_image_maybe_exif_rotate', $orientation, $image_file['tmp_name'] );
-			if ( $orientation && 1 !== $orientation ) {
-				switch ( $orientation ) {
-					case 2:
-						// Flip horizontally.
-						$result = $image->flip( false, true );
-						break;
-					case 3:
-						/*
-						* Rotate 180 degrees or flip horizontally and vertically.
-						* Flipping seems faster and uses less resources.
-						*/
-						$result = $image->flip( true, true );
-						break;
-					case 4:
-						// Flip vertically.
-						$result = $image->flip( true, false );
-						break;
-					case 5:
-						// Rotate 90 degrees counter-clockwise and flip vertically.
-						$result = $image->rotate( 90 );
-						if ( ! is_wp_error( $result ) ) {
-							$result = $image->flip( true, false );
-						}
-						break;
-					case 6:
-						// Rotate 90 degrees clockwise (270 counter-clockwise).
-						$result = $image->rotate( 270 );
-						break;
-					case 7:
-						// Rotate 90 degrees counter-clockwise and flip horizontally.
-						$result = $image->rotate( 90 );
-						if ( ! is_wp_error( $result ) ) {
-							$result = $image->flip( false, true );
-						}
-						break;
-					case 8:
-						// Rotate 90 degrees counter-clockwise.
-						$result = $image->rotate( 90 );
-						break;
-				}
+		$ignore_same_format = is_array( $settings['quickwebp_settings_conversion_ignore_webp'] ) ? $settings['quickwebp_settings_conversion_ignore_webp'] : array();
+		$mime_type          = wp_get_image_mime( $image_file['tmp_name'] );
+		if ( in_array( 'checked', $ignore_same_format ) ) {
+			if ( '1' == $mode_enabled && 'image/webp' == $mime_type ) {
+				return $image_file;
+			} elseif( '2' == $mode_enabled && 'image/avif' == $mime_type ) {
+				return $image_file;
 			}
 		}
-		$quality 	= $this->get_quality( $image_file['tmp_name'], $settings );
 
-		$image->sharpen($settings['quickwebp_settings_conversion_sharpen']);
-		$image->save( $image_file['tmp_name'], $quality, 'webp' );
+		$quality = $this->get_the_quality( $settings );
+		$is_pro  = false;
+		if ( $quickwebp_surecart_client ) {
+			$is_pro = $quickwebp_surecart_client->license()->is_valid();
+		}
 
-		$size_after 	= $image->filesize();
-		$mime 			= $image->mime();
+		if ( '2' === $mode_enabled && $is_pro ) {
+			$avif_image = $this->create_avif_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
+			if ( $avif_image ) {
+				$image_file['size']      = filesize( $image_file['tmp_name'] );
+				$image_file['type']      = 'image/avif';
+				$image_file['quickwebp'] = 'optimized';
+			}
+		}
 
-		$image_file['size'] = $size_after;
-		$image_file['type'] = $mime;
-		
+		if ( '1' === $mode_enabled ) {
+			$webp_image = $this->create_webp_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
+			if ( $webp_image ) {
+				$image_file['size']      = filesize( $image_file['tmp_name'] );
+				$image_file['type']      = 'image/webp';
+				$image_file['quickwebp'] = 'optimized';
+			}
+		}
+
 		return $image_file;
 	}
 
 	/**
-	 * Get the package used by the server
-	 * 
+	 * Add post meta to the attachment that already optimized
 	 */
-	public function image_extension_loaded( $settings ) {
+	public function add_already_optimized_meta( $metadata, $attachment_id, $context ) {
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$quickwebp = sanitize_text_field( wp_unslash( $_FILES['async-upload']['quickwebp'] ?? '' ) );
+		
+		if ( 'optimized' == $quickwebp ) {
+			//phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$type = sanitize_text_field( wp_unslash( $_FILES['async-upload']['type'] ?? '' ) );
 
-		$accepted_librarys	= array( 'gd', 'imagick' );
-		$library_to_use		= $settings['quickwebp_settings_library'];
-
-		if ( in_array( $library_to_use, $accepted_librarys ) ) {
-
-			return $library_to_use;
+			if ( 'image/webp' == $type ) {
+				update_post_meta( $attachment_id, 'quickwebp_already_optimized', '1' );
+			} elseif ( 'image/avif' == $type ) {
+				update_post_meta( $attachment_id, 'quickwebp_already_optimized', '2' );
+			}
 		}
 
-		return false;
+		return $metadata;
 	}
 
 	/**
-	 * Check if the file is an image
-	 * 
+	 * Save the original image in the attachment meta
 	 */
-	public function file_is_image( $file, $settings ) {
+	public function save_original_image( $metadata, $attachment_id, $context ) {
 
-		$file_name		= isset($file['name']) 		? $file['name'] 	: '';
-		$file_type		= isset($file['type']) 		? $file['type'] 	: '';
-		$file_tmp_name	= isset($file['tmp_name'])	? $file['tmp_name']	: '';
-		$file_error		= isset($file['error']) 	? $file['error'] 	: '';
-		$file_size		= isset($file['size']) 		? $file['size'] 	: '';
-
-		if ( empty($file_tmp_name) ) {
-			return false;
+		if ( $context != 'create' ) {
+			return $metadata;
 		}
 
-		$allowed_mime_types	= apply_filters( 'quickwebp_mime_types_allowed', $this->allowed_mime_types );
-		$is_image			= wp_getimagesize($file_tmp_name);
-		$mime_type 			= wp_get_image_mime($file_tmp_name);
-		if ( ! $is_image || ! in_array( $mime_type, $allowed_mime_types ) ) {
-			return false;
+		$settings = $this->get_settings();
+
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
+		if ( $mode_enabled === '0' ) {
+			return $metadata;
 		}
 
-		$name = $file_name;
-
-		if ( $settings['quickwebp_settings_cleanup'] == '1' ) {
-			$name =  quickwebp_sanitize_name($file_name);
+		$save_original = is_array( $settings['quickwebp_settings_conversion_save_original'] ) ? $settings['quickwebp_settings_conversion_save_original'] : array();
+		if ( ! in_array( 'checked', $save_original ) ) {
+			return $metadata;
 		}
 
-		return array(
-			'original_name'	=> $file_name,
-			'name'			=> $name,
-			'type'			=> $file_type,
-			'tmp_name'		=> $file_tmp_name,
-			'error'			=> $file_error,
-			'size'			=> $file_size
-		);
-	}
-
-	/**
-	 * Get the optimization settings
-	 */
-	public function get_settings() {
-
-		return array(
-			'quickwebp_settings_conversion'					=> get_option('quickwebp_settings_conversion', quickwebp_settings_default('quickwebp_settings_conversion') ),
-			'quickwebp_settings_conversion_quality'			=> get_option('quickwebp_settings_conversion_quality', quickwebp_settings_default('quickwebp_settings_conversion_quality') ),
-			'quickwebp_settings_conversion_sharpen'			=> get_option('quickwebp_settings_conversion_sharpen', quickwebp_settings_default('quickwebp_settings_conversion_sharpen') ),
-			'quickwebp_settings_conversion_ignore_webp'		=> get_option('quickwebp_settings_conversion_ignore_webp', quickwebp_settings_default('quickwebp_settings_conversion_ignore_webp') ),
-			'quickwebp_settings_conversion_save_original'	=> get_option('quickwebp_settings_conversion_save_original', quickwebp_settings_default('quickwebp_settings_conversion_save_original') ),
-			'quickwebp_settings_resize'						=> get_option('quickwebp_settings_resize', quickwebp_settings_default('quickwebp_settings_resize') ),
-			'quickwebp_settings_resize_value'				=> get_option('quickwebp_settings_resize_value', quickwebp_settings_default('quickwebp_settings_resize_value') ),
-			'quickwebp_settings_completion'					=> get_option('quickwebp_settings_completion', quickwebp_settings_default('quickwebp_settings_completion') ),
-			'quickwebp_settings_completion_options'			=> get_option('quickwebp_settings_completion_options', quickwebp_settings_default('quickwebp_settings_completion_options') ),
-			'quickwebp_settings_cleanup'					=> get_option('quickwebp_settings_cleanup', quickwebp_settings_default('quickwebp_settings_cleanup') ),
-			'quickwebp_settings_library'					=> get_option( 'quickwebp_settings_library', quickwebp_settings_default('quickwebp_settings_library') )
-		);
-	}
-	
-	/**
-	 * Get the optimization settings
-	 */
-	public function get_ajax_settings() {
-
-		$raw_settings = isset( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : '';
-		$settings     = is_string( $raw_settings ) ? json_decode( $raw_settings, true ) : array();
-
-		if ( ! is_array( $settings ) ) {
-			$settings = array();
+		$ignore_same_format = is_array( $settings['quickwebp_settings_conversion_ignore_webp'] ) ? $settings['quickwebp_settings_conversion_ignore_webp'] : array();
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$mime_type          = sanitize_text_field( wp_unslash( $_FILES['async-upload']['type'] ?? '' ) );
+		if ( in_array( 'checked', $ignore_same_format ) ) {
+			if ( '1' == $mode_enabled && 'image/webp' == $mime_type ) {
+				return $metadata;
+			} elseif( '2' == $mode_enabled && 'image/avif' == $mime_type ) {
+				return $metadata;
+			}
 		}
 
-		return array(
-			'quickwebp_settings_conversion'				=> isset( $settings['quickwebp_settings_conversion'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_conversion'] ) : '',
-			'quickwebp_settings_conversion_quality'		=> isset( $settings['quickwebp_settings_conversion_quality'] ) ? absint( $settings['quickwebp_settings_conversion_quality'] ) : 0,
-			'quickwebp_settings_conversion_sharpen'		=> isset( $settings['quickwebp_settings_conversion_sharpen'] ) ? absint( $settings['quickwebp_settings_conversion_sharpen'] ) : 0,
-			'quickwebp_settings_conversion_ignore_webp'	=> isset( $settings['quickwebp_settings_conversion_ignore_webp'] ) && is_array( $settings['quickwebp_settings_conversion_ignore_webp'] ) ? array_map( 'sanitize_text_field', $settings['quickwebp_settings_conversion_ignore_webp'] ) : array(),
-			'quickwebp_settings_resize'					=> isset( $settings['quickwebp_settings_resize'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_resize'] ) : '',
-			'quickwebp_settings_resize_value'			=> isset( $settings['quickwebp_settings_resize_value'] ) ? absint( $settings['quickwebp_settings_resize_value'] ) : 0,
-			'quickwebp_settings_completion'				=> isset( $settings['quickwebp_settings_completion'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_completion'] ) : '',
-			'quickwebp_settings_completion_options'		=> isset( $settings['quickwebp_settings_completion_options'] ) && is_array( $settings['quickwebp_settings_completion_options'] ) ? array_map( 'sanitize_text_field', $settings['quickwebp_settings_completion_options'] ) : array(),
-			'quickwebp_settings_cleanup'				=> isset( $settings['quickwebp_settings_cleanup'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_cleanup'] ) : '',
-			'quickwebp_settings_library'				=> isset( $settings['quickwebp_settings_library'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_library'] ) : ''
-		);
+		$sizes     = $this->get_media_files( $attachment_id );
+		$new_sizes = array();
+		
+		foreach ( $sizes as $key => $size ) {
+			$result = $this->optimize_local_file( $size );
+
+			if ( $result ) {
+				$new_sizes[$key] = $result;
+			}
+		}
+
+		if ( ! empty( $new_sizes ) ) {
+			if ( '1' == $mode_enabled ) {
+				update_post_meta( $attachment_id, 'quickwebp_already_optimized', '1' );
+			} elseif ( '2' == $mode_enabled ) {
+				update_post_meta( $attachment_id, 'quickwebp_already_optimized', '2' );
+			}
+
+			update_post_meta( $attachment_id, 'quickwebp_data', $new_sizes );
+			delete_post_meta( $attachment_id, 'quickwebp_has_error' );
+		} else {
+			update_post_meta( $attachment_id, 'quickwebp_has_error', '1' );
+		}
+
+		return $metadata;
 	}
 
 	/**
@@ -247,26 +193,22 @@ class Quickwebp_Image_Optimizer {
 	 */
 	public function add_data_to_attachment( $metadata, $attachment_id, $context ) {
 
+		if ( $context != 'create' ) {
+			return $metadata;
+		}
+
 		$settings = $this->get_settings();
 		if ( $settings['quickwebp_settings_completion'] != '1' ) {
 			return $metadata;
 		}
 
-		if ( $context != 'create' ) {
-			return $metadata;
-		}
-
-		if ( isset($_FILES['async-upload']['original_name']) ) {
-
-			$original_name = sanitize_text_field( wp_unslash( $_FILES['async-upload']['original_name'] ) );
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$original_name = isset( $_FILES['async-upload']['original_name'] ) ? sanitize_text_field( wp_unslash( $_FILES['async-upload']['original_name'] ) ) : sanitize_text_field( $_FILES['async-upload']['name'] ?? '' );
+		if ( ! empty( $original_name ) ) {
 			$original_name = pathinfo( $original_name, PATHINFO_FILENAME );
+			$post_arr      = array();
 
-			$post_arr = array(
-				'ID'			=> $attachment_id,
-				'meta_input'	=> array()
-			);
-
-			$completion_options = is_array($settings['quickwebp_settings_completion_options']) ? $settings['quickwebp_settings_completion_options'] : array();
+			$completion_options = is_array( $settings['quickwebp_settings_completion_options'] ) ? $settings['quickwebp_settings_completion_options'] : array();
 
 			if ( in_array( 'title', $completion_options ) ) {
 				$post_arr['post_title'] = $original_name;
@@ -284,29 +226,9 @@ class Quickwebp_Image_Optimizer {
 				$post_arr['post_content'] = $original_name;
 			}
 
-			wp_update_post( $post_arr );
-		}
-
-		$save_original	= is_array( $settings['quickwebp_settings_conversion_save_original'] ) ? $settings['quickwebp_settings_conversion_save_original'] : array();
-		if ( in_array( 'checked', $save_original ) ) {
-			$sizes		= $this->get_media_files( $attachment_id );
-			$new_sizes 	= array();
-			
-			foreach ( $sizes as $key => $size ) {
-				$result = $this->optimize_local_file( $size );
-	
-				if ( $result ) {
-					$new_sizes[$key] = $result;
-				}
-			}
-	
-			if ( ! empty( $new_sizes ) ) {
-	
-				update_post_meta( $attachment_id, 'quickwebp_already_optimized', '1' );
-				update_post_meta( $attachment_id, 'quickwebp_data', $new_sizes );
-				delete_post_meta( $attachment_id, 'quickwebp_has_error' );
-			} else {
-				update_post_meta( $attachment_id, 'quickwebp_has_error', '1' );
+			if ( ! empty( $post_arr ) ) {
+				$post_arr['ID'] = $attachment_id;
+				wp_update_post( $post_arr );
 			}
 		}
 
@@ -314,37 +236,21 @@ class Quickwebp_Image_Optimizer {
 	}
 
 	/**
-	 * Get the quality
-	 */
-	public function get_quality( $file, $settings ) {
-
-		$ignore_webp	= is_array( $settings['quickwebp_settings_conversion_ignore_webp'] ) ? $settings['quickwebp_settings_conversion_ignore_webp'] : array();
-		$quality		= $settings['quickwebp_settings_conversion_quality'];
-		$mime_type		= wp_get_image_mime($file);
-
-		switch ( $mime_type ) {
-
-			case 'image/webp':
-				if ( in_array( 'checked', $ignore_webp ) ){
-					$quality = 99;
-				}
-			break;
-		}
-
-		return $quality;
-	}
-
-	/**
 	 * Change the default size of wp editor
 	 */
-	public function change_wp_max_size( $max_size = 2560 ) {
+	public function change_wp_max_size( $max_size, $imagesize ) {
 
-		$settings		= $this->get_settings();
-		$resize_active	= $settings['quickwebp_settings_resize'];
-		$resize_value	= $settings['quickwebp_settings_resize_value'];
-
+		$settings      = $this->get_settings();
+		$resize_active = $settings['quickwebp_settings_resize'];
+		
 		if ( $resize_active == '1' ) {
-			$max_size = $resize_value;
+
+			$imagesize_width = isset($imagesize[0]) ? $imagesize[0] : 0;
+			$resize_value    = $settings['quickwebp_settings_resize_value'];
+
+			if ( $imagesize_width > $resize_value ) {
+				$max_size = $resize_value;
+			}
 		}
 
 		return $max_size;
@@ -353,108 +259,274 @@ class Quickwebp_Image_Optimizer {
 	/**
 	 * Change the default quality of wp editor
 	 */
-	public function change_wp_quality( $default_quality, $mime_type ) {
+	public function change_wp_quality( $default_quality ) {
 
-		$default_quality = 90;
+		$settings     = $this->get_settings();
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
+		if ( $mode_enabled === '0' ) {
+			return $default_quality;
+		}
 
-		return $default_quality;
+		return 100;
 	}
 
 	/**
 	 * Optimize image through ajax
 	 */
-	public function image_optimizition_ajax() {
+	public function image_optimization_ajax() {
+		global $quickwebp_surecart_client;
 
 		if ( ! current_user_can( 'upload_files' ) ) {
-			wp_send_json_error( __( 'You are not allowed to upload files.', QUICKWEBP_TEXT_DOMAIN ), 403 );
+			wp_send_json_error( __( 'You are not allowed to upload files.', 'quickwebp' ), 403 );
 		}
 
 		// verify the nonce.
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if( !wp_verify_nonce( $nonce, 'image_optimize_nonce' ) ) {
-			wp_send_json_error( __( 'Refresh the page and try again.', QUICKWEBP_TEXT_DOMAIN ) );
+			wp_send_json_error( __( 'Refresh the page and try again.', 'quickwebp' ) );
 		}
-
-		// Get settings
-		$settings	= $this->get_ajax_settings();
 
 		// Get the file
 		$file = count($_FILES) > 0 ? array_shift($_FILES) : array();
 		if ( empty($file) ) {
-			wp_send_json_error( __( 'No image uploaded, try again.', QUICKWEBP_TEXT_DOMAIN ) );
+			wp_send_json_error( __( 'No image uploaded, try again.', 'quickwebp' ) );
 		}
-		
 
+		$settings   = $this->get_ajax_settings();
 		$image_file = $this->file_is_image( $file, $settings );
+
 		if ( ! $image_file ) {
-			wp_send_json_error( __( 'No image uploaded, try again.', QUICKWEBP_TEXT_DOMAIN ) );
+			wp_send_json_error( __( 'No image uploaded, try again.', 'quickwebp' ) );
 		}
 
-		if ( $settings['quickwebp_settings_conversion'] != '1' ) {
-			
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
+		if ( $mode_enabled === '0' ) {
 			$image_file['new_size'] = $image_file['size'];
 			$image_file['new_type'] = $image_file['type'];
 			$this->return_ajax_data( $image_file );
 		}
 
-		$extension_to_use = $this->image_extension_loaded( $settings );
-		if ( ! $extension_to_use ) {
-
-			$image_file['new_size'] = $image_file['size'];
-			$image_file['new_type'] = $image_file['type'];
-			$this->return_ajax_data( $image_file );
+		$quality = $this->get_the_quality( $settings );
+		$is_pro  = false;
+		if ( $quickwebp_surecart_client ) {
+			$is_pro = $quickwebp_surecart_client->license()->is_valid();
 		}
 
-		$manager	= new ImageManager(array('driver'=>$extension_to_use));
-		$image		= $manager->make($image_file['tmp_name']);
-		$quality 	= $this->get_quality( $image_file['tmp_name'], $settings );
+		if ( '2' === $mode_enabled && $is_pro ) {
+			$avif_image = $this->create_avif_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
+			if ( $avif_image ) {
+				$image_file['new_size'] = filesize( $image_file['tmp_name'] );
+				$image_file['new_type'] = 'image/avif';
+			}
+		}
 
-		$image->sharpen( $settings['quickwebp_settings_conversion_sharpen'] );
-		$image->save( $image_file['tmp_name'], $quality, 'webp' );
+		if ( '1' === $mode_enabled ) {
+			$webp_image = $this->create_webp_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
+			if ( $webp_image ) {
+				$image_file['new_size'] = filesize( $image_file['tmp_name'] );
+				$image_file['new_type'] = 'image/webp';
+			}
+		}
 
-		$image_file['new_size'] = $image->filesize();
-		$image_file['new_type'] = $image->mime();
 		$this->return_ajax_data( $image_file );
 	}
 
 	/**
-	 * Return ajax data
+	 * Optimize a single media
 	 */
-	public function return_ajax_data( $data ) {
+	public function single_optimization_ajax() {
 
-		$return = array(
-			'original_name'	=> $data['original_name'],
-			'size'			=> $data['size'],
-			'type'			=> $this->type_from_mime_type( $data['type'] ),
-			'mime_type'		=> $data['type'],
-			'image'			=> 'data:'.$data['new_type'].';base64,' . base64_encode( file_get_contents( $data['tmp_name'] ) ),
-			'name'			=> $data['name'],
-			'new_size'		=> $data['new_size'],
-			'new_type'		=> $this->type_from_mime_type( $data['new_type'] ),
-			'new_mime_type'	=> $data['new_type']
-		);
+		// verify the nonce.
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if( !wp_verify_nonce( $nonce, 'quickwebp_admin_attachment' ) ) {
+			wp_send_json_error( __( 'Refresh the page and try again.', 'quickwebp' ) );
+		}
 
-		wp_send_json_success( $return );
+		// Sanitize data
+		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( wp_unslash( $_POST['attachment_id'] ) ) : 0;
+
+		if ( ! $attachment_id ) {
+			wp_send_json_error( __( 'No attachment id.', 'quickwebp' ) );
+		}
+
+		$settings     = $this->get_settings();
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
+		if ( '0' === $mode_enabled ) {
+			wp_send_json_error( __( 'Choose an image format and save the settings.', 'quickwebp' ) );
+		}
+
+		$already_optimized = get_post_meta( $attachment_id, 'quickwebp_already_optimized', true );
+
+		if ( '1' == $already_optimized && '1' == $mode_enabled ) {
+			wp_send_json_error( __( 'Already optimized.', 'quickwebp' ) );
+		}
+
+		if ( '2' == $already_optimized && '2' == $mode_enabled ) {
+			wp_send_json_error( __( 'Already optimized.', 'quickwebp' ) );
+		}
+
+		$post_mime_type = get_post_mime_type( $attachment_id );
+		if ( ! in_array( $post_mime_type, $this->allowed_mime_types ) ) {
+			wp_send_json_error( __( 'Not a valid image.', 'quickwebp' ) );
+		}
+
+		$sizes     = $this->get_media_files( $attachment_id );
+		$new_sizes = array();
+
+		foreach ( $sizes as $key => $size ) {
+			$result = $this->optimize_local_file( $size );
+
+			if ( $result ) {
+				$new_sizes[$key] = $result;
+			}
+		}
+
+		if ( ! empty( $new_sizes ) ) {
+
+			$data = get_post_meta( $attachment_id, 'quickwebp_data', true );
+			if ( ! empty( $data ) ) {
+				$this->remove_related_files( $data );
+			}
+
+			if ( '1' == $mode_enabled ) {
+				update_post_meta( $attachment_id, 'quickwebp_already_optimized', '1' );
+			} elseif ( '2' == $mode_enabled ) {
+				update_post_meta( $attachment_id, 'quickwebp_already_optimized', '2' );
+			}
+
+			update_post_meta( $attachment_id, 'quickwebp_data', $new_sizes );
+			delete_post_meta( $attachment_id, 'quickwebp_has_error' );
+		} else {
+			update_post_meta( $attachment_id, 'quickwebp_has_error', '1' );
+			delete_post_meta( $attachment_id, 'quickwebp_already_optimized' );
+			delete_post_meta( $attachment_id, 'quickwebp_data' );
+		}
+
+		$wp_media_extend = new Quickwebp_Wp_Media_Extends( $this->plugin_name, $this->version );
+		$html            = $wp_media_extend->attachment_data( $new_sizes, $attachment_id );
+
+		wp_send_json_success( $html );
 	}
 
 	/**
-	 * Get the type from the mime type
+	 * Undo a single media optimization
 	 */
-	public function type_from_mime_type( $mime_type ) {
+	public function undo_single_optimization_ajax() {
 
-		$array = array(
-			'image/jpeg' 	=> 'JPEG',
-			'image/png'		=> 'PNG',
-			'image/webp'	=> 'WebP'
+		// verify the nonce.
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if( !wp_verify_nonce( $nonce, 'quickwebp_admin_attachment' ) ) {
+			wp_send_json_error( __( 'Refresh the page and try again.', 'quickwebp' ) );
+		}
+
+		// Sanitize data
+		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( wp_unslash( $_POST['attachment_id'] ) ) : 0;
+
+		if ( ! $attachment_id ) {
+			wp_send_json_error( __( 'No attachment id.', 'quickwebp' ) );
+		}
+
+		$data = get_post_meta( $attachment_id, 'quickwebp_data', true );
+		if ( ! empty( $data ) ) {
+			$this->remove_related_files( $data );
+			delete_post_meta( $attachment_id, 'quickwebp_already_optimized' );
+			delete_post_meta( $attachment_id, 'quickwebp_data' );
+
+			$wp_media_extend = new Quickwebp_Wp_Media_Extends( $this->plugin_name, $this->version );
+			$html            = $wp_media_extend->optimize_btn( $attachment_id );
+			wp_send_json_success( $html );
+		} else {
+			wp_send_json_error( __( 'Not optimized.', 'quickwebp' ) );
+		}
+	}
+
+	/**
+	 * Trigger before delete attachment
+	 */
+	public function before_delete_attachment( $post_id ) {
+		$data = get_post_meta( $post_id, 'quickwebp_data', true );
+		if ( ! empty( $data ) ) {
+			$this->remove_related_files( $data );
+		}
+	}
+
+	/**
+	 * Get the image data for the preview in the settings page
+	 */
+	public function get_image_data_for_preview_ajax() {
+
+		// verify the nonce.
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if( !wp_verify_nonce( $nonce, 'image_optimize_nonce' ) ) {
+			wp_send_json_error( __( 'Refresh the page and try again.', 'quickwebp' ) );
+		}
+
+		// Get the file
+		$file = count($_FILES) > 0 ? array_shift($_FILES) : array();
+		if ( empty($file) ) {
+			wp_send_json_error( __( 'No image uploaded, try again.', 'quickwebp' ) );
+		}
+
+		$image_file = $this->file_is_image( $file );
+		if ( ! $image_file ) {
+			wp_send_json_error( __( 'No image uploaded, try again.', 'quickwebp' ) );
+		}
+
+		$preview_image_data = array(
+			'name'       => $image_file['name'],
+			'size'       => size_format( $image_file['size'], 2 ),
+			'dimensions' => $image_file['width'] . ' x ' . $image_file['height'],
 		);
 
-		return $array[$mime_type] ?? '';
+		$conversions = array( '1', '2' );
+		$qualities	 = array( 'low', 'medium', 'high', 'extra_high' );
+
+		foreach ( $conversions as $conversion ) {
+			foreach ( $qualities as $quality ) {
+
+				$size_after = 0;
+
+				if ( '2' == $conversion ) {
+					$new_path      = $image_file['tmp_name'] . '-' . $quality . '.avif';
+					$quality_value = $this->get_the_quality_values( $quality, $conversion );
+					$avif_image    = $this->create_avif_image( $image_file['tmp_name'], $new_path, $quality_value );
+
+					if ( $avif_image ) {
+						$size_after = filesize( $new_path );
+					}
+				} elseif ( '1' == $conversion ) {
+					$new_path      = $image_file['tmp_name'] . '-' . $quality . '.webp';
+					$quality_value = $this->get_the_quality_values( $quality, $conversion );
+					$webp_image    = $this->create_webp_image( $image_file['tmp_name'], $new_path, $quality_value );
+
+					if ( $webp_image ) {
+						$size_after = filesize( $new_path );
+					}
+				}
+
+				$deference = $image_file['size'] - $size_after;
+				$percent   = $deference / $image_file['size'] * 100;
+
+				$preview_image_data[$conversion . '_' . $quality] = array(
+					'size'         => size_format( $size_after, 2 ),
+					'save'         => size_format( $deference, 2 ),
+					'save_percent' => round( $percent ) . '%',
+					'percent'      => round( 100 - $percent ) . '%',
+				);
+			}
+		}
+		
+		wp_send_json_success( $preview_image_data );
 	}
 
 	/**
 	 * Get the unoptimized media ids
 	 */
 	public function get_unoptimized_media_ids() {
+
+		$settings           = $this->get_settings();
+		$mode_enabled       = $settings['quickwebp_settings_conversion'];
+		$ignore_same_format = is_array( $settings['quickwebp_settings_conversion_ignore_webp'] ) ? $settings['quickwebp_settings_conversion_ignore_webp'] : array();
 
 		$statuses = array(
 			'inherit' => 'inherit',
@@ -466,46 +538,63 @@ class Quickwebp_Image_Optimizer {
 			$statuses = array_merge( $statuses, $custom_statuses );
 		}
 
-		$mime_types	= $this->allowed_mime_types;
-		$index 		= array_search( 'image/webp', $mime_types );
-		unset( $mime_types[$index] );
+		$allowed_mime_types = $this->allowed_mime_types;
+		if ( in_array( 'checked', $ignore_same_format ) ) {
+			if ( '1' == $mode_enabled ) {
+				$webp_index = array_search( 'image/webp', $allowed_mime_types );
+				unset( $allowed_mime_types[$webp_index] );
+			} elseif ( '2' == $mode_enabled ) {
+				$avif_index = array_search( 'image/avif', $allowed_mime_types );
+				unset( $allowed_mime_types[$avif_index] );
+			}
+		}
+
+		$meta_query_already_optimized = array(
+			'relation' => 'OR',
+			array(
+				'key'     => 'quickwebp_already_optimized',
+				'compare' => 'NOT EXISTS'
+			),
+		);
+
+		if ( 'webp' == $mode_enabled ) {
+			$meta_query_already_optimized[] = array(
+				'key'     => 'quickwebp_already_optimized',
+				'compare' => '!=',
+				'value'   => '1',
+			);
+		} elseif ( 'avif' == $mode_enabled ) {
+			$meta_query_already_optimized[] = array(
+				'key'     => 'quickwebp_already_optimized',
+				'compare' => '!=',
+				'value'   => '2',
+			);
+		}
 
 		$media_ids = get_posts( array(
 			'post_type'      => 'attachment',
-			'post_mime_type' => $mime_types,
+			'post_mime_type' => $allowed_mime_types,
 			'post_status'    => array_keys( $statuses ),
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'meta_query'     => array(
 				'relation' => 'AND',
 				array(
 					'key'     => 'quickwebp_has_error',
 					'compare' => 'NOT EXISTS'
 				),
-				array(
-					'relation' => 'OR',
-					array(
-						'key'     => 'quickwebp_already_optimized',
-						'compare' => 'NOT EXISTS'
-					),
-					array(
-						'key'     => 'quickwebp_already_optimized',
-						'compare' => '=',
-						'value'   => '0'
-					)
-				),
+				$meta_query_already_optimized,
 			),
 		) );
 
 		return $media_ids;
-
 	}
 
 	/**
 	 * Get the list of media files
 	 */
 	public function get_media_files( $media_id ) {
-
 		$fullsize_path = get_attached_file( $media_id );
 
 		if ( ! $fullsize_path ) {
@@ -546,96 +635,10 @@ class Quickwebp_Image_Optimizer {
 	}
 
 	/**
-	 * Validate that a post is an optimizable attachment.
-	 */
-	public function get_valid_attachment( $attachment_id ) {
-
-		$attachment_id = absint( $attachment_id );
-		if ( ! $attachment_id ) {
-			return false;
-		}
-
-		$attachment = get_post( $attachment_id );
-		if ( ! $attachment || 'attachment' !== $attachment->post_type ) {
-			return false;
-		}
-
-		$mime_types	= $this->allowed_mime_types;
-		$index 		= array_search( 'image/webp', $mime_types, true );
-		if ( false !== $index ) {
-			unset( $mime_types[ $index ] );
-		}
-
-		$mime_type = get_post_mime_type( $attachment_id );
-		if ( ! in_array( $mime_type, $mime_types, true ) ) {
-			return false;
-		}
-
-		return $attachment;
-	}
-
-	/**
-	 * Check whether the current user can manage a specific attachment.
-	 */
-	public function current_user_can_manage_attachment( $attachment_id ) {
-
-		return current_user_can( 'upload_files' ) && current_user_can( 'edit_post', $attachment_id );
-	}
-
-	/**
-	 * Check whether a generated WebP path is safe to delete.
-	 */
-	public function is_safe_generated_webp_path( $path ) {
-
-		if ( empty( $path ) || ! is_string( $path ) ) {
-			return false;
-		}
-
-		$uploads = wp_get_upload_dir();
-		if ( empty( $uploads['basedir'] ) ) {
-			return false;
-		}
-
-		$normalized_path = wp_normalize_path( $path );
-		$normalized_base = trailingslashit( wp_normalize_path( $uploads['basedir'] ) );
-
-		if ( 0 !== strpos( $normalized_path, $normalized_base ) ) {
-			return false;
-		}
-
-		return '.webp' === strtolower( substr( $normalized_path, -5 ) );
-	}
-
-	/**
-	 * Get the generated WebP files for an attachment.
-	 */
-	public function get_generated_webp_paths( $attachment_id ) {
-
-		$paths = array();
-		$sizes = $this->get_media_files( $attachment_id );
-
-		foreach ( $sizes as $size ) {
-			$path = isset( $size['path'] ) ? $size['path'] . '.webp' : '';
-
-			if ( $this->is_safe_generated_webp_path( $path ) ) {
-				$paths[] = $path;
-			}
-		}
-
-		return array_values( array_unique( $paths ) );
-	}
-
-	/**
 	 * Optimize a local file
 	 */
 	public function optimize_local_file( $size ) {
-
-		$settings	= $this->get_settings();
-
-		$extension_to_use = $this->image_extension_loaded( $settings );
-		if ( ! $extension_to_use ) {
-			return false;
-		}
+		global $quickwebp_surecart_client;
 
 		if ( !is_file($size['path']) ) {
 			return false;
@@ -646,160 +649,383 @@ class Quickwebp_Image_Optimizer {
 			return false;
 		}
 
-		try {
-			$size_before	= filesize( $size['path'] );
-			$manager		= new ImageManager(array('driver'=>$extension_to_use));
-			$image			= $manager->make($size['path']);
-			$quality 		= $this->get_quality( $size['path'], $settings );
-			$webp_path		= $size['path'].'.webp';
-	
-			$image->sharpen($settings['quickwebp_settings_conversion_sharpen']);
-			$image->save( $webp_path, $quality, 'webp' );
-			$size_after = $image->filesize();
-			$image->destroy();
-	
-			$deference	= $size_before - $size_after;
-			$percent	= $deference / $size_before * 100;
-	
-			return array(
-				'success'			=> 1,
-				'original_size'		=> $size_before,
-				'optimized_size'	=> $size_after,
-				'percent' 			=> round( $percent, 2 ),
-				'path'				=> $webp_path
-			);
-		} catch (\Throwable $th) {
-			return false;
+		$settings = $this->get_settings();
+		$quality  = $this->get_the_quality( $settings );
+		$is_pro   = false;
+		if ( $quickwebp_surecart_client ) {
+			$is_pro = $quickwebp_surecart_client->license()->is_valid();
 		}
-	}
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
+		$size_before  = filesize( $size['path'] );
+		$new_path     = $size['path'] . '.' . ( '2' === $mode_enabled && $is_pro ? 'avif' : 'webp' );
 
-	/**
-	 * Optimize a single media
-	 */
-	public function single_optimizition_ajax() {
-
-		// verify the nonce.
-		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if( !wp_verify_nonce( $nonce, 'quickwebp_admin_attachment' ) ) {
-			wp_send_json_error( __( 'Refresh the page and try again.', QUICKWEBP_TEXT_DOMAIN ) );
-		}
-
-		// Sanitize data
-		$attachment_id	= isset( $_POST['attachment_id'] ) ? absint( wp_unslash( $_POST['attachment_id'] ) ) : 0;
-
-		if ( ! $attachment_id ) {
-			wp_send_json_error( __( 'No attachment id.', QUICKWEBP_TEXT_DOMAIN ) );
-		}
-
-		if ( ! $this->get_valid_attachment( $attachment_id ) ) {
-			wp_send_json_error( __( 'Not a valid image.', QUICKWEBP_TEXT_DOMAIN ), 400 );
-		}
-
-		if ( ! $this->current_user_can_manage_attachment( $attachment_id ) ) {
-			wp_send_json_error( __( 'You are not allowed to manage this attachment.', QUICKWEBP_TEXT_DOMAIN ), 403 );
-		}
-
-		$already_optimized = get_post_meta( $attachment_id, 'quickwebp_already_optimized', true );
-		if ( $already_optimized === '1' ) {
-			wp_send_json_error( __( 'Already optimized.', QUICKWEBP_TEXT_DOMAIN ) );
-		}
-
-		$sizes	= $this->get_media_files( $attachment_id );
-		$new_sizes  = array();
-
-		foreach ( $sizes as $key => $size ) {
-
-			$result = $this->optimize_local_file( $size );
-
-			if ( $result ) {
-				$new_sizes[$key] = $result;
+		if ( '2' === $mode_enabled && $is_pro ) {
+			$avif_image = $this->create_avif_image( $size['path'], $new_path, $quality );
+			if ( $avif_image ) {
+				$size_after = filesize( $new_path );
+			}
+		} elseif ( '1' === $mode_enabled ) {
+			$webp_image = $this->create_webp_image( $size['path'], $new_path, $quality );
+			if ( $webp_image ) {
+				$size_after = filesize( $new_path );
 			}
 		}
 
-		if ( ! empty( $new_sizes ) ) {
-			update_post_meta( $attachment_id, 'quickwebp_already_optimized', '1' );
-			update_post_meta( $attachment_id, 'quickwebp_data', $new_sizes );
-			delete_post_meta( $attachment_id, 'quickwebp_has_error' );
-		} else {
-			update_post_meta( $attachment_id, 'quickwebp_has_error', '1' );
-		}
+		$deference = $size_before - $size_after;
+		$percent   = $deference / $size_before * 100;
 
-		$wp_media_extend = new Quickwebp_Wp_Media_Extends( $this->plugin_name, $this->version );
-		$html = $wp_media_extend->attachment_data( $new_sizes, $attachment_id );
-
-		wp_send_json_success( $html );
-	}
-
-	/**
-	 * Undo a single media optimization
-	 */
-	public function undo_single_optimizition_ajax() {
-
-		// verify the nonce.
-		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if( !wp_verify_nonce( $nonce, 'quickwebp_admin_attachment' ) ) {
-			wp_send_json_error( __( 'Refresh the page and try again.', QUICKWEBP_TEXT_DOMAIN ) );
-		}
-
-		// Sanitize data
-		$attachment_id	= isset( $_POST['attachment_id'] ) ? absint( wp_unslash( $_POST['attachment_id'] ) ) : 0;
-
-		if ( ! $attachment_id ) {
-			wp_send_json_error( __( 'No attachment id.', QUICKWEBP_TEXT_DOMAIN ) );
-		}
-
-		if ( ! $this->get_valid_attachment( $attachment_id ) ) {
-			wp_send_json_error( __( 'Not a valid image.', QUICKWEBP_TEXT_DOMAIN ), 400 );
-		}
-
-		if ( ! $this->current_user_can_manage_attachment( $attachment_id ) ) {
-			wp_send_json_error( __( 'You are not allowed to manage this attachment.', QUICKWEBP_TEXT_DOMAIN ), 403 );
-		}
-
-		$already_optimized = get_post_meta( $attachment_id, 'quickwebp_already_optimized', true );
-		if ( $already_optimized === '1' ) {
-
-			$this->remove_related_files( $attachment_id );
-			delete_post_meta( $attachment_id, 'quickwebp_already_optimized' );
-			delete_post_meta( $attachment_id, 'quickwebp_data' );
-
-			$wp_media_extend = new Quickwebp_Wp_Media_Extends( $this->plugin_name, $this->version );
-			$html = $wp_media_extend->optimize_btn( $attachment_id );
-
-			wp_send_json_success( $html );
-
-		} else {
-			wp_send_json_error( __( 'Not optimized.', QUICKWEBP_TEXT_DOMAIN ) );
-		}
-
+		return array(
+			'success'        => 1,
+			'original_size'  => $size_before,
+			'optimized_size' => $size_after,
+			'percent'        => round( $percent, 2 ),
+			'path'			 => $new_path,
+			'format'         => $mode_enabled,
+		);
 	}
 
 	/**
 	 * Remove the related files of an optimized attachment
 	 */
-	public function remove_related_files( $id ) {
+	public function remove_related_files( $data ) {
+		foreach ( $data as $value ) {
+			$path = $value['path'] ?? '';
 
-		$paths = $this->get_generated_webp_paths( $id );
-
-		foreach ( $paths as $path ) {
-			if ( file_exists( $path ) ) {
+			if ( ! empty( $path ) && file_exists( $path ) ) {
 				wp_delete_file( $path );
 			}
 		}
-
 	}
 
 	/**
-	 * Trigger before delete attachment
+	 * Get the optimization settings
 	 */
-	public function before_delete_attachment( $post_id, $post ) {
+	public function get_settings() {
+		return array(
+			'quickwebp_settings_conversion'				  => get_option('quickwebp_settings_conversion', quickwebp_settings_default('quickwebp_settings_conversion') ),
+			'quickwebp_settings_conversion_quality'		  => get_option('quickwebp_settings_conversion_quality', quickwebp_settings_default('quickwebp_settings_conversion_quality') ),
+			'quickwebp_settings_conversion_ignore_webp'	  => get_option('quickwebp_settings_conversion_ignore_webp', quickwebp_settings_default('quickwebp_settings_conversion_ignore_webp') ),
+			'quickwebp_settings_conversion_save_original' => get_option('quickwebp_settings_conversion_save_original', quickwebp_settings_default('quickwebp_settings_conversion_save_original') ),
+			'quickwebp_settings_resize'					  => get_option('quickwebp_settings_resize', quickwebp_settings_default('quickwebp_settings_resize') ),
+			'quickwebp_settings_resize_value'			  => get_option('quickwebp_settings_resize_value', quickwebp_settings_default('quickwebp_settings_resize_value') ),
+			'quickwebp_settings_completion'				  => get_option('quickwebp_settings_completion', quickwebp_settings_default('quickwebp_settings_completion') ),
+			'quickwebp_settings_completion_options'		  => get_option('quickwebp_settings_completion_options', quickwebp_settings_default('quickwebp_settings_completion_options') ),
+			'quickwebp_settings_cleanup'				  => get_option('quickwebp_settings_cleanup', quickwebp_settings_default('quickwebp_settings_cleanup') ),
+		);
+	}
+	
+	/**
+	 * Get the optimization settings
+	 */
+	private function get_ajax_settings() {
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$raw_settings = isset( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : '';
+		$settings     = is_string( $raw_settings ) ? json_decode( $raw_settings, true ) : array();
 
-		$already_optimized = get_post_meta( $post_id, 'quickwebp_already_optimized', true );
-		if ( $already_optimized === '1' ) {
-
-			$this->remove_related_files( $post_id );
+		if ( ! is_array( $settings ) ) {
+			$settings = array();
 		}
 
+		return array(
+			'quickwebp_settings_conversion'				=> isset( $settings['quickwebp_settings_conversion'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_conversion'] ) : '0',
+			'quickwebp_settings_conversion_quality'		=> isset( $settings['quickwebp_settings_conversion_quality'] ) ? sanitize_text_field( $settings['quickwebp_settings_conversion_quality'] ) : 'high',
+			'quickwebp_settings_conversion_ignore_webp'	=> isset( $settings['quickwebp_settings_conversion_ignore_webp'] ) && is_array( $settings['quickwebp_settings_conversion_ignore_webp'] ) ? array_map( 'sanitize_text_field', $settings['quickwebp_settings_conversion_ignore_webp'] ) : array(),
+			'quickwebp_settings_resize'					=> isset( $settings['quickwebp_settings_resize'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_resize'] ) : '',
+			'quickwebp_settings_resize_value'			=> isset( $settings['quickwebp_settings_resize_value'] ) ? absint( $settings['quickwebp_settings_resize_value'] ) : 0,
+			'quickwebp_settings_completion'				=> isset( $settings['quickwebp_settings_completion'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_completion'] ) : '',
+			'quickwebp_settings_completion_options'		=> isset( $settings['quickwebp_settings_completion_options'] ) && is_array( $settings['quickwebp_settings_completion_options'] ) ? array_map( 'sanitize_text_field', $settings['quickwebp_settings_completion_options'] ) : array(),
+			'quickwebp_settings_cleanup'				=> isset( $settings['quickwebp_settings_cleanup'] ) ? sanitize_text_field( (string) $settings['quickwebp_settings_cleanup'] ) : '',
+		);
 	}
 
+	/**
+	 * Check if the file is an image
+	 */
+	private function file_is_image( $file, $settings = array() ) {
+
+		$file_name		= isset($file['name']) 		? $file['name'] 	: '';
+		$file_type		= isset($file['type']) 		? $file['type'] 	: '';
+		$file_tmp_name	= isset($file['tmp_name'])	? $file['tmp_name']	: '';
+		$file_error		= isset($file['error']) 	? $file['error'] 	: '';
+		$file_size		= isset($file['size']) 		? $file['size'] 	: '';
+
+		if ( empty($file_tmp_name) ) {
+			return false;
+		}
+
+		$allowed_mime_types	= apply_filters( 'quickwebp_mime_types_allowed', $this->allowed_mime_types );
+		$is_image			= wp_getimagesize($file_tmp_name);
+		$mime_type 			= wp_get_image_mime($file_tmp_name);
+		if ( ! $is_image || ! in_array( $mime_type, $allowed_mime_types ) ) {
+			return false;
+		}
+
+		$name = $file_name;
+
+		if ( isset($settings['quickwebp_settings_cleanup']) && $settings['quickwebp_settings_cleanup'] == '1' ) {
+			$name =  quickwebp_sanitize_name($file_name);
+		}
+
+		return array(
+			'original_name'	=> $file_name,
+			'name'			=> $name,
+			'type'			=> $file_type,
+			'tmp_name'		=> $file_tmp_name,
+			'error'			=> $file_error,
+			'size'			=> $file_size,
+			'width'			=> $is_image[0],
+			'height'		=> $is_image[1],
+		);
+	}
+
+	/**
+	 * Return ajax data
+	 */
+	private function return_ajax_data( $data ) {
+		$return = array(
+			'original_name'	=> $data['original_name'],
+			'size'			=> $data['size'],
+			'type'			=> $this->type_from_mime_type( $data['type'] ),
+			'mime_type'		=> $data['type'],
+			'image'			=> 'data:'.$data['new_type'].';base64,' . base64_encode( file_get_contents( $data['tmp_name'] ) ),
+			'name'			=> $data['name'],
+			'new_size'		=> $data['new_size'],
+			'new_type'		=> $this->type_from_mime_type( $data['new_type'] ),
+			'new_mime_type'	=> $data['new_type']
+		);
+
+		wp_send_json_success( $return );
+	}
+
+	/**
+	 * Get the type from the mime type
+	 */
+	private function type_from_mime_type( $mime_type ) {
+		$array = array(
+			'image/jpeg' => 'JPEG',
+			'image/png'  => 'PNG',
+			'image/webp' => 'WebP',
+			'image/avif' => 'AVIF',
+		);
+
+		return $array[$mime_type] ?? '';
+	}
+
+	/**
+	 * Get the quality
+	 */
+	private function get_the_quality( $settings ) {
+		$mode_enabled = $settings['quickwebp_settings_conversion'];
+		$quality      = $settings['quickwebp_settings_conversion_quality'];
+
+		return $this->get_the_quality_values( $quality, $mode_enabled );
+	}
+
+	/**
+	 * Get the quality values for avif and webp
+	 */
+	private function get_the_quality_values( $quality, $mode_enabled ) {
+		$result = 50;
+
+		switch ( $quality ) {
+			case 'low':
+				$result = 50;
+				if ( '2' === $mode_enabled ) {
+					$result = 30;
+				}
+			break;
+			case 'medium':
+				$result = 60;
+				if ( '2' === $mode_enabled ) {
+					$result = 40;
+				}
+			break;
+			case 'high':
+				$result = 75;
+				if ( '2' === $mode_enabled ) {
+					$result = 50;
+				}
+			break;
+			case 'extra_high':
+				$result = 90;
+				if ( '2' === $mode_enabled ) {
+					$result = 70;
+				}
+			break;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Create the avif image
+	 */
+	private function create_avif_image( $file_path, $output_path, $quality ) {
+		$image     = false;
+		$mime_type = wp_get_image_mime( $file_path );
+
+		if ( 'image/avif' == $mime_type ) {
+			$image = imagecreatefromavif( $file_path );
+		} elseif ( 'image/webp' == $mime_type ) {
+			$image = imagecreatefromwebp( $file_path );
+		} elseif ( 'image/jpeg' == $mime_type ) {
+			$image = imagecreatefromjpeg( $file_path );
+		} elseif ( 'image/png' == $mime_type ) {
+			$image = imagecreatefrompng( $file_path );
+		}
+
+		if ( ! $image ) {
+			return false;
+		}
+
+		// Handle EXIF orientation for proper image rotation
+		$exif_data = @exif_read_data( $file_path );
+		if ( ! empty( $exif_data['Orientation'] ) ) {
+			$orientation = (int) $exif_data['Orientation'];
+			//phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$orientation = apply_filters( 'wp_image_maybe_exif_rotate', $orientation, $file_path );
+			if ( $orientation && 1 !== $orientation ) {
+				switch ( $orientation ) {
+					case 2:
+						// Flip horizontally.
+						imageflip( $image, IMG_FLIP_HORIZONTAL );
+						break;
+					case 3:
+						// Rotate 180 degrees.
+						$image = imagerotate( $image, 180, 0 );
+						break;
+					case 4:
+						// Flip vertically.
+						imageflip( $image, IMG_FLIP_VERTICAL );
+						break;
+					case 5:
+						// Rotate 90 degrees counter-clockwise and flip vertically.
+						$image = imagerotate( $image, -90, 0 );
+						imageflip( $image, IMG_FLIP_VERTICAL );
+						break;
+					case 6:
+						// Rotate 90 degrees clockwise (270 counter-clockwise).
+						$image = imagerotate( $image, -90, 0 );
+						break;
+					case 7:
+						// Rotate 90 degrees counter-clockwise and flip horizontally.
+						$image = imagerotate( $image, 90, 0 );
+						imageflip( $image, IMG_FLIP_HORIZONTAL );
+						break;
+					case 8:
+						// Rotate 90 degrees counter-clockwise.
+						$image = imagerotate( $image, 90, 0 );
+						break;
+				}
+			}
+		}
+		
+		if ( ! imageistruecolor( $image ) ) {
+			$truecolor = imagecreatetruecolor( imagesx( $image ), imagesy( $image ) );
+	
+			if ( $mime_type === 'image/png' ) {
+				imagealphablending( $truecolor, false );
+				imagesavealpha( $truecolor, true );
+				$transparent = imagecolorallocatealpha( $truecolor, 0, 0, 0, 127 );
+				imagefilledrectangle( $truecolor, 0, 0, imagesx( $image ), imagesy( $image ), $transparent );
+			}
+	
+			imagecopy( $truecolor, $image, 0, 0, 0, 0, imagesx( $image ), imagesy( $image ) );
+			$image = $truecolor;
+		}
+
+		$avif_image = imageavif( $image, $output_path, $quality );
+		imagedestroy( $image );
+		if ( ! $avif_image ) {
+			return false;
+		}
+
+		return $avif_image;
+	}
+
+	/**
+	 * Create the webp image
+	 */
+	private function create_webp_image( $file_path, $output_path, $quality ) {
+		$image     = false;
+		$mime_type = wp_get_image_mime( $file_path );
+
+		if ( 'image/avif' == $mime_type ) {
+			$image = imagecreatefromavif( $file_path );
+		} elseif ( 'image/webp' == $mime_type ) {
+			$image = imagecreatefromwebp( $file_path );
+		} elseif ( 'image/jpeg' == $mime_type ) {
+			$image = imagecreatefromjpeg( $file_path );
+		} elseif ( 'image/png' == $mime_type ) {
+			$image = imagecreatefrompng( $file_path );
+		}
+
+		if ( ! $image ) {
+			return false;
+		}
+
+		// Handle EXIF orientation for proper image rotation
+		$exif_data = @exif_read_data( $file_path );
+		if ( ! empty( $exif_data['Orientation'] ) ) {
+			$orientation = (int) $exif_data['Orientation'];
+			//phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$orientation = apply_filters( 'wp_image_maybe_exif_rotate', $orientation, $file_path );
+			if ( $orientation && 1 !== $orientation ) {
+				switch ( $orientation ) {
+					case 2:
+						// Flip horizontally.
+						imageflip( $image, IMG_FLIP_HORIZONTAL );
+						break;
+					case 3:
+						// Rotate 180 degrees.
+						$image = imagerotate( $image, 180, 0 );
+						break;
+					case 4:
+						// Flip vertically.
+						imageflip( $image, IMG_FLIP_VERTICAL );
+						break;
+					case 5:
+						// Rotate 90 degrees counter-clockwise and flip vertically.
+						$image = imagerotate( $image, -90, 0 );
+						imageflip( $image, IMG_FLIP_VERTICAL );
+						break;
+					case 6:
+						// Rotate 90 degrees clockwise (270 counter-clockwise).
+						$image = imagerotate( $image, -90, 0 );
+						break;
+					case 7:
+						// Rotate 90 degrees counter-clockwise and flip horizontally.
+						$image = imagerotate( $image, 90, 0 );
+						imageflip( $image, IMG_FLIP_HORIZONTAL );
+						break;
+					case 8:
+						// Rotate 90 degrees counter-clockwise.
+						$image = imagerotate( $image, 90, 0 );
+						break;
+				}
+			}
+		}
+		
+		if ( ! imageistruecolor( $image ) ) {
+			$truecolor = imagecreatetruecolor( imagesx( $image ), imagesy( $image ) );
+	
+			if ( $mime_type === 'image/png' ) {
+				imagealphablending( $truecolor, false );
+				imagesavealpha( $truecolor, true );
+				$transparent = imagecolorallocatealpha( $truecolor, 0, 0, 0, 127 );
+				imagefilledrectangle( $truecolor, 0, 0, imagesx( $image ), imagesy( $image ), $transparent );
+			}
+	
+			imagecopy( $truecolor, $image, 0, 0, 0, 0, imagesx( $image ), imagesy( $image ) );
+			$image = $truecolor;
+		}
+
+		$webp_image = imagewebp( $image, $output_path, $quality );
+		imagedestroy( $image );
+		if ( ! $webp_image ) {
+			return false;
+		}
+
+		return $webp_image;
+	}
 }

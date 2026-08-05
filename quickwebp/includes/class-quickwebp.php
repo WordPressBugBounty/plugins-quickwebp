@@ -109,13 +109,6 @@ class Quickwebp {
 		 * core plugin.
 		 */
 		require_once QUICKWEBP_PLUGIN_PATH . 'includes/class-quickwebp-loader.php';
-
-		/**
-		 * This file is loaded only on local environement for test or debug.
-		 */
-		if( $_SERVER['REMOTE_ADDR'] == '127.0.0.1' || $_SERVER['REMOTE_ADDR'] == '::1' ){
-			require_once QUICKWEBP_PLUGIN_PATH. 'includes/dev-toolkits.php';
-		}
 		
 		/**
 		 * The global functions for this plugin
@@ -147,6 +140,16 @@ class Quickwebp {
 		 * The class responsible of cron job.
 		 */
 		require_once QUICKWEBP_PLUGIN_PATH . 'admin/class-cron-job.php';
+
+		/**
+		 * The class responsible for handling the surecart.
+		 */
+		require_once QUICKWEBP_PLUGIN_PATH . 'admin/class-surecart.php';
+
+		/**
+		 * The class responsible for handling the migration.
+		 */
+		require_once QUICKWEBP_PLUGIN_PATH . 'admin/class-migration.php';
 
 		/**
 		 * The handle the front-end display functionality of the plugin.
@@ -187,22 +190,24 @@ class Quickwebp {
 		$this->loader->add_action( 'admin_enqueue_scripts', $quickwebp_settings, 'enqueue_scripts_styles' );
 		$this->loader->add_action( 'admin_menu', $quickwebp_settings, 'add_settings_menu' );
 		$this->loader->add_filter( 'plugin_action_links', $quickwebp_settings, 'add_settings_link', 10, 2 );
-		$this->loader->add_action( 'admin_init', $quickwebp_settings, 'show_notice_if_library_not_exist' );
 		$this->loader->add_filter( 'sanitize_option_quickwebp_settings_conversion_display_webp_mode', $quickwebp_settings, 'add_rewrite_rules', 5 );
 		$this->loader->add_filter( 'sanitize_option_quickwebp_settings_conversion_display_webp_mode', $quickwebp_settings, 'sanitize_display_mode_for_consistency', 10, 3 );
 		
 		$quickwebp_image_optimizer = new Quickwebp_Image_Optimizer( $this->get_plugin_name(), $this->get_version() );
-		$this->loader->add_filter( 'wp_handle_upload_prefilter', $quickwebp_image_optimizer, 'image_optimizition' );
+		$this->loader->add_filter( 'wp_handle_upload_prefilter', $quickwebp_image_optimizer, 'image_optimization' );
+		$this->loader->add_filter( 'wp_generate_attachment_metadata', $quickwebp_image_optimizer, 'add_already_optimized_meta', 10, 3 );
+		$this->loader->add_filter( 'wp_generate_attachment_metadata', $quickwebp_image_optimizer, 'save_original_image', 10, 3 );
 		$this->loader->add_filter( 'wp_generate_attachment_metadata', $quickwebp_image_optimizer, 'add_data_to_attachment', 10, 3 );
-		$this->loader->add_filter( 'big_image_size_threshold', $quickwebp_image_optimizer, 'change_wp_max_size', PHP_INT_MAX, 1 );
-		$this->loader->add_filter( 'wp_editor_set_quality', $quickwebp_image_optimizer, 'change_wp_quality', PHP_INT_MAX, 2 );
-		$this->loader->add_action( 'wp_ajax_image_optimizition_ajax', $quickwebp_image_optimizer, 'image_optimizition_ajax' );
-		$this->loader->add_action( 'wp_ajax_single_optimizition_ajax', $quickwebp_image_optimizer, 'single_optimizition_ajax' );
-		$this->loader->add_action( 'wp_ajax_undo_single_optimizition_ajax', $quickwebp_image_optimizer, 'undo_single_optimizition_ajax' );
-		$this->loader->add_action( 'delete_attachment', $quickwebp_image_optimizer, 'before_delete_attachment', 10, 2 );
+		$this->loader->add_filter( 'big_image_size_threshold', $quickwebp_image_optimizer, 'change_wp_max_size', PHP_INT_MAX, 2 );
+		$this->loader->add_filter( 'wp_editor_set_quality', $quickwebp_image_optimizer, 'change_wp_quality', PHP_INT_MAX );
+		$this->loader->add_action( 'wp_ajax_image_optimization_ajax', $quickwebp_image_optimizer, 'image_optimization_ajax' );
+		$this->loader->add_action( 'wp_ajax_single_optimization_ajax', $quickwebp_image_optimizer, 'single_optimization_ajax' );
+		$this->loader->add_action( 'wp_ajax_undo_single_optimization_ajax', $quickwebp_image_optimizer, 'undo_single_optimization_ajax' );
+		$this->loader->add_action( 'delete_attachment', $quickwebp_image_optimizer, 'before_delete_attachment' );
+		$this->loader->add_action( 'wp_ajax_get_image_data_for_preview', $quickwebp_image_optimizer, 'get_image_data_for_preview_ajax' );
 
 		$quickwebp_wp_media_extends = new Quickwebp_Wp_Media_Extends( $this->get_plugin_name(), $this->get_version() );
-		$this->loader->add_action( 'wp_enqueue_media', $quickwebp_wp_media_extends, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $quickwebp_wp_media_extends, 'enqueue_scripts' );
 		$this->loader->add_filter( 'attachment_fields_to_edit', $quickwebp_wp_media_extends, 'add_attachment_fields_to_edit', PHP_INT_MAX, 2 );
 		$this->loader->add_filter( 'manage_media_columns', $quickwebp_wp_media_extends, 'add_media_columns');
 		$this->loader->add_action( 'manage_media_custom_column', $quickwebp_wp_media_extends, 'add_media_custom_column', 10, 2 );
@@ -215,6 +220,12 @@ class Quickwebp {
 		$this->loader->add_action( 'wp_ajax_stop_bulk_optimization', $quickwebp_cron_job, 'stop_bulk_optimization' );
 		$this->loader->add_action( 'wp_ajax_check_bulk_optimization_progress', $quickwebp_cron_job, 'check_bulk_optimization_progress' );
 
+		$quickwebp_surecart = new Quickwebp_Surecart();
+		$this->loader->add_action( 'init', $quickwebp_surecart, 'init_surecart' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $quickwebp_surecart, 'enqueue_scripts_styles' );
+
+		$quickwebp_migration = new Quickwebp_Migration();
+		$this->loader->add_action( 'init', $quickwebp_migration, 'init_migration' );
 	}
 
 	/**
@@ -228,7 +239,6 @@ class Quickwebp {
 
 		$quickwebp_display_webp = new Quickwebp_Display_Webp( $this->get_plugin_name(), $this->get_version() );
 		$this->loader->add_action( 'template_redirect', $quickwebp_display_webp, 'start_content_process', -1000 );
-
 	}
 
 	/**

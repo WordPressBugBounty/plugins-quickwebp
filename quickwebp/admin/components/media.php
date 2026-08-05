@@ -1,72 +1,75 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * Media component for the settings page
  */
 
-$key_option = sanitize_key( $data['name'] );
-
-if( isset( $key_option, $_POST[ $key_option ] ) ) {
-    $raw_value = sanitize_text_field( wp_unslash( $_POST[ $key_option ] ) );
-    $media_ids = array_filter( array_map( 'absint', explode( ',', $raw_value ) ) );
-    update_option( $key_option, implode( ',', $media_ids ) );
+$quickwebp_key_option = sanitize_key( $data['name'] );
+//phpcs:ignore WordPress.Security.NonceVerification.Missing
+if( isset( $quickwebp_key_option, $_POST[ $quickwebp_key_option ] ) ) {
+	//phpcs:ignore WordPress.Security.NonceVerification.Missing
+    $quickwebp_raw_value = sanitize_text_field( wp_unslash( $_POST[ $quickwebp_key_option ] ) );
+    $quickwebp_media_ids = array_filter( array_map( 'absint', explode( ',', $quickwebp_raw_value ) ) );
+    update_option( $quickwebp_key_option, implode( ',', $quickwebp_media_ids ) );
 }
 
 wp_enqueue_media();
-$is_multiple = isset( $data['multiple'] ) && $data['multiple'] === true ? 'true' : 'false';
-$image_preview_template = '<img src="%1$s" title="%2$s" class="media-preview-image">';
+$quickwebp_is_multiple = isset( $data['multiple'] ) && $data['multiple'] === true ? 'true' : 'false';
+$quickwebp_image_preview_template = '<img src="%1$s" title="%2$s" class="media-preview-image">';
 
-$medias_string = isset( $key_option ) ? get_option( $key_option, '' ) : '';
-$medias        = $medias_string ? explode( ',', $medias_string ) : array();
+$quickwebp_medias_string = isset( $quickwebp_key_option ) ? get_option( $quickwebp_key_option, '' ) : '';
+$quickwebp_medias        = $quickwebp_medias_string ? explode( ',', $quickwebp_medias_string ) : array();
 ?>
 <div class="quickwebp-media-input-container">
-    <div id="<?php echo esc_attr( $key_option ?? '' ); ?>_is_empty" class="quickwebp-media-input--is-empty" style="display: <?php echo esc_attr( ! empty( $medias ) ? 'none' : 'block' ); ?>">
-        <?php _e( 'No image selected', QUICKWEBP_TEXT_DOMAIN ); ?>
+    <div id="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>_is_empty" class="quickwebp-media-input--is-empty" style="display: <?php echo esc_attr( ! empty( $quickwebp_medias ) ? 'none' : 'block' ); ?>">
+        <?php esc_html_e( 'No image selected', 'quickwebp' ); ?>
     </div>
     <input 
         type="hidden" 
-        name="<?php echo esc_attr( $key_option ?? '' ); ?>"
-        id="<?php echo esc_attr( $key_option ?? '' ); ?>"
-        value="<?php echo esc_attr( $medias_string ); ?>"
+        name="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>"
+        id="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>"
+        value="<?php echo esc_attr( $quickwebp_medias_string ); ?>"
     >
-    <div id="<?php echo esc_attr( $key_option ?? '' ); ?>_medias-selected" class="quickwebp-medias-selected-container">
+    <div id="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>_medias-selected" class="quickwebp-medias-selected-container">
         <?php
-        foreach( $medias as $media_id ) {
-            $media_id = absint( $media_id );
-            $media = get_post( $media_id );
-            if( $media ) {
-                if( wp_attachment_is_image( $media_id ) ) {
-                    echo wp_kses_post( sprintf( $image_preview_template, esc_url( wp_get_attachment_image_url( $media_id, 'thumbnail' ) ), esc_attr( $media->post_title ) ) );
+        foreach( $quickwebp_medias as $quickwebp_media_id ) {
+            $quickwebp_media_id = absint( $quickwebp_media_id );
+            $quickwebp_media = get_post( $quickwebp_media_id );
+            if( $quickwebp_media ) {
+                if( wp_attachment_is_image( $quickwebp_media_id ) ) {
+                    echo wp_kses_post( sprintf( $quickwebp_image_preview_template, esc_url( wp_get_attachment_image_url( $quickwebp_media_id, 'thumbnail' ) ), esc_attr( $quickwebp_media->post_title ) ) );
                 } else {
-                    echo wp_kses_post( sprintf( $image_preview_template, esc_url( wp_mime_type_icon( $media->post_mime_type ) ), esc_attr( $media->post_title ) ) );
+                    echo wp_kses_post( sprintf( $quickwebp_image_preview_template, esc_url( wp_mime_type_icon( $quickwebp_media->post_mime_type ) ), esc_attr( $quickwebp_media->post_title ) ) );
                 }
             }
         }
         ?>
     </div>
     <input type="button" 
-        name="<?php echo esc_attr( $key_option ?? '' ); ?>_button"
-        id="<?php echo esc_attr( $key_option ?? '' ); ?>_button"
+        name="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>_button"
+        id="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>_button"
         class="button button-secondary"
-        value="<?php echo esc_attr( $data['button_text'] ?? __( 'Select media', QUICKWEBP_TEXT_DOMAIN ) ); ?>"
+        value="<?php echo esc_attr( $data['button_text'] ?? __( 'Select media', 'quickwebp' ) ); ?>"
     >
     <input type="button" 
-        name="<?php echo esc_attr( $key_option ?? '' ); ?>_remove_button"
-        id="<?php echo esc_attr( $key_option ?? '' ); ?>_remove_button"
+        name="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>_remove_button"
+        id="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>_remove_button"
         class="button button-secondary button-remove-media"
-        value="<?php echo esc_attr( $data['remove_button_text'] ?? __( 'Remove medias', QUICKWEBP_TEXT_DOMAIN ) ); ?>"
-        <?php echo empty( $medias ) ? 'disabled' : ''; ?>
+        value="<?php echo esc_attr( $data['remove_button_text'] ?? __( 'Remove medias', 'quickwebp' ) ); ?>"
+        <?php echo empty( $quickwebp_medias ) ? 'disabled' : ''; ?>
     >
 </div>
 
 <script type="text/javascript">
     jQuery(document).ready(function($){
-        const id = <?php echo wp_json_encode( $key_option ?? '' ); ?>;
-        const media_template_preview = <?php echo wp_json_encode( $image_preview_template ); ?>;
+        const id = <?php echo wp_json_encode( $quickwebp_key_option ?? '' ); ?>;
+        const media_template_preview = <?php echo wp_json_encode( $quickwebp_image_preview_template ); ?>;
         jQuery( "#" + id + "_button" ).click(function(e) {
             e.preventDefault();
             var image = wp.media({ 
-                title: <?php echo wp_json_encode( $data['button_text'] ?? __( 'Select media', QUICKWEBP_TEXT_DOMAIN ) ); ?>,
-                multiple: <?php echo esc_attr( $is_multiple ); ?>
+                title: <?php echo wp_json_encode( $data['button_text'] ?? __( 'Select media', 'quickwebp' ) ); ?>,
+                multiple: <?php echo esc_attr( $quickwebp_is_multiple ); ?>
             })
 
             image.on('select', function(e){

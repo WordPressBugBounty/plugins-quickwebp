@@ -1,5 +1,5 @@
 <?php
-abstract class Rewrite_Rules_Abstract {
+abstract class Quickwebp_Rewrite_Rules_Abstract {
 
     /**
 	 * Name of the tag used as block delemiter.
@@ -119,8 +119,10 @@ abstract class Rewrite_Rules_Abstract {
 		if ( ! $file_exists ) {
 			$dir_name = dirname( $file_path );
 			if ( ! file_exists( $dir_name ) ){
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 				mkdir( $dir_name, 0755, true );
 			}
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_touch
 			touch( $file_path );
 		}
 		$writable   	= wp_is_writable( $file_path );
@@ -135,7 +137,8 @@ abstract class Rewrite_Rules_Abstract {
 			return new \WP_Error(
 				'not_read',
 				sprintf(
-					__( 'The %s file could not be read.', QUICKWEBP_TEXT_DOMAIN ),
+					// translators: %s is a placeholder for the file path.
+					__( 'The %s file could not be read.', 'quickwebp' ),
 					'<code>' . esc_html( $file_path ) . '</code>'
 				)
 			);
@@ -159,7 +162,8 @@ abstract class Rewrite_Rules_Abstract {
         return new \WP_Error(
 			'edition_failed',
 			sprintf(
-				__( 'Could not write into the %s file.', QUICKWEBP_TEXT_DOMAIN ),
+				// translators: %s is a placeholder for the file path.
+				__( 'Could not write into the %s file.', 'quickwebp' ),
 				'<code>' . esc_html( $file_path ) . '</code>'
 			)
 		);
@@ -170,6 +174,7 @@ abstract class Rewrite_Rules_Abstract {
      */
     protected function put_contents( $file, $contents, $mode = false ) {
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
         $fp = @fopen( $file, 'wb' );
 
 		if ( ! $fp ) {
@@ -180,10 +185,12 @@ abstract class Rewrite_Rules_Abstract {
 
 		$data_length = strlen( $contents );
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 		$bytes_written = fwrite( $fp, $contents );
 
 		reset_mbstring_encoding();
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		fclose( $fp );
 
 		if ( $data_length !== $bytes_written ) {
@@ -191,9 +198,9 @@ abstract class Rewrite_Rules_Abstract {
 		}
 
         $chmod_file = fileperms( ABSPATH . 'index.php' ) & 0777 | 0644;
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
         chmod( $file, $chmod_file );
 
         return true;
     }
-
 }

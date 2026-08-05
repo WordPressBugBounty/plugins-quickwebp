@@ -1,18 +1,22 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * Textarea component for the settings page
  */
 
-$key_option = sanitize_key( $data['name'] );
+$quickwebp_key_option = sanitize_key( $data['name'] );
 
-if( isset( $key_option, $_POST[ $key_option ] ) ) {
-    $value_to_save = sanitize_textarea_field( wp_unslash( $_POST[ $key_option ] ) );
-    update_option( $key_option, $value_to_save );
+//phpcs:ignore WordPress.Security.NonceVerification.Missing
+if( isset( $quickwebp_key_option, $_POST[ $quickwebp_key_option ] ) ) {
+	//phpcs:ignore WordPress.Security.NonceVerification.Missing
+    $quickwebp_value_to_save = sanitize_textarea_field( wp_unslash( $_POST[ $quickwebp_key_option ] ) );
+    update_option( $quickwebp_key_option, $quickwebp_value_to_save );
 }
 ?>
 <textarea 
-    name="<?php echo esc_attr( $key_option ?? '' ); ?>"
+    name="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>"
     class="regular-text"
-    id="<?php echo esc_attr( $key_option ?? '' ); ?>"
+    id="<?php echo esc_attr( $quickwebp_key_option ?? '' ); ?>"
     <?php echo isset( $data['pattern'] ) ? 'pattern="' . esc_attr( $data['pattern'] ) . '"' : ''; ?>
-><?php echo esc_html( get_option( $key_option ) ); ?></textarea>
+><?php echo esc_html( get_option( $quickwebp_key_option ) ); ?></textarea>

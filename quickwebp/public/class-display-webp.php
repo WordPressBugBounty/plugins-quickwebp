@@ -47,21 +47,18 @@ class Quickwebp_Display_Webp {
      * Start buffering the page content
      */
     public function start_content_process() {
-
         $display_webp = get_option( 'quickwebp_settings_conversion_display_webp_mode', quickwebp_settings_default('quickwebp_settings_conversion_display_webp_mode') );
-
         if ( $display_webp != 'picture' ){
             return;
         }
 
-        ob_start( array( $this, 'maybe_process_buffer' ) );        
-
+        ob_start( array( $this, 'maybe_process_buffer' ) );
     }
 
     /**
      * Maybe process the page content
      */
-	public function maybe_process_buffer( $buffer ) {
+	private function maybe_process_buffer( $buffer ) {
 
         if ( ! $this->is_html( $buffer ) ) {
             return $buffer;
@@ -77,10 +74,17 @@ class Quickwebp_Display_Webp {
         return $buffer;
     }
 
+	/**
+     * Tell if a content is HTML
+     */
+    private function is_html( $content ) {
+		return preg_match( '/<\/html>/i', $content );
+	}
+
     /**
      * Process the content
      */
-    public function process_content( $content ) {
+    private function process_content( $content ) {
 
 		$html_no_picture_tags   = $this->remove_picture_tags( $content );
         $images                 = $this->get_images( $html_no_picture_tags );
@@ -132,41 +136,18 @@ class Quickwebp_Display_Webp {
 
 		foreach ( $images as $i => $image ) {
 
-            if ( empty( $image['src']['webp_exists'] ) || empty( $image['src']['webp_url'] ) ) {
+            if ( empty( $image['src'] ) ) {
 				unset( $images[ $i ] );
 				continue;
 			}
-
-			unset( $images[ $i ]['src']['webp_path'], $images[ $i ]['src']['webp_exists'] );
 
             if ( empty( $image['srcset'] ) || ! is_array( $image['srcset'] ) ) {
 				unset( $images[ $i ]['srcset'] );
 				continue;
 			}
-
-            foreach ( $image['srcset'] as $j => $srcset ) {
-
-				if ( ! is_array( $srcset ) ) {
-					continue;
-				}
-
-				if ( empty( $srcset['webp_exists'] ) || empty( $srcset['webp_url'] ) ) {
-					unset( $images[ $i ]['srcset'][ $j ]['webp_url'] );
-				}
-
-				unset( $images[ $i ]['srcset'][ $j ]['webp_path'], $images[ $i ]['srcset'][ $j ]['webp_exists'] );
-			}
-
         }
 
         return $images;
-	}
-
-    /**
-     * Tell if a content is HTML
-     */
-    protected function is_html( $content ) {
-		return preg_match( '/<\/html>/i', $content );
 	}
 
     /**
@@ -214,9 +195,16 @@ class Quickwebp_Display_Webp {
 			return false;
 		}
 
-		$webp_url  = $src['src'] . '.webp';
-		$webp_path = $this->url_to_path( $webp_url );
-        $webp_url .= ! empty( $src['query'] ) ? $src['query'] : '';
+		$avif_url   = $src['src'] . '.avif';
+		$webp_url   = $src['src'] . '.webp';
+		$avif_path  = $this->url_to_path( $avif_url );
+		$webp_path  = $this->url_to_path( $webp_url );
+		$avif_url  .= ! empty( $src['query'] ) ? $src['query'] : '';
+        $webp_url  .= ! empty( $src['query'] ) ? $src['query'] : '';
+		$avif_exist = $avif_path && @file_exists( $avif_path );
+		$webp_exist = $webp_path && @file_exists( $webp_path );
+		$type       = $avif_exist ? 'image/avif' : ( $webp_exist ? 'image/webp' : '' );
+		$new_url    = $avif_exist ? $avif_url : ( $webp_exist ? $webp_url : '' );
 
         $data = [
 			'tag'              => $image,
@@ -224,12 +212,11 @@ class Quickwebp_Display_Webp {
 			'src_attribute'    => $src_source,
 			'src'              => [
 				'url'         => $attributes[ $src_source ],
-				'webp_url'    => $webp_url,
-				'webp_path'   => $webp_path,
-				'webp_exists' => $webp_path && @file_exists( $webp_path )
+				'new_url'     => $new_url,
 			],
 			'srcset_attribute' => false,
-			'srcset'           => []
+			'srcset'           => [],
+			'type'             => $type,
 		];
 
         // Deal with the srcset attribute.
@@ -269,16 +256,21 @@ class Quickwebp_Display_Webp {
 					continue;
 				}
 
-                $webp_url  = $src['src'] . '.webp';
-				$webp_path = $this->url_to_path( $webp_url );
-				$webp_url .= ! empty( $src['query'] ) ? $src['query'] : '';
+                $avif_url   = $src['src'] . '.avif';
+                $webp_url   = $src['src'] . '.webp';
+				$avif_path  = $this->url_to_path( $avif_url );
+				$webp_path  = $this->url_to_path( $webp_url );
+				$avif_url  .= ! empty( $src['query'] ) ? $src['query'] : '';
+				$webp_url  .= ! empty( $src['query'] ) ? $src['query'] : '';
+				$avif_exist = $avif_path && @file_exists( $avif_path );
+				$webp_exist = $webp_path && @file_exists( $webp_path );
+				$type       = $avif_exist ? 'image/avif' : ( $webp_exist ? 'image/webp' : '' );
+				$new_url    = $avif_exist ? $avif_url : ( $webp_exist ? $webp_url : '' );
 
                 $data['srcset'][] = [
-					'url'         => $srcs[0],
-					'descriptor'  => $srcs[1],
-					'webp_url'    => $webp_url,
-					'webp_path'   => $webp_path,
-					'webp_exists' => $webp_path && @file_exists( $webp_path )
+					'url'        => $srcs[0],
+					'descriptor' => $srcs[1],
+					'new_url'    => $new_url,
 				];
             }
         }
@@ -347,7 +339,7 @@ class Quickwebp_Display_Webp {
 
             } else {
 
-                $document_root     = realpath( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) );
+                $document_root     = realpath( sanitize_text_field( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ?? '' ) ) );
                 $document_root     = trailingslashit( str_replace( '\\', '/', $document_root ) );
                 $path_current_site = trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' );
                 $root_dir         = trailingslashit( wp_normalize_path( $document_root . $path_current_site ) );
@@ -360,7 +352,6 @@ class Quickwebp_Display_Webp {
 			} else {
 				$domain_url = false;
 			}
-
         }
 
         // Get the right URL format.
@@ -449,22 +440,22 @@ class Quickwebp_Display_Webp {
 
 		$srcset_source = ! empty( $image['srcset_attribute'] ) ? $image['srcset_attribute'] : $image['src_attribute'] . 'set';
 		$attributes    = [
-			'type'         => 'image/webp',
+			'type'         => $image['type'],
 			$srcset_source => [],
 		];
         
 		if ( ! empty( $image['srcset'] ) ) {
             foreach ( $image['srcset'] as $srcset ) {
-                if ( empty( $srcset['webp_url'] ) ) {
+                if ( empty( $srcset['new_url'] ) ) {
                     continue;
 				}
                 
-				$attributes[ $srcset_source ][] = $srcset['webp_url'] . ' ' . $srcset['descriptor'];
+				$attributes[ $srcset_source ][] = $srcset['new_url'] . ' ' . $srcset['descriptor'];
 			}
 		}
 
 		if ( empty( $attributes[ $srcset_source ] ) ) {
-			$attributes[ $srcset_source ][] = $image['src']['webp_url'];
+			$attributes[ $srcset_source ][] = $image['src']['new_url'];
 		}
 
 		$attributes[ $srcset_source ] = implode( ', ', $attributes[ $srcset_source ] );
@@ -517,5 +508,4 @@ class Quickwebp_Display_Webp {
 
 		return '<img' . $this->build_attributes( $attributes ) . "/>\n";
 	}
-
 }
