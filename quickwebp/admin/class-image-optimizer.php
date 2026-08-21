@@ -87,6 +87,9 @@ class Quickwebp_Image_Optimizer {
 			$is_pro = $quickwebp_surecart_client->license()->is_valid();
 		}
 
+		$image_file['new_size'] = $image_file['size'];
+		$image_file['new_type'] = $image_file['type'];
+
 		if ( '2' === $mode_enabled && $is_pro ) {
 			$avif_image = $this->create_avif_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
 			if ( $avif_image ) {
@@ -311,6 +314,9 @@ class Quickwebp_Image_Optimizer {
 		if ( $quickwebp_surecart_client ) {
 			$is_pro = $quickwebp_surecart_client->license()->is_valid();
 		}
+
+		$image_file['new_size'] = $image_file['size'];
+		$image_file['new_type'] = $image_file['type'];
 
 		if ( '2' === $mode_enabled && $is_pro ) {
 			$avif_image = $this->create_avif_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
@@ -658,6 +664,7 @@ class Quickwebp_Image_Optimizer {
 		$mode_enabled = $settings['quickwebp_settings_conversion'];
 		$size_before  = filesize( $size['path'] );
 		$new_path     = $size['path'] . '.' . ( '2' === $mode_enabled && $is_pro ? 'avif' : 'webp' );
+		$size_after   = 0;
 
 		if ( '2' === $mode_enabled && $is_pro ) {
 			$avif_image = $this->create_avif_image( $size['path'], $new_path, $quality );
@@ -669,6 +676,10 @@ class Quickwebp_Image_Optimizer {
 			if ( $webp_image ) {
 				$size_after = filesize( $new_path );
 			}
+		}
+
+		if ( ! $size_after ) {
+			return false;
 		}
 
 		$deference = $size_before - $size_after;
@@ -858,21 +869,110 @@ class Quickwebp_Image_Optimizer {
 	}
 
 	/**
+	 * Get the extension matching an image mime type.
+	 *
+	 * @param string $mime_type Image mime type.
+	 *
+	 * @return string
+	 */
+	private function get_extension_from_mime_type( $mime_type ) {
+		$extensions = array(
+			'image/avif' => 'avif',
+			'image/webp' => 'webp',
+			'image/jpeg' => 'jpg',
+			'image/png'  => 'png',
+		);
+
+		return $extensions[ $mime_type ] ?? '';
+	}
+
+	/**
+	 * Create an image using the WordPress image editor abstraction.
+	 *
+	 * @param string $file_path        Path to the source image.
+	 * @param string $output_path      Path where the converted image should be written.
+	 * @param int    $quality          Compression quality.
+	 * @param string $target_mime_type Output mime type.
+	 *
+	 * @return bool
+	 */
+	private function create_image_with_wp_editor( $file_path, $output_path, $quality, $target_mime_type ) {
+		$editor = wp_get_image_editor( $file_path );
+
+		if ( is_wp_error( $editor ) ) {
+			return false;
+		}
+
+		$extension = $this->get_extension_from_mime_type( $target_mime_type );
+		if ( empty( $extension ) ) {
+			return false;
+		}
+
+		$save_path = $output_path;
+		if ( pathinfo( $output_path, PATHINFO_EXTENSION ) !== $extension ) {
+			$save_path = $output_path . '.' . $extension;
+		}
+
+		$editor->set_quality( $quality );
+		$result = $editor->save( $save_path, $target_mime_type );
+
+		if ( is_wp_error( $result ) || empty( $result['path'] ) || ! file_exists( $result['path'] ) ) {
+			return false;
+		}
+
+		if ( $result['path'] !== $output_path ) {
+			$file_contents = file_get_contents( $result['path'] );
+
+			if ( false === $file_contents || false === file_put_contents( $output_path, $file_contents ) ) {
+				return false;
+			}
+
+			wp_delete_file( $result['path'] );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Create a GD image resource when the required loader is available.
+	 *
+	 * @param string $file_path Path to the source image.
+	 * @param string $mime_type Source mime type.
+	 *
+	 * @return GdImage|resource|false
+	 */
+	private function create_gd_image_resource( $file_path, $mime_type ) {
+		$loaders = array(
+			'image/avif' => 'imagecreatefromavif',
+			'image/webp' => 'imagecreatefromwebp',
+			'image/jpeg' => 'imagecreatefromjpeg',
+			'image/png'  => 'imagecreatefrompng',
+		);
+
+		if ( empty( $loaders[ $mime_type ] ) ) {
+			return false;
+		}
+
+		$loader = $loaders[ $mime_type ];
+
+		if ( ! function_exists( $loader ) ) {
+			return false;
+		}
+
+		return $loader( $file_path );
+	}
+
+	/**
 	 * Create the avif image
 	 */
 	private function create_avif_image( $file_path, $output_path, $quality ) {
+		if ( $this->create_image_with_wp_editor( $file_path, $output_path, $quality, 'image/avif' ) ) {
+			return true;
+		}
+
 		$image     = false;
 		$mime_type = wp_get_image_mime( $file_path );
-
-		if ( 'image/avif' == $mime_type ) {
-			$image = imagecreatefromavif( $file_path );
-		} elseif ( 'image/webp' == $mime_type ) {
-			$image = imagecreatefromwebp( $file_path );
-		} elseif ( 'image/jpeg' == $mime_type ) {
-			$image = imagecreatefromjpeg( $file_path );
-		} elseif ( 'image/png' == $mime_type ) {
-			$image = imagecreatefrompng( $file_path );
-		}
+		$image     = $this->create_gd_image_resource( $file_path, $mime_type );
 
 		if ( ! $image ) {
 			return false;
@@ -947,18 +1047,13 @@ class Quickwebp_Image_Optimizer {
 	 * Create the webp image
 	 */
 	private function create_webp_image( $file_path, $output_path, $quality ) {
+		if ( $this->create_image_with_wp_editor( $file_path, $output_path, $quality, 'image/webp' ) ) {
+			return true;
+		}
+
 		$image     = false;
 		$mime_type = wp_get_image_mime( $file_path );
-
-		if ( 'image/avif' == $mime_type ) {
-			$image = imagecreatefromavif( $file_path );
-		} elseif ( 'image/webp' == $mime_type ) {
-			$image = imagecreatefromwebp( $file_path );
-		} elseif ( 'image/jpeg' == $mime_type ) {
-			$image = imagecreatefromjpeg( $file_path );
-		} elseif ( 'image/png' == $mime_type ) {
-			$image = imagecreatefrompng( $file_path );
-		}
+		$image     = $this->create_gd_image_resource( $file_path, $mime_type );
 
 		if ( ! $image ) {
 			return false;

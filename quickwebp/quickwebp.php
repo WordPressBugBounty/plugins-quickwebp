@@ -10,7 +10,7 @@
  * Plugin Name:       QuickWebP - Compress / Optimize Images & Convert WebP | SEO Friendly
  * Plugin URI:        https://webdeclic.com/projets/creation-de-lextension-wordpress-quickwebp/
  * Description:       Convert JPG and PNG images to WebP, compress uploads locally, improve image SEO, and unlock AVIF with QuickWebP Pro.
- * Version:           4.0.0
+ * Version:           4.0.1
  * Author:            Webdeclic
  * Requires PHP: 	  8.1
  * Author URI:        https://webdeclic.com/

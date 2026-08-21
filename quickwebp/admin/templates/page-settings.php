@@ -345,7 +345,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 <section class="quickwebp-card" id="quickwebp-tools">
                     <div class="quickwebp-card-head">
                         <h2><?php esc_html_e( 'Other tools', 'quickwebp' ); ?></h2>
-                        <p><?php esc_html_e( 'Fine tune file naming, paste behavior, and backend image library.', 'quickwebp' ); ?></p>
+                        <p><?php esc_html_e( 'Fine tune file naming, paste behavior, and local image processing.', 'quickwebp' ); ?></p>
                     </div>
                     <div class="quickwebp-card-body">
                         <table class="form-table">
@@ -607,7 +607,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 					<div class="quickwebp__pro-popup__content__body__bottom">
 						<div class="quickwebp__pro-popup__content__body__bottom__upgrade">
-                            <a href="<?php echo esc_url( quickwebp_get_pro_url( 'settings-upgrade-popup' ) ); ?>" class="quickwebp__pro-popup__content__body__bottom__upgrade__link">
+                            <a href="<?php echo esc_url( quickwebp_get_pro_url( 'settings-upgrade-popup' ) ); ?>" class="quickwebp__pro-popup__content__body__bottom__upgrade__link" target="_blank">
 								<span class="quickwebp__pro-popup__content__body__bottom__upgrade__link__icon">
 									<?php echo wp_kses( file_get_contents( QUICKWEBP_PLUGIN_PATH . 'public/assets/svg/crown.svg' ), quickwebp_allowed_tags_for_svg_files() ); ?>
 								</span>

@@ -2,9 +2,9 @@
 Contributors: ludwigyou
 Tags: webp, avif, image optimization, seo, performance
 Requires at least: 6.8.2
-Tested up to: 7.0.2
+Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 4.0.0
+Stable tag: 4.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 
@@ -25,7 +25,7 @@ If you want even smaller next-generation images, QuickWebP Pro adds AVIF convers
 * SEO-friendly filename cleanup
 * Automatic image metadata pre-fill for alt text, caption, description, legend, and title
 * Automatic resize with maximum width and height controls
-* Choice between GD and Imagick when available
+* Uses the native WordPress image editor with the best available server backend
 * Bulk optimization for older media when originals are preserved
 * Clipboard paste support inside the WordPress media frame
 * Optimization preview inside the settings screen
@@ -101,8 +101,8 @@ Yes. You can paste images from tools such as Photoshop, Illustrator, GIMP, Affin
 
 == Screenshots ==
 
-1. QuickWebP optimization results compared with the original image
-2. QuickWebP settings page
+1. QuickWebP WebP optimization results compared with the original image
+2. QuickWebP settings page and an explanation of the available options
 
 == More from Webdeclic ==
 
@@ -116,6 +116,10 @@ If you want to support the project, you can do it here: [Buy me a coffee](https:
 
 == Changelog ==
 
+= 4.0.1 =
+* Target blank on upgrade links to QuickWebP Pro in the settings page and license screen.
+* Improved local image conversion compatibility by using the native WordPress image editor before falling back to direct GD handling.
+
 = 4.0.0 =
 * Added QuickWebP Pro positioning with the AVIF upgrade path.
 * Reworked the README and plugin metadata to clarify Free vs Pro features.
@@ -124,16 +128,5 @@ If you want to support the project, you can do it here: [Buy me a coffee](https:
 = 3.3.1 =
 * FIX: replace sanitize_filename() with sanitize_text_field() to preserve special characters in the filename for autocomplete seo features.
 
-= 3.3.0 =
-* UI/UX: Fully redesigned settings page with a modern card-based layout, quick navigation, and a live configuration summary.
-* UX: Added first-configuration onboarding assistant with recommended presets for new sites vs existing sites.
-* UX: Onboarding assistant is now shown only during first configuration.
-* UX: Added live examples for SEO metadata automation and filename cleanup, including realistic filenames with spaces, apostrophes, and accents.
-* UX: Live previews now update instantly when related options are checked/unchecked.
-* LOGIC: Enforced coherent setting combinations for WebP display mode based on conversion and original-image preservation options.
-* LOGIC: Display mode "Deactivate" is automatically forced when originals are not preserved or conversion is disabled.
-* LOGIC: Display mode "Deactivate" is no longer selectable when originals are preserved and conversion is enabled.
-* LOGIC: Bulk optimization is now available only when "Save original images" is enabled.
 
-
-[See changelog for all versions.](https://svn.wordpress.org/plugins/quickwebp/trunk/changelog.txt)
+[See changelog for all versions.](https://plugins.svn.wordpress.org/quickwebp/trunk/changelog.txt)

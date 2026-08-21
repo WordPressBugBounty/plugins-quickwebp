@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 4.0.1 =
+* Target blank on upgrade links to QuickWebP Pro in the settings page and license screen.
+* Improved local image conversion compatibility by using the native WordPress image editor before falling back to direct GD handling.
+
 = 4.0.0 =
 * Added QuickWebP Pro positioning with the AVIF upgrade path.
 * Reworked the README and plugin metadata to clarify Free vs Pro features.

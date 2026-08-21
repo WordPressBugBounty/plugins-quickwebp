@@ -376,7 +376,7 @@ class Settings {
 
 						<div class="quickwebp-license__pro__body__bottom">
 							<div class="quickwebp-license__pro__body__bottom__upgrade">
-								<a href="<?php echo esc_url( quickwebp_get_pro_url( 'license-screen-upgrade' ) ); ?>" class="quickwebp-license__pro__body__bottom__upgrade__link">
+								<a href="<?php echo esc_url( quickwebp_get_pro_url( 'license-screen-upgrade' ) ); ?>" class="quickwebp-license__pro__body__bottom__upgrade__link" target="_blank">
 									<span class="quickwebp-license__pro__body__bottom__upgrade__link__icon">
 										<?php echo wp_kses( file_get_contents( QUICKWEBP_PLUGIN_PATH . 'public/assets/svg/crown.svg' ), quickwebp_allowed_tags_for_svg_files() ); ?>
 									</span>
