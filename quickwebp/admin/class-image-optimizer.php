@@ -54,20 +54,28 @@ class Quickwebp_Image_Optimizer {
 	public function image_optimization( $file ) {
 		global $quickwebp_surecart_client;
 
+		quickwebp_debug_log( 'image_optimization:start', array(
+			'file_name' => $file['name'] ?? '',
+			'file_type' => $file['type'] ?? '',
+		) );
+
 		$settings	= $this->get_settings();
 		$image_file = $this->file_is_image( $file, $settings );
 
 		if ( ! $image_file ) {
+			quickwebp_debug_log( 'image_optimization:not_image' );
 			return $file;
 		}
 
 		$mode_enabled = $settings['quickwebp_settings_conversion'];
 		if ( $mode_enabled === '0' ) {
+			quickwebp_debug_log( 'image_optimization:conversion_disabled' );
 			return $image_file;
 		}
 
 		$save_original = is_array( $settings['quickwebp_settings_conversion_save_original'] ) ? $settings['quickwebp_settings_conversion_save_original'] : array();
 		if ( in_array( 'checked', $save_original ) ) {
+			quickwebp_debug_log( 'image_optimization:save_original_enabled' );
 			return $image_file;
 		}
 
@@ -75,8 +83,10 @@ class Quickwebp_Image_Optimizer {
 		$mime_type          = wp_get_image_mime( $image_file['tmp_name'] );
 		if ( in_array( 'checked', $ignore_same_format ) ) {
 			if ( '1' == $mode_enabled && 'image/webp' == $mime_type ) {
+				quickwebp_debug_log( 'image_optimization:skip_same_format', array( 'mime_type' => $mime_type ) );
 				return $image_file;
 			} elseif( '2' == $mode_enabled && 'image/avif' == $mime_type ) {
+				quickwebp_debug_log( 'image_optimization:skip_same_format', array( 'mime_type' => $mime_type ) );
 				return $image_file;
 			}
 		}
@@ -91,20 +101,24 @@ class Quickwebp_Image_Optimizer {
 		$image_file['new_type'] = $image_file['type'];
 
 		if ( '2' === $mode_enabled && $is_pro ) {
+			quickwebp_debug_log( 'image_optimization:try_avif', array( 'mime_type' => $mime_type, 'quality' => $quality ) );
 			$avif_image = $this->create_avif_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
 			if ( $avif_image ) {
 				$image_file['size']      = filesize( $image_file['tmp_name'] );
 				$image_file['type']      = 'image/avif';
 				$image_file['quickwebp'] = 'optimized';
+				quickwebp_debug_log( 'image_optimization:avif_success', array( 'new_size' => $image_file['size'] ) );
 			}
 		}
 
 		if ( '1' === $mode_enabled ) {
+			quickwebp_debug_log( 'image_optimization:try_webp', array( 'mime_type' => $mime_type, 'quality' => $quality ) );
 			$webp_image = $this->create_webp_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
 			if ( $webp_image ) {
 				$image_file['size']      = filesize( $image_file['tmp_name'] );
 				$image_file['type']      = 'image/webp';
 				$image_file['quickwebp'] = 'optimized';
+				quickwebp_debug_log( 'image_optimization:webp_success', array( 'new_size' => $image_file['size'] ) );
 			}
 		}
 
@@ -279,6 +293,8 @@ class Quickwebp_Image_Optimizer {
 	public function image_optimization_ajax() {
 		global $quickwebp_surecart_client;
 
+		quickwebp_debug_log( 'image_optimization_ajax:start' );
+
 		if ( ! current_user_can( 'upload_files' ) ) {
 			wp_send_json_error( __( 'You are not allowed to upload files.', 'quickwebp' ), 403 );
 		}
@@ -292,6 +308,7 @@ class Quickwebp_Image_Optimizer {
 		// Get the file
 		$file = count($_FILES) > 0 ? array_shift($_FILES) : array();
 		if ( empty($file) ) {
+			quickwebp_debug_log( 'image_optimization_ajax:missing_file' );
 			wp_send_json_error( __( 'No image uploaded, try again.', 'quickwebp' ) );
 		}
 
@@ -299,11 +316,13 @@ class Quickwebp_Image_Optimizer {
 		$image_file = $this->file_is_image( $file, $settings );
 
 		if ( ! $image_file ) {
+			quickwebp_debug_log( 'image_optimization_ajax:not_image' );
 			wp_send_json_error( __( 'No image uploaded, try again.', 'quickwebp' ) );
 		}
 
 		$mode_enabled = $settings['quickwebp_settings_conversion'];
 		if ( $mode_enabled === '0' ) {
+			quickwebp_debug_log( 'image_optimization_ajax:conversion_disabled' );
 			$image_file['new_size'] = $image_file['size'];
 			$image_file['new_type'] = $image_file['type'];
 			$this->return_ajax_data( $image_file );
@@ -319,6 +338,7 @@ class Quickwebp_Image_Optimizer {
 		$image_file['new_type'] = $image_file['type'];
 
 		if ( '2' === $mode_enabled && $is_pro ) {
+			quickwebp_debug_log( 'image_optimization_ajax:try_avif', array( 'quality' => $quality ) );
 			$avif_image = $this->create_avif_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
 			if ( $avif_image ) {
 				$image_file['new_size'] = filesize( $image_file['tmp_name'] );
@@ -327,6 +347,7 @@ class Quickwebp_Image_Optimizer {
 		}
 
 		if ( '1' === $mode_enabled ) {
+			quickwebp_debug_log( 'image_optimization_ajax:try_webp', array( 'quality' => $quality ) );
 			$webp_image = $this->create_webp_image( $image_file['tmp_name'], $image_file['tmp_name'], $quality );
 			if ( $webp_image ) {
 				$image_file['new_size'] = filesize( $image_file['tmp_name'] );
@@ -341,6 +362,7 @@ class Quickwebp_Image_Optimizer {
 	 * Optimize a single media
 	 */
 	public function single_optimization_ajax() {
+		quickwebp_debug_log( 'single_optimization_ajax:start' );
 
 		// verify the nonce.
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
@@ -352,6 +374,7 @@ class Quickwebp_Image_Optimizer {
 		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( wp_unslash( $_POST['attachment_id'] ) ) : 0;
 
 		if ( ! $attachment_id ) {
+			quickwebp_debug_log( 'single_optimization_ajax:missing_attachment_id' );
 			wp_send_json_error( __( 'No attachment id.', 'quickwebp' ) );
 		}
 
@@ -380,6 +403,7 @@ class Quickwebp_Image_Optimizer {
 		$new_sizes = array();
 
 		foreach ( $sizes as $key => $size ) {
+			quickwebp_debug_log( 'single_optimization_ajax:optimize_size', array( 'size_key' => $key, 'path' => $size['path'] ?? '' ) );
 			$result = $this->optimize_local_file( $size );
 
 			if ( $result ) {
@@ -460,6 +484,7 @@ class Quickwebp_Image_Optimizer {
 	 * Get the image data for the preview in the settings page
 	 */
 	public function get_image_data_for_preview_ajax() {
+		quickwebp_debug_log( 'get_image_data_for_preview_ajax:start' );
 
 		// verify the nonce.
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
@@ -470,11 +495,13 @@ class Quickwebp_Image_Optimizer {
 		// Get the file
 		$file = count($_FILES) > 0 ? array_shift($_FILES) : array();
 		if ( empty($file) ) {
+			quickwebp_debug_log( 'get_image_data_for_preview_ajax:missing_file' );
 			wp_send_json_error( __( 'No image uploaded, try again.', 'quickwebp' ) );
 		}
 
 		$image_file = $this->file_is_image( $file );
 		if ( ! $image_file ) {
+			quickwebp_debug_log( 'get_image_data_for_preview_ajax:not_image' );
 			wp_send_json_error( __( 'No image uploaded, try again.', 'quickwebp' ) );
 		}
 
@@ -489,6 +516,7 @@ class Quickwebp_Image_Optimizer {
 
 		foreach ( $conversions as $conversion ) {
 			foreach ( $qualities as $quality ) {
+				quickwebp_debug_log( 'get_image_data_for_preview_ajax:preview_variant', array( 'conversion' => $conversion, 'quality' => $quality ) );
 
 				$size_after = 0;
 
@@ -646,12 +674,16 @@ class Quickwebp_Image_Optimizer {
 	public function optimize_local_file( $size ) {
 		global $quickwebp_surecart_client;
 
+		quickwebp_debug_log( 'optimize_local_file:start', array( 'path' => $size['path'] ?? '' ) );
+
 		if ( !is_file($size['path']) ) {
+			quickwebp_debug_log( 'optimize_local_file:missing_file', array( 'path' => $size['path'] ?? '' ) );
 			return false;
 		}
 
 		$real_type = mime_content_type( $size['path']);
 		if ( !in_array( $real_type, $this->allowed_mime_types ) ) {
+			quickwebp_debug_log( 'optimize_local_file:invalid_mime_type', array( 'mime_type' => $real_type ) );
 			return false;
 		}
 
@@ -667,11 +699,13 @@ class Quickwebp_Image_Optimizer {
 		$size_after   = 0;
 
 		if ( '2' === $mode_enabled && $is_pro ) {
+			quickwebp_debug_log( 'optimize_local_file:try_avif', array( 'path' => $size['path'], 'quality' => $quality ) );
 			$avif_image = $this->create_avif_image( $size['path'], $new_path, $quality );
 			if ( $avif_image ) {
 				$size_after = filesize( $new_path );
 			}
 		} elseif ( '1' === $mode_enabled ) {
+			quickwebp_debug_log( 'optimize_local_file:try_webp', array( 'path' => $size['path'], 'quality' => $quality ) );
 			$webp_image = $this->create_webp_image( $size['path'], $new_path, $quality );
 			if ( $webp_image ) {
 				$size_after = filesize( $new_path );
@@ -679,6 +713,7 @@ class Quickwebp_Image_Optimizer {
 		}
 
 		if ( ! $size_after ) {
+			quickwebp_debug_log( 'optimize_local_file:conversion_failed', array( 'path' => $size['path'], 'target_path' => $new_path ) );
 			return false;
 		}
 
@@ -761,6 +796,7 @@ class Quickwebp_Image_Optimizer {
 		$file_size		= isset($file['size']) 		? $file['size'] 	: '';
 
 		if ( empty($file_tmp_name) ) {
+			quickwebp_debug_log( 'file_is_image:missing_tmp_name', array( 'file_name' => $file_name ) );
 			return false;
 		}
 
@@ -768,6 +804,7 @@ class Quickwebp_Image_Optimizer {
 		$is_image			= wp_getimagesize($file_tmp_name);
 		$mime_type 			= wp_get_image_mime($file_tmp_name);
 		if ( ! $is_image || ! in_array( $mime_type, $allowed_mime_types ) ) {
+			quickwebp_debug_log( 'file_is_image:rejected', array( 'file_name' => $file_name, 'mime_type' => $mime_type ) );
 			return false;
 		}
 
@@ -897,14 +934,23 @@ class Quickwebp_Image_Optimizer {
 	 * @return bool
 	 */
 	private function create_image_with_wp_editor( $file_path, $output_path, $quality, $target_mime_type ) {
+		quickwebp_debug_log( 'create_image_with_wp_editor:start', array(
+			'file_path'        => $file_path,
+			'output_path'      => $output_path,
+			'quality'          => $quality,
+			'target_mime_type' => $target_mime_type,
+		) );
+
 		$editor = wp_get_image_editor( $file_path );
 
 		if ( is_wp_error( $editor ) ) {
+			quickwebp_debug_log( 'create_image_with_wp_editor:editor_error', array( 'message' => $editor->get_error_message() ) );
 			return false;
 		}
 
 		$extension = $this->get_extension_from_mime_type( $target_mime_type );
 		if ( empty( $extension ) ) {
+			quickwebp_debug_log( 'create_image_with_wp_editor:missing_extension', array( 'target_mime_type' => $target_mime_type ) );
 			return false;
 		}
 
@@ -917,6 +963,23 @@ class Quickwebp_Image_Optimizer {
 		$result = $editor->save( $save_path, $target_mime_type );
 
 		if ( is_wp_error( $result ) || empty( $result['path'] ) || ! file_exists( $result['path'] ) ) {
+			quickwebp_debug_log( 'create_image_with_wp_editor:save_failed', array(
+				'output_path' => $save_path,
+				'error'       => is_wp_error( $result ) ? $result->get_error_message() : 'missing_generated_file',
+			) );
+			return false;
+		}
+
+		$source_size    = file_exists( $file_path ) ? filesize( $file_path ) : 0;
+		$generated_size = filesize( $result['path'] );
+
+		if ( $source_size > 0 && $generated_size > $source_size ) {
+			quickwebp_debug_log( 'create_image_with_wp_editor:larger_than_source', array(
+				'source_size'    => $source_size,
+				'generated_size' => $generated_size,
+				'output_path'    => $result['path'],
+			) );
+			wp_delete_file( $result['path'] );
 			return false;
 		}
 
@@ -924,11 +987,18 @@ class Quickwebp_Image_Optimizer {
 			$file_contents = file_get_contents( $result['path'] );
 
 			if ( false === $file_contents || false === file_put_contents( $output_path, $file_contents ) ) {
+				quickwebp_debug_log( 'create_image_with_wp_editor:copy_failed', array( 'output_path' => $output_path ) );
 				return false;
 			}
 
 			wp_delete_file( $result['path'] );
 		}
+
+		quickwebp_debug_log( 'create_image_with_wp_editor:success', array(
+			'output_path'     => $output_path,
+			'generated_size'  => file_exists( $output_path ) ? filesize( $output_path ) : $generated_size,
+			'target_mime_type'=> $target_mime_type,
+		) );
 
 		return true;
 	}
@@ -963,18 +1033,50 @@ class Quickwebp_Image_Optimizer {
 	}
 
 	/**
+	 * Check whether the source mime type can be loaded through GD.
+	 *
+	 * @param string $mime_type Source mime type.
+	 *
+	 * @return bool
+	 */
+	private function can_load_image_with_gd( $mime_type ) {
+		$loaders = array(
+			'image/avif' => 'imagecreatefromavif',
+			'image/webp' => 'imagecreatefromwebp',
+			'image/jpeg' => 'imagecreatefromjpeg',
+			'image/png'  => 'imagecreatefrompng',
+		);
+
+		if ( empty( $loaders[ $mime_type ] ) ) {
+			return false;
+		}
+
+		return function_exists( $loaders[ $mime_type ] );
+	}
+
+	/**
 	 * Create the avif image
 	 */
 	private function create_avif_image( $file_path, $output_path, $quality ) {
-		if ( $this->create_image_with_wp_editor( $file_path, $output_path, $quality, 'image/avif' ) ) {
+		$image     = false;
+		$mime_type = wp_get_image_mime( $file_path );
+
+		quickwebp_debug_log( 'create_avif_image:start', array(
+			'file_path'   => $file_path,
+			'output_path' => $output_path,
+			'mime_type'   => $mime_type,
+			'quality'     => $quality,
+		) );
+
+		if ( ! $this->can_load_image_with_gd( $mime_type ) && $this->create_image_with_wp_editor( $file_path, $output_path, $quality, 'image/avif' ) ) {
+			quickwebp_debug_log( 'create_avif_image:used_wp_editor', array( 'mime_type' => $mime_type ) );
 			return true;
 		}
 
-		$image     = false;
-		$mime_type = wp_get_image_mime( $file_path );
 		$image     = $this->create_gd_image_resource( $file_path, $mime_type );
 
 		if ( ! $image ) {
+			quickwebp_debug_log( 'create_avif_image:gd_load_failed', array( 'mime_type' => $mime_type ) );
 			return false;
 		}
 
@@ -1037,8 +1139,14 @@ class Quickwebp_Image_Optimizer {
 		$avif_image = imageavif( $image, $output_path, $quality );
 		imagedestroy( $image );
 		if ( ! $avif_image ) {
+			quickwebp_debug_log( 'create_avif_image:gd_save_failed', array( 'output_path' => $output_path ) );
 			return false;
 		}
+
+		quickwebp_debug_log( 'create_avif_image:gd_success', array(
+			'output_path' => $output_path,
+			'file_size'   => file_exists( $output_path ) ? filesize( $output_path ) : 0,
+		) );
 
 		return $avif_image;
 	}
@@ -1047,15 +1155,25 @@ class Quickwebp_Image_Optimizer {
 	 * Create the webp image
 	 */
 	private function create_webp_image( $file_path, $output_path, $quality ) {
-		if ( $this->create_image_with_wp_editor( $file_path, $output_path, $quality, 'image/webp' ) ) {
+		$image     = false;
+		$mime_type = wp_get_image_mime( $file_path );
+
+		quickwebp_debug_log( 'create_webp_image:start', array(
+			'file_path'   => $file_path,
+			'output_path' => $output_path,
+			'mime_type'   => $mime_type,
+			'quality'     => $quality,
+		) );
+
+		if ( ! $this->can_load_image_with_gd( $mime_type ) && $this->create_image_with_wp_editor( $file_path, $output_path, $quality, 'image/webp' ) ) {
+			quickwebp_debug_log( 'create_webp_image:used_wp_editor', array( 'mime_type' => $mime_type ) );
 			return true;
 		}
 
-		$image     = false;
-		$mime_type = wp_get_image_mime( $file_path );
 		$image     = $this->create_gd_image_resource( $file_path, $mime_type );
 
 		if ( ! $image ) {
+			quickwebp_debug_log( 'create_webp_image:gd_load_failed', array( 'mime_type' => $mime_type ) );
 			return false;
 		}
 
@@ -1118,8 +1236,14 @@ class Quickwebp_Image_Optimizer {
 		$webp_image = imagewebp( $image, $output_path, $quality );
 		imagedestroy( $image );
 		if ( ! $webp_image ) {
+			quickwebp_debug_log( 'create_webp_image:gd_save_failed', array( 'output_path' => $output_path ) );
 			return false;
 		}
+
+		quickwebp_debug_log( 'create_webp_image:gd_success', array(
+			'output_path' => $output_path,
+			'file_size'   => file_exists( $output_path ) ? filesize( $output_path ) : 0,
+		) );
 
 		return $webp_image;
 	}

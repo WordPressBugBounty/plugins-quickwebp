@@ -46,9 +46,57 @@ function quickwebp_settings_default( $id ) {
         ),
         'quickwebp_settings_cleanup'                      => '1',
         'quickwebp_settings_paste_image'                  => '0',
+        'quickwebp_settings_debug_mode'                   => '0',
     );
 
     return isset($settings_arr[$id]) ? $settings_arr[$id] : '';
+}
+
+/**
+ * Get the QuickWebP debug log path.
+ *
+ * @return string
+ */
+function quickwebp_get_debug_log_path() {
+    $upload_dir = wp_upload_dir();
+    $base_dir   = trailingslashit( $upload_dir['basedir'] ) . 'quickwebp';
+
+    if ( ! is_dir( $base_dir ) ) {
+        wp_mkdir_p( $base_dir );
+    }
+
+    return trailingslashit( $base_dir ) . 'quickwebp-debug.log';
+}
+
+/**
+ * Check whether QuickWebP debug mode is enabled.
+ *
+ * @return bool
+ */
+function quickwebp_is_debug_mode_enabled() {
+    return '1' === (string) get_option( 'quickwebp_settings_debug_mode', quickwebp_settings_default( 'quickwebp_settings_debug_mode' ) );
+}
+
+/**
+ * Write a debug message to the QuickWebP custom log file.
+ *
+ * @param string $message Debug message.
+ * @param array  $context Optional contextual data.
+ *
+ * @return void
+ */
+function quickwebp_debug_log( $message, $context = array() ) {
+    if ( ! quickwebp_is_debug_mode_enabled() ) {
+        return;
+    }
+
+    $formatted_message = '[' . gmdate( 'Y-m-d H:i:s' ) . '] ' . sanitize_text_field( $message );
+
+    if ( ! empty( $context ) ) {
+        $formatted_message .= ' ' . wp_json_encode( $context );
+    }
+
+    error_log( $formatted_message . PHP_EOL, 3, quickwebp_get_debug_log_path() );
 }
 
 /**

@@ -391,6 +391,18 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                                 'default'     => quickwebp_settings_default( 'quickwebp_settings_paste_image' ),
                                 'description' => __( 'With this feature you can paste directly your picture in WordPress media.', 'quickwebp' ),
                             ) ); ?>
+
+                            <?php $this->render_component( array(
+                                'type'        => 'toggle',
+                                'name'        => 'quickwebp_settings_debug_mode',
+                                'label'       => __( 'Enable/disable debug mode', 'quickwebp' ),
+                                'default'     => quickwebp_settings_default( 'quickwebp_settings_debug_mode' ),
+                                'description' => sprintf(
+                                    /* translators: %s: debug log path. */
+                                    __( 'Write detailed optimization logs to %s.', 'quickwebp' ),
+                                    quickwebp_get_debug_log_path()
+                                ),
+                            ) ); ?>
                         </table>
                     </div>
                 </section>

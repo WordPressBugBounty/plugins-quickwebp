@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 4.1.0 =
+* Added a Debug Mode setting with detailed logs written to a custom file in uploads/quickwebp.
+* Improved image conversion compatibility by using the WordPress image editor only as a targeted fallback when GD cannot load the source format.
+* Added a safety check to reject conversions from the WordPress image editor when the generated file is larger than the source.
+
 = 4.0.1 =
 * Target blank on upgrade links to QuickWebP Pro in the settings page and license screen.
 * Improved local image conversion compatibility by using the native WordPress image editor before falling back to direct GD handling.
