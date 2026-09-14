@@ -63,6 +63,91 @@ class Quickwebp_Settings {
 			));
 		}
 	}
+
+	/**
+	 * Persist dismissal of the contextual AVIF notice for the current user.
+	 */
+	public function dismiss_avif_notice() {
+		if ( ! isset( $_GET['quickwebp_dismiss_avif_notice'] ) || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		check_admin_referer( 'quickwebp_dismiss_avif_notice' );
+		update_user_meta( get_current_user_id(), 'quickwebp_avif_notice_dismissed', 1 );
+
+		wp_safe_redirect( remove_query_arg( array( 'quickwebp_dismiss_avif_notice', '_wpnonce' ) ) );
+		exit;
+	}
+
+	/**
+	 * Render the contextual AVIF upgrade notice outside QuickWebP screens.
+	 */
+	public function render_avif_notice() {
+		global $quickwebp_surecart_client;
+
+		if ( ! current_user_can( 'manage_options' ) || get_user_meta( get_current_user_id(), 'quickwebp_avif_notice_dismissed', true ) ) {
+			return;
+		}
+
+		$screen = get_current_screen();
+		if ( $screen && false !== strpos( $screen->id, 'quickwebp' ) ) {
+			return;
+		}
+
+		if ( $quickwebp_surecart_client && $quickwebp_surecart_client->license()->is_valid() ) {
+			return;
+		}
+
+		$stats        = get_option( 'quickwebp_optimization_stats', array() );
+		$image_count  = absint( $stats['images_optimized'] ?? 0 );
+		$bytes_saved  = absint( $stats['bytes_saved'] ?? 0 );
+		$installed_at = absint( get_option( 'quickwebp_installed_at', 0 ) );
+		$seven_days   = 7 * DAY_IN_SECONDS;
+
+		if ( $image_count < 20 && ( ! $installed_at || time() - $installed_at < $seven_days ) ) {
+			return;
+		}
+
+		$avif_supported = function_exists( 'wp_image_editor_supports' ) && wp_image_editor_supports( array( 'mime_type' => 'image/avif' ) );
+		if ( ! $avif_supported ) {
+			return;
+		}
+
+		$dismiss_url = wp_nonce_url(
+			add_query_arg( 'quickwebp_dismiss_avif_notice', '1' ),
+			'quickwebp_dismiss_avif_notice'
+		);
+		?>
+		<div class="notice notice-success quickwebp-avif-notice">
+			<p>
+				<strong>
+					<?php
+					printf(
+						/* translators: %s is the number of images optimized by QuickWebP. */
+						esc_html( _n( 'QuickWebP has already optimized %s image on your site.', 'QuickWebP has already optimized %s images on your site.', $image_count, 'quickwebp' ) ),
+						esc_html( number_format_i18n( $image_count ) )
+					);
+					?>
+				</strong>
+			</p>
+			<p>
+				<?php
+				printf(
+					/* translators: %s is the disk space saved by QuickWebP. */
+					esc_html__( 'You have saved %s thanks to WebP.', 'quickwebp' ),
+					'<strong>' . esc_html( size_format( $bytes_saved, 1 ) ) . '</strong>'
+				);
+				?>
+			</p>
+			<p><strong><?php esc_html_e( 'Your server also supports AVIF.', 'quickwebp' ); ?></strong></p>
+			<p><strong><?php esc_html_e( 'With AVIF, your WebP images could be around 30% smaller on average.', 'quickwebp' ); ?></strong></p>
+			<p>
+				<a class="button button-primary" href="<?php echo esc_url( quickwebp_get_pro_url( 'avif-admin-notice' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Discover AVIF', 'quickwebp' ); ?></a>
+				<a class="button-link" href="<?php echo esc_url( $dismiss_url ); ?>"><?php esc_html_e( 'Dismiss', 'quickwebp' ); ?></a>
+			</p>
+		</div>
+		<?php
+	}
 		
 	/**
 	 * add_settings_menu
@@ -170,6 +255,12 @@ class Quickwebp_Settings {
 				// translators: %s is a placeholder for the link to the settings page.
 				__( '<a href="%s">Settings</a>', 'quickwebp' ),
 				esc_url( admin_url( 'upload.php?page=quickwebp-settings' ) )
+			);
+
+			$new_actions['upgrade_pro'] = sprintf(
+				'<a href="%1$s" target="_blank" rel="noopener noreferrer" style="color: #008a20; font-weight: 600;">%2$s</a>',
+				esc_url( quickwebp_get_pro_url( 'plugins-list-upgrade' ) ),
+				esc_html__( 'Upgrade to Pro', 'quickwebp' )
 			);
 		}
 

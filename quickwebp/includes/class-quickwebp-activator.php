@@ -30,6 +30,7 @@ class Quickwebp_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
+		add_option( 'quickwebp_installed_at', time(), '', false );
 		self::maybe_add_rewrite_rules();
 	}
 

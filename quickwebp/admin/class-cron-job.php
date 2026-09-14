@@ -96,6 +96,7 @@ class Quickwebp_Cron_Job {
 			}
 
 			if ( ! empty( $new_sizes ) ) {
+				$quickwebp_image_optimizer->record_attachment_optimization_stats( $new_sizes );
 
 				$data = get_post_meta( $id, 'quickwebp_data', true );
 				if ( ! empty( $data ) ) {

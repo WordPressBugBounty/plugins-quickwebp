@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 4.1.1 =
+* Better informations about pro version and AVIF format in settings page.
+
 = 4.1.0 =
 * Added a Debug Mode setting with detailed logs written to a custom file in uploads/quickwebp.
 * Improved image conversion compatibility by using the WordPress image editor only as a targeted fallback when GD cannot load the source format.

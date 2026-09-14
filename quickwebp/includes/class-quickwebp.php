@@ -189,6 +189,8 @@ class Quickwebp {
 		$quickwebp_settings = new Quickwebp_Settings( $this->get_plugin_name(), $this->get_version() );
 		$this->loader->add_action( 'admin_enqueue_scripts', $quickwebp_settings, 'enqueue_scripts_styles' );
 		$this->loader->add_action( 'admin_menu', $quickwebp_settings, 'add_settings_menu' );
+		$this->loader->add_action( 'admin_init', $quickwebp_settings, 'dismiss_avif_notice' );
+		$this->loader->add_action( 'admin_notices', $quickwebp_settings, 'render_avif_notice' );
 		$this->loader->add_filter( 'plugin_action_links', $quickwebp_settings, 'add_settings_link', 10, 2 );
 		$this->loader->add_filter( 'sanitize_option_quickwebp_settings_conversion_display_webp_mode', $quickwebp_settings, 'add_rewrite_rules', 5 );
 		$this->loader->add_filter( 'sanitize_option_quickwebp_settings_conversion_display_webp_mode', $quickwebp_settings, 'sanitize_display_mode_for_consistency', 10, 3 );
@@ -225,7 +227,7 @@ class Quickwebp {
 		$this->loader->add_action( 'admin_enqueue_scripts', $quickwebp_surecart, 'enqueue_scripts_styles' );
 
 		$quickwebp_migration = new Quickwebp_Migration();
-		$this->loader->add_action( 'init', $quickwebp_migration, 'init_migration' );
+		$this->loader->add_action( 'admin_init', $quickwebp_migration, 'init_migration' );
 	}
 
 	/**

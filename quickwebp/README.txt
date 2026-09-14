@@ -4,7 +4,7 @@ Tags: webp, avif, image optimization, seo, performance
 Requires at least: 6.8.2
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 4.1.0
+Stable tag: 4.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 
@@ -116,6 +116,9 @@ If you want to support the project, you can do it here: [Buy me a coffee](https:
 
 == Changelog ==
 
+= 4.1.1 =
+* Better informations about pro version and AVIF format in settings page.
+
 = 4.1.0 =
 * Added a Debug Mode setting with detailed logs written to a custom file in uploads/quickwebp.
 * Improved image conversion compatibility by using the WordPress image editor only as a targeted fallback when GD cannot load the source format.
@@ -124,11 +127,6 @@ If you want to support the project, you can do it here: [Buy me a coffee](https:
 = 4.0.1 =
 * Target blank on upgrade links to QuickWebP Pro in the settings page and license screen.
 * Improved local image conversion compatibility by using the native WordPress image editor before falling back to direct GD handling.
-
-= 4.0.0 =
-* Added QuickWebP Pro positioning with the AVIF upgrade path.
-* Reworked the README and plugin metadata to clarify Free vs Pro features.
-* Updated the QuickWebP Pro product link.
 
 
 [See changelog for all versions.](https://plugins.svn.wordpress.org/quickwebp/trunk/changelog.txt)

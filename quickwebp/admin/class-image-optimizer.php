@@ -107,6 +107,7 @@ class Quickwebp_Image_Optimizer {
 				$image_file['size']      = filesize( $image_file['tmp_name'] );
 				$image_file['type']      = 'image/avif';
 				$image_file['quickwebp'] = 'optimized';
+				$this->record_optimization_stats( $image_file['new_size'], $image_file['size'] );
 				quickwebp_debug_log( 'image_optimization:avif_success', array( 'new_size' => $image_file['size'] ) );
 			}
 		}
@@ -118,6 +119,7 @@ class Quickwebp_Image_Optimizer {
 				$image_file['size']      = filesize( $image_file['tmp_name'] );
 				$image_file['type']      = 'image/webp';
 				$image_file['quickwebp'] = 'optimized';
+				$this->record_optimization_stats( $image_file['new_size'], $image_file['size'] );
 				quickwebp_debug_log( 'image_optimization:webp_success', array( 'new_size' => $image_file['size'] ) );
 			}
 		}
@@ -190,6 +192,8 @@ class Quickwebp_Image_Optimizer {
 		}
 
 		if ( ! empty( $new_sizes ) ) {
+			$this->record_attachment_optimization_stats( $new_sizes );
+
 			if ( '1' == $mode_enabled ) {
 				update_post_meta( $attachment_id, 'quickwebp_already_optimized', '1' );
 			} elseif ( '2' == $mode_enabled ) {
@@ -412,6 +416,7 @@ class Quickwebp_Image_Optimizer {
 		}
 
 		if ( ! empty( $new_sizes ) ) {
+			$this->record_attachment_optimization_stats( $new_sizes );
 
 			$data = get_post_meta( $attachment_id, 'quickwebp_data', true );
 			if ( ! empty( $data ) ) {
@@ -728,6 +733,56 @@ class Quickwebp_Image_Optimizer {
 			'path'			 => $new_path,
 			'format'         => $mode_enabled,
 		);
+	}
+
+	/**
+	 * Record aggregated optimization statistics for one image attachment.
+	 *
+	 * @param array $optimized_sizes Optimization results for the attachment sizes.
+	 */
+	public function record_attachment_optimization_stats( $optimized_sizes ) {
+		$size_before = 0;
+		$size_after  = 0;
+
+		foreach ( $optimized_sizes as $optimized_size ) {
+			$size_before += absint( $optimized_size['original_size'] ?? 0 );
+			$size_after  += absint( $optimized_size['optimized_size'] ?? 0 );
+		}
+
+		$this->record_optimization_stats( $size_before, $size_after );
+	}
+
+	/**
+	 * Record local cumulative optimization statistics.
+	 *
+	 * @param int $size_before File size before optimization in bytes.
+	 * @param int $size_after  File size after optimization in bytes.
+	 */
+	public function record_optimization_stats( $size_before, $size_after ) {
+		$size_before = absint( $size_before );
+		$size_after  = absint( $size_after );
+
+		if ( ! $size_before || ! $size_after ) {
+			return;
+		}
+
+		$stats = get_option( 'quickwebp_optimization_stats', array() );
+		$stats = wp_parse_args(
+			is_array( $stats ) ? $stats : array(),
+			array(
+				'images_optimized' => 0,
+				'bytes_before'     => 0,
+				'bytes_after'      => 0,
+				'bytes_saved'      => 0,
+			)
+		);
+
+		$stats['images_optimized'] = absint( $stats['images_optimized'] ) + 1;
+		$stats['bytes_before']     = absint( $stats['bytes_before'] ) + $size_before;
+		$stats['bytes_after']      = absint( $stats['bytes_after'] ) + $size_after;
+		$stats['bytes_saved']      = max( 0, $stats['bytes_before'] - $stats['bytes_after'] );
+
+		update_option( 'quickwebp_optimization_stats', $stats, false );
 	}
 
 	/**
