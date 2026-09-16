@@ -228,6 +228,7 @@ class Quickwebp {
 
 		$quickwebp_migration = new Quickwebp_Migration();
 		$this->loader->add_action( 'admin_init', $quickwebp_migration, 'init_migration' );
+		$this->loader->add_action( 'quickwebp_optimization_stats_migration_hook', $quickwebp_migration, 'migrate_optimization_stats_batch' );
 	}
 
 	/**

@@ -57,7 +57,12 @@ class Quickwebp_Cron_Job {
 	 * excute bulk optimization
 	 */
 	public function excute_bulk_optimization() {
-		$time_start = microtime(true);
+		$lock_token = $this->acquire_bulk_optimization_lock();
+		if ( ! $lock_token ) {
+			return;
+		}
+
+		$time_start = microtime( true );
 
 		$quickwebp_image_optimizer = new Quickwebp_Image_Optimizer( QUICKWEBP_TEXT_DOMAIN, QUICKWEBP_VERSION );
 		$settings                  = $quickwebp_image_optimizer->get_settings();
@@ -65,23 +70,34 @@ class Quickwebp_Cron_Job {
 		$mode_enabled = $settings['quickwebp_settings_conversion'];
 		if ( '0' === $mode_enabled ) {
 			$this->end_cron_job();
+			$this->release_bulk_optimization_lock( $lock_token );
+			return;
 		}
 
-		$media_ids = $quickwebp_image_optimizer->get_unoptimized_media_ids();
+		$media_ids = $quickwebp_image_optimizer->get_unoptimized_media_ids( 5 );
 		if ( empty( $media_ids ) ) {
 			$this->end_cron_job();
+			$this->release_bulk_optimization_lock( $lock_token );
+			return;
 		}
 
 		$status = get_option( 'quickwebp_bulk_optimize_status', 'finish' );
 		if ( $status != 'running' ) {
 			$this->end_cron_job();
+			$this->release_bulk_optimization_lock( $lock_token );
+			return;
 		}
 		
-		$current = (int)get_option( 'quickwebp_bulk_optimize_current', 0 );
+		$current     = (int) get_option( 'quickwebp_bulk_optimize_current', 0 );
+		$batch_stats = array(
+			'images_optimized' => 0,
+			'bytes_before'     => 0,
+			'bytes_after'      => 0,
+		);
 
 		foreach ( $media_ids as $id ) {
-			if ( $time_start + 55 < microtime(true) ) {
-				exit;
+			if ( $time_start + 55 < microtime( true ) ) {
+				break;
 			}
 
 			$sizes     = $quickwebp_image_optimizer->get_media_files( $id );
@@ -96,7 +112,10 @@ class Quickwebp_Cron_Job {
 			}
 
 			if ( ! empty( $new_sizes ) ) {
-				$quickwebp_image_optimizer->record_attachment_optimization_stats( $new_sizes );
+				$attachment_stats                = $quickwebp_image_optimizer->get_attachment_optimization_stats( $new_sizes );
+				$batch_stats['images_optimized'] += $attachment_stats['images_optimized'];
+				$batch_stats['bytes_before']     += $attachment_stats['bytes_before'];
+				$batch_stats['bytes_after']      += $attachment_stats['bytes_after'];
 
 				$data = get_post_meta( $id, 'quickwebp_data', true );
 				if ( ! empty( $data ) ) {
@@ -118,10 +137,62 @@ class Quickwebp_Cron_Job {
 			}
 
 			$current++;
-			update_option( 'quickwebp_bulk_optimize_current', $current );
 		}
 
-		$this->end_cron_job();
+		if ( $batch_stats['images_optimized'] ) {
+			$quickwebp_image_optimizer->record_optimization_stats(
+				$batch_stats['bytes_before'],
+				$batch_stats['bytes_after'],
+				$batch_stats['images_optimized']
+			);
+		}
+
+		update_option( 'quickwebp_bulk_optimize_current', $current );
+
+		if ( empty( $quickwebp_image_optimizer->get_unoptimized_media_ids( 1 ) ) ) {
+			$this->end_cron_job();
+		}
+
+		$this->release_bulk_optimization_lock( $lock_token );
+	}
+
+	/**
+	 * Acquire an expiring lock for the bulk optimization worker.
+	 *
+	 * @return string|false
+	 */
+	private function acquire_bulk_optimization_lock() {
+		$lock_token = wp_generate_uuid4();
+		$lock       = array(
+			'token'   => $lock_token,
+			'expires' => time() + ( 2 * MINUTE_IN_SECONDS ),
+		);
+
+		if ( add_option( 'quickwebp_bulk_optimization_lock', $lock, '', false ) ) {
+			return $lock_token;
+		}
+
+		$existing_lock = get_option( 'quickwebp_bulk_optimization_lock', array() );
+		if ( is_array( $existing_lock ) && absint( $existing_lock['expires'] ?? 0 ) < time() ) {
+			delete_option( 'quickwebp_bulk_optimization_lock' );
+			if ( add_option( 'quickwebp_bulk_optimization_lock', $lock, '', false ) ) {
+				return $lock_token;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Release the bulk optimization lock owned by this process.
+	 *
+	 * @param string $lock_token Lock ownership token.
+	 */
+	private function release_bulk_optimization_lock( $lock_token ) {
+		$lock = get_option( 'quickwebp_bulk_optimization_lock', array() );
+		if ( is_array( $lock ) && hash_equals( (string) ( $lock['token'] ?? '' ), $lock_token ) ) {
+			delete_option( 'quickwebp_bulk_optimization_lock' );
+		}
 	}
 
 	/**
@@ -147,8 +218,8 @@ class Quickwebp_Cron_Job {
 			wp_send_json_error( __( 'Choose an image format and save the settings.', 'quickwebp' ) );
 		}
 
-		$media_ids = $quickwebp_image_optimizer->get_unoptimized_media_ids();
-		if ( empty( $media_ids ) ) {
+		$total = $quickwebp_image_optimizer->get_unoptimized_media_count();
+		if ( ! $total ) {
 			wp_send_json_error( __( 'No images to optimize.', 'quickwebp' ) );
 		}
 
@@ -160,7 +231,6 @@ class Quickwebp_Cron_Job {
 		if ( ! wp_next_scheduled( 'quickwebp_bulk_optimization_hook' ) ) {
 			wp_schedule_event( time(), 'bulk_optimization', 'quickwebp_bulk_optimization_hook' );
 
-			$total   = count( $media_ids );
 			$current = 0;
 
 			update_option( 'quickwebp_bulk_optimize_total', $total );
@@ -246,6 +316,5 @@ class Quickwebp_Cron_Job {
 	 */
 	private function end_cron_job() {
 		$this->clear_bulk_optimization();
-		exit;
 	}
 }

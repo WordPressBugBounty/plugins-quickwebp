@@ -560,8 +560,40 @@ class Quickwebp_Image_Optimizer {
 
 	/**
 	 * Get the unoptimized media ids
+	 *
+	 * @param int $limit Maximum number of media IDs to retrieve.
+	 * @return int[]
 	 */
-	public function get_unoptimized_media_ids() {
+	public function get_unoptimized_media_ids( $limit = 5 ) {
+		$query_args                   = $this->get_unoptimized_media_query_args();
+		$query_args['posts_per_page'] = max( 1, absint( $limit ) );
+		$query_args['fields']         = 'ids';
+		$query_args['no_found_rows']  = true;
+
+		return get_posts( $query_args );
+	}
+
+	/**
+	 * Count unoptimized media.
+	 *
+	 * @return int
+	 */
+	public function get_unoptimized_media_count() {
+		$query_args                   = $this->get_unoptimized_media_query_args();
+		$query_args['posts_per_page'] = 1;
+		$query_args['fields']         = 'ids';
+
+		$query = new WP_Query( $query_args );
+
+		return absint( $query->found_posts );
+	}
+
+	/**
+	 * Get the shared query arguments for unoptimized media.
+	 *
+	 * @return array
+	 */
+	private function get_unoptimized_media_query_args() {
 
 		$settings           = $this->get_settings();
 		$mode_enabled       = $settings['quickwebp_settings_conversion'];
@@ -610,12 +642,10 @@ class Quickwebp_Image_Optimizer {
 			);
 		}
 
-		$media_ids = get_posts( array(
+		return array(
 			'post_type'      => 'attachment',
 			'post_mime_type' => $allowed_mime_types,
 			'post_status'    => array_keys( $statuses ),
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'meta_query'     => array(
 				'relation' => 'AND',
@@ -625,9 +655,7 @@ class Quickwebp_Image_Optimizer {
 				),
 				$meta_query_already_optimized,
 			),
-		) );
-
-		return $media_ids;
+		);
 	}
 
 	/**
@@ -741,28 +769,54 @@ class Quickwebp_Image_Optimizer {
 	 * @param array $optimized_sizes Optimization results for the attachment sizes.
 	 */
 	public function record_attachment_optimization_stats( $optimized_sizes ) {
-		$size_before = 0;
-		$size_after  = 0;
+		$stats = $this->get_attachment_optimization_stats( $optimized_sizes );
+		$this->record_optimization_stats( $stats['bytes_before'], $stats['bytes_after'], $stats['images_optimized'] );
+	}
+
+	/**
+	 * Calculate optimization statistics for attachment sizes without persisting them.
+	 *
+	 * @param array $optimized_sizes Optimization results for the attachment sizes.
+	 * @return array
+	 */
+	public function get_attachment_optimization_stats( $optimized_sizes ) {
+		$stats = array(
+			'images_optimized' => 0,
+			'bytes_before'     => 0,
+			'bytes_after'      => 0,
+		);
 
 		foreach ( $optimized_sizes as $optimized_size ) {
-			$size_before += absint( $optimized_size['original_size'] ?? 0 );
-			$size_after  += absint( $optimized_size['optimized_size'] ?? 0 );
+			$stats['bytes_before'] += absint( $optimized_size['original_size'] ?? 0 );
+			$stats['bytes_after']  += absint( $optimized_size['optimized_size'] ?? 0 );
 		}
 
-		$this->record_optimization_stats( $size_before, $size_after );
+		if ( $stats['bytes_before'] && $stats['bytes_after'] ) {
+			$stats['images_optimized'] = 1;
+		}
+
+		return $stats;
 	}
 
 	/**
 	 * Record local cumulative optimization statistics.
 	 *
 	 * @param int $size_before File size before optimization in bytes.
-	 * @param int $size_after  File size after optimization in bytes.
+	 * @param int $size_after      File size after optimization in bytes.
+	 * @param int $images_optimized Number of optimized attachments.
 	 */
-	public function record_optimization_stats( $size_before, $size_after ) {
-		$size_before = absint( $size_before );
-		$size_after  = absint( $size_after );
+	public function record_optimization_stats( $size_before, $size_after, $images_optimized = 1 ) {
+		$size_before     = absint( $size_before );
+		$size_after      = absint( $size_after );
+		$images_optimized = absint( $images_optimized );
 
-		if ( ! $size_before || ! $size_after ) {
+		if ( ! $size_before || ! $size_after || ! $images_optimized ) {
+			return;
+		}
+
+		$lock_token = $this->acquire_optimization_stats_lock();
+		if ( ! $lock_token ) {
+			$this->queue_optimization_stats_delta( $size_before, $size_after, $images_optimized );
 			return;
 		}
 
@@ -776,13 +830,109 @@ class Quickwebp_Image_Optimizer {
 				'bytes_saved'      => 0,
 			)
 		);
+		$pending_stats = $this->consume_optimization_stats_deltas();
 
-		$stats['images_optimized'] = absint( $stats['images_optimized'] ) + 1;
-		$stats['bytes_before']     = absint( $stats['bytes_before'] ) + $size_before;
-		$stats['bytes_after']      = absint( $stats['bytes_after'] ) + $size_after;
+		$stats['images_optimized'] = absint( $stats['images_optimized'] ) + $images_optimized + $pending_stats['images_optimized'];
+		$stats['bytes_before']     = absint( $stats['bytes_before'] ) + $size_before + $pending_stats['bytes_before'];
+		$stats['bytes_after']      = absint( $stats['bytes_after'] ) + $size_after + $pending_stats['bytes_after'];
 		$stats['bytes_saved']      = max( 0, $stats['bytes_before'] - $stats['bytes_after'] );
 
 		update_option( 'quickwebp_optimization_stats', $stats, false );
+		$this->release_optimization_stats_lock( $lock_token );
+	}
+
+	/**
+	 * Queue a statistics delta when another request owns the update lock.
+	 *
+	 * @param int $size_before      File size before optimization in bytes.
+	 * @param int $size_after       File size after optimization in bytes.
+	 * @param int $images_optimized Number of optimized attachments.
+	 */
+	private function queue_optimization_stats_delta( $size_before, $size_after, $images_optimized ) {
+		$option_name = 'quickwebp_optimization_stats_delta_' . str_replace( '-', '', wp_generate_uuid4() );
+		add_option(
+			$option_name,
+			array(
+				'images_optimized' => $images_optimized,
+				'bytes_before'     => $size_before,
+				'bytes_after'      => $size_after,
+			),
+			'',
+			false
+		);
+	}
+
+	/**
+	 * Consume queued statistics deltas while holding the update lock.
+	 *
+	 * @return array
+	 */
+	private function consume_optimization_stats_deltas() {
+		global $wpdb;
+
+		$pending_stats = array(
+			'images_optimized' => 0,
+			'bytes_before'     => 0,
+			'bytes_after'      => 0,
+		);
+		$option_prefix = 'quickwebp_optimization_stats_delta_';
+		$option_names  = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( $option_prefix ) . '%'
+			)
+		);
+
+		foreach ( $option_names as $option_name ) {
+			$delta = get_option( $option_name, array() );
+			if ( is_array( $delta ) ) {
+				$pending_stats['images_optimized'] += absint( $delta['images_optimized'] ?? 0 );
+				$pending_stats['bytes_before']     += absint( $delta['bytes_before'] ?? 0 );
+				$pending_stats['bytes_after']      += absint( $delta['bytes_after'] ?? 0 );
+			}
+			delete_option( $option_name );
+		}
+
+		return $pending_stats;
+	}
+
+	/**
+	 * Acquire an expiring lock for cumulative statistics updates.
+	 *
+	 * @return string|false
+	 */
+	private function acquire_optimization_stats_lock() {
+		$lock_token = wp_generate_uuid4();
+		$lock       = array(
+			'token'   => $lock_token,
+			'expires' => time() + MINUTE_IN_SECONDS,
+		);
+
+		if ( add_option( 'quickwebp_optimization_stats_lock', $lock, '', false ) ) {
+			return $lock_token;
+		}
+
+		$existing_lock = get_option( 'quickwebp_optimization_stats_lock', array() );
+		if ( is_array( $existing_lock ) && absint( $existing_lock['expires'] ?? 0 ) < time() ) {
+			delete_option( 'quickwebp_optimization_stats_lock' );
+			if ( add_option( 'quickwebp_optimization_stats_lock', $lock, '', false ) ) {
+				return $lock_token;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Release the statistics lock owned by this process.
+	 *
+	 * @param string $lock_token Lock ownership token.
+	 */
+	private function release_optimization_stats_lock( $lock_token ) {
+		$lock = get_option( 'quickwebp_optimization_stats_lock', array() );
+		if ( is_array( $lock ) && hash_equals( (string) ( $lock['token'] ?? '' ), $lock_token ) ) {
+			delete_option( 'quickwebp_optimization_stats_lock' );
+		}
 	}
 
 	/**

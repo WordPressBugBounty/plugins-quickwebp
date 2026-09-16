@@ -1,7 +1,15 @@
 == Changelog ==
 
+= 4.1.2 =
+* PERFORMANCE: Moved the optimization statistics migration out of admin requests and process it in small scheduled batches.
+* PERFORMANCE: Replaced counted page-based migration queries with ID cursor pagination and no_found_rows.
+* PERFORMANCE: Reduced bulk optimization option writes by persisting progress and statistics once per batch.
+* FIX: Added expiring locks to prevent overlapping bulk optimization and statistics migration workers.
+* FIX: Serialized cumulative statistics updates and preserved increments received during concurrent requests.
+
 = 4.1.1 =
 * Better informations about pro version and AVIF format in settings page.
+* Added cumulative image optimization statistics and an existing-media statistics migration.
 
 = 4.1.0 =
 * Added a Debug Mode setting with detailed logs written to a custom file in uploads/quickwebp.
